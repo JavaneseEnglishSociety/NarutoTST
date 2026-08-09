@@ -338,28 +338,16 @@ function setLobbyError(msg) { $('#lobbyError').textContent = msg || ''; }
 function connectAndJoin(roomCode, name, color) {
   $('#joinBtn').disabled = true;
   if (socket) { socket.removeAllListeners(); socket.disconnect(); }
+  // Stash these BEFORE connecting — the single 'connect' handler in
+  // wireSocketEvents() uses them for both the first join and any later
+  // auto-reconnect, so there is only ever one join attempt per connection.
+  lastRoomCode = roomCode; lastPlayerName = name; lastPlayerColor = color;
   socket = io(SERVER_URL, { transports: ['websocket', 'polling'], reconnectionAttempts: 6 });
   wireSocketEvents();
 
   socket.on('connect_error', () => {
     setLobbyError(`Could not reach the server at ${SERVER_URL}. Check the URL at the top of this file / your connection.`);
     $('#joinBtn').disabled = false;
-  });
-
-  socket.on('connect', () => {
-    socket.emit('joinRoom', { roomCode, name, color }, ack => {
-      $('#joinBtn').disabled = false;
-      if (!ack || !ack.ok) { setLobbyError((ack && ack.error) || 'Could not join room.'); return; }
-      myId = ack.playerId;
-      arenaCfg = ack.arena;
-      winScore = ack.winScore;
-      lastRoomCode = ack.roomCode; lastPlayerName = name; lastPlayerColor = color;
-      inRoom = true;
-      $('#joinCard').style.display = 'none';
-      $('#roomPanel').style.display = 'block';
-      $('#roomCodeDisplay').textContent = ack.roomCode;
-      resizeCanvas();
-    });
   });
 }
 
@@ -413,14 +401,28 @@ function wireSocketEvents() {
   socket.on('disconnect', () => {
     if (inRoom) $('#reconnectOverlay').classList.add('on');
   });
+
+  // Single 'connect' handler for the whole socket lifecycle: it fires once on
+  // the very first connection (joins fresh, room may be created) AND on every
+  // subsequent auto-reconnect (rejoins lastRoomCode, which by then holds the
+  // server-assigned code). Previously this logic was split across two
+  // separate 'connect' listeners, which double-emitted 'joinRoom' on every
+  // reconnect — fixed by consolidating into this one.
   socket.on('connect', () => {
     $('#reconnectOverlay').classList.remove('on');
-    // Auto-reconnection: socket.io gave us a *new* connection; rejoin the same room.
-    if (inRoom && lastRoomCode) {
-      socket.emit('joinRoom', { roomCode: lastRoomCode, name: lastPlayerName, color: lastPlayerColor }, ack => {
-        if (ack && ack.ok) { myId = ack.playerId; arenaCfg = ack.arena; }
-      });
-    }
+    socket.emit('joinRoom', { roomCode: lastRoomCode, name: lastPlayerName, color: lastPlayerColor }, ack => {
+      $('#joinBtn').disabled = false;
+      if (!ack || !ack.ok) { setLobbyError((ack && ack.error) || 'Could not join room.'); return; }
+      myId = ack.playerId;
+      arenaCfg = ack.arena;
+      winScore = ack.winScore;
+      lastRoomCode = ack.roomCode;
+      inRoom = true;
+      $('#joinCard').style.display = 'none';
+      $('#roomPanel').style.display = 'block';
+      $('#roomCodeDisplay').textContent = ack.roomCode;
+      resizeCanvas();
+    });
   });
 }
 
