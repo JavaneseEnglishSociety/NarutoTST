@@ -171,6 +171,40 @@ main{display:grid;grid-template-columns:322px 1fr;min-height:0}
 #tip .tg{font-family:var(--data);font-size:10px;color:#8894A3;margin-top:7px;border-top:1px solid var(--sumi-line);padding-top:6px;line-height:1.5}
 #drawerToggle{display:none}
 
+/* ═══ Delta ribbon — the visible receipt of applied mechanics ═══ */
+.entry.delta .body{border:none;background:none;padding:0}
+.dwrap{border-left:2px solid var(--leaf);background:rgba(94,140,78,.07);padding:9px 13px}
+.dl{display:flex;gap:8px;align-items:baseline;font-family:var(--data);font-size:11.5px;line-height:1.65;color:#4A4132}
+.dl .s{flex:none;width:10px;text-align:center;font-size:9px}
+.dl.up{color:#3F6B33} .dl.up .s{color:var(--leaf)}
+.dl.dn{color:#8A3123} .dl.dn .s{color:var(--hanko)}
+.dl.flat{color:#7A6C51}
+.dsrc{font-family:var(--data);font-size:9.5px;color:#9A8A6C;margin-top:6px;border-top:1px solid rgba(120,100,66,.2);padding-top:5px}
+.entry.interp .body{border:none;background:none;padding:0;font-family:var(--data);font-size:11px;color:#9A8A6C}
+.spin{display:inline-block;width:8px;height:8px;border:1.5px solid #C4B393;border-top-color:var(--hanko);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ═══ Death screen ═══ */
+#deathScreen{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px;
+  background:radial-gradient(90% 70% at 50% 20%,#2A1512,#07090C 70%);overflow-y:auto;animation:fadein .9s ease both}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.dcard{width:min(640px,100%);text-align:center;color:var(--washi)}
+.dcard .kanji{font-family:var(--display);font-size:15px;font-weight:800;letter-spacing:.5em;color:var(--hanko);text-transform:uppercase;margin-bottom:20px}
+.dcard h1{font-family:var(--display);font-size:52px;font-weight:800;margin:0 0 6px;color:#F1E8D6;letter-spacing:.02em}
+.dcard .sub{font-family:var(--data);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#8A6B62;margin-bottom:26px}
+.dcard .cause{font-family:var(--body);font-size:18px;font-style:italic;color:#C9B9A4;margin:0 auto 28px;max-width:44ch;line-height:1.6}
+.dstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:1px;background:var(--sumi-line);border:1px solid var(--sumi-line);margin-bottom:24px}
+.dstat{background:#12171F;padding:12px 8px}
+.dstat .l{font-family:var(--data);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:#65717F}
+.dstat .v{font-family:var(--display);font-size:24px;font-weight:800;color:#E8DECB;line-height:1.2;margin-top:3px}
+.dnote{font-family:var(--data);font-size:11px;color:#7A8797;line-height:1.7;margin-bottom:26px;text-align:left;
+  border-left:2px solid var(--sumi-line);padding-left:14px;max-width:46ch;margin-left:auto;margin-right:auto}
+.dnote b{color:#B9C4D2;font-weight:500}
+.drow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.dbtn{padding:13px 28px;font-family:var(--data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;transition:.16s;border:1px solid transparent}
+.dbtn.p{background:var(--hanko);color:#F6EEDD} .dbtn.p:hover{background:#8F2C1F}
+.dbtn.g{border-color:var(--sumi-line);color:#93A0B1} .dbtn.g:hover{border-color:var(--shu);color:var(--washi)}
+
 /* ═══ Skill tree — compact, lives inside the Chakra pane ═══ */
 .sttree-mini{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin:0 -2px}
 .sttree-mini::-webkit-scrollbar{height:6px}
@@ -309,6 +343,22 @@ main{display:grid;grid-template-columns:322px 1fr;min-height:0}
       <div class="field"><label>Every recorded line <span id="rerollsLeft" style="float:right;text-transform:none;letter-spacing:0"></span></label><div class="clangrid" id="clanGrid"></div></div>
       <div class="row"><button class="prim" id="btnRoll">Draw blood</button><button class="ghost" id="btnBirth" disabled>Be born</button><button class="ghost" id="backStep2">Back</button></div>
       <p class="gate-note">Saves download as a .json file. Load one from the first screen to continue an old life.</p>
+    </div>
+  </div>
+</div>
+
+<div id="deathScreen" hidden>
+  <div class="dcard">
+    <div class="kanji">The Record Closes</div>
+    <h1 id="dName">—</h1>
+    <div class="sub" id="dSub">—</div>
+    <p class="cause" id="dCause">—</p>
+    <div class="dstats" id="dStats"></div>
+    <div class="dnote" id="dNote"></div>
+    <div class="drow">
+      <button class="dbtn p" id="dNew">Be born again</button>
+      <button class="dbtn g" id="dSave">Download this record</button>
+      <button class="dbtn g" id="dLoad">Load an earlier save</button>
     </div>
   </div>
 </div>
@@ -533,40 +583,217 @@ const ABILITIES = [
 {c:"Tailed beast",n:"Sand manipulation",g:"Shukaku jinchūriki, or Sabaku blood",d:"Commands sand as armour, prison and weapon, moving on its own to save you."}
 ];
 
-/* ═══ SKILL TREE ═══ each branch: k = state key, n = display name, color for the tree UI */
+/* ═══ SKILL TREE ═══
+   k   = the key inside player.skills that this branch reads from
+   n   = display name
+   col = branch colour in the tree UI
+   nodes = milestone unlocks, ascending by lv. `s` is the stat auto-granted when the
+           node is first crossed (applied by the engine, not the model, so milestone
+           bonuses can never be silently skipped). `j` optionally names a jutsu that
+           becomes learnable at that node. */
 const TREE = [
-{k:"taijutsu",n:"Taijutsu",col:"#B23A2B",nodes:[
- {lv:10,n:"Leaf Whirlwind",g:"+2 Agility"},{lv:25,n:"Dynamic Entry",g:"+3 Strength"},
- {lv:40,n:"Shadow of the Dancing Leaf",g:"+3 Agility"},{lv:60,n:"Strong Fist",g:"+5 Strength · opens Gate training"},
- {lv:80,n:"Eight Gates: first opening",g:"+8 Strength · permanent injury risk"}]},
-{k:"ninjutsu",n:"Ninjutsu",col:"#4C7FB8",nodes:[
- {lv:10,n:"Nature transformation",g:"+2 Chakra"},{lv:25,n:"Seals at speed",g:"+3 Control"},
- {lv:40,n:"Shadow Clone",g:"+4 Chakra"},{lv:60,n:"Shape transformation",g:"Rasengan line opens"},
- {lv:80,n:"Second nature",g:"A secondary affinity becomes trainable"}]},
-{k:"genjutsu",n:"Genjutsu",col:"#8E7BC0",nodes:[
- {lv:10,n:"Illusion release (Kai)",g:"+2 Intelligence"},{lv:25,n:"Hell Viewing",g:"+3 Willpower"},
- {lv:40,n:"Layered casting",g:"+4 Intelligence"},{lv:60,n:"Sensory hijack",g:"Cast without hand seals"},
- {lv:80,n:"Bringer of Darkness",g:"+6 Intelligence"}]},
-{k:"fuinjutsu",n:"Sealing",col:"#C29B2B",nodes:[
- {lv:10,n:"Storage scrolls",g:"+2 Control"},{lv:25,n:"Explosive tag scripting",g:"+3 Control"},
- {lv:40,n:"Barrier seals",g:"+4 Control"},{lv:60,n:"Contract writing",g:"Summoning contracts open"},
- {lv:80,n:"Living seals",g:"Beast-grade sealing opens"}]},
-{k:"kenjutsu",n:"Swordsmanship",col:"#D4552F",nodes:[
- {lv:10,n:"Blade forms",g:"+2 Strength"},{lv:25,n:"Iaidō draw",g:"+3 Agility"},
- {lv:40,n:"Chakra flow",g:"+3 Control"},{lv:60,n:"Two-blade style",g:"+5 Agility"},
- {lv:80,n:"Chakra blade forging",g:"Forge a named weapon"}]},
-{k:"bukijutsu",n:"Weapons",col:"#5E8C4E",nodes:[
- {lv:10,n:"Shuriken accuracy",g:"+2 Agility"},{lv:25,n:"Wire trap rigging",g:"+3 Intelligence"},
- {lv:40,n:"Curved throw",g:"+3 Luck"},{lv:60,n:"Shadow Shuriken",g:"+4 Agility"},
- {lv:80,n:"Thousand-needle rain",g:"+6 Control"}]},
-{k:"medical",n:"Medical",col:"#4CA394",nodes:[
- {lv:10,n:"Field triage",g:"+2 Intelligence"},{lv:25,n:"Healing palm",g:"+3 Control"},
- {lv:40,n:"Poison extraction",g:"+4 Intelligence"},{lv:60,n:"Chakra scalpel",g:"+5 Control"},
- {lv:80,n:"Strength of a Hundred",g:"Regeneration line opens"}]},
-{k:"senjutsu",n:"Sage Arts",col:"#B58DB6",nodes:[
- {lv:10,n:"Stillness training",g:"+2 Willpower"},{lv:25,n:"Natural energy sensing",g:"+3 Willpower"},
- {lv:40,n:"Gathering without moving",g:"+4 Control"},{lv:60,n:"Imperfect Sage Mode",g:"Petrification risk"},
- {lv:80,n:"Sage Mode",g:"+10 to physical stats while active"}]}
+{k:"taijutsu",n:"Taijutsu",col:"#B23A2B",desc:"Hand-to-hand combat: strikes, throws, footwork, and the raw conditioning behind them.",nodes:[
+ {lv:5, n:"Basic stance",g:"+1 Strength",s:{strength:1}},
+ {lv:10,n:"Leaf Whirlwind",g:"+2 Agility",s:{agility:2},j:"Leaf Whirlwind"},
+ {lv:20,n:"Body conditioning",g:"+2 Stamina",s:{stamina:2}},
+ {lv:25,n:"Dynamic Entry",g:"+3 Strength",s:{strength:3},j:"Dynamic Entry"},
+ {lv:40,n:"Shadow of the Dancing Leaf",g:"+3 Agility",s:{agility:3},j:"Shadow of the Dancing Leaf"},
+ {lv:55,n:"Leaf Great Whirlwind",g:"+3 Strength · +1 Agility",s:{strength:3,agility:1},j:"Leaf Great Whirlwind"},
+ {lv:60,n:"Strong Fist",g:"+5 Strength · opens Gate training",s:{strength:5}},
+ {lv:70,n:"Front Lotus",g:"+4 Strength · self-damaging",s:{strength:4},j:"Front Lotus"},
+ {lv:80,n:"Eight Gates: first opening",g:"+8 Strength · permanent injury risk",s:{strength:8},j:"Eight Gates: Gate of Opening"},
+ {lv:95,n:"Eight Gates: third opening",g:"+10 Strength · +5 Agility · lethal strain",s:{strength:10,agility:5}}]},
+
+{k:"ninjutsu",n:"Ninjutsu",col:"#4C7FB8",desc:"Chakra techniques: clones, transformations, elemental release, and shape manipulation.",nodes:[
+ {lv:5, n:"Chakra awareness",g:"+1 Chakra",s:{chakra:1}},
+ {lv:10,n:"Nature transformation",g:"+2 Chakra",s:{chakra:2}},
+ {lv:15,n:"Clone Technique",g:"+1 Control",s:{control:1},j:"Clone Technique"},
+ {lv:25,n:"Seals at speed",g:"+3 Control",s:{control:3},j:"Body Replacement Technique"},
+ {lv:40,n:"Shadow Clone",g:"+4 Chakra",s:{chakra:4},j:"Shadow Clone Technique"},
+ {lv:50,n:"Elemental mastery",g:"+3 Chakra · +2 Control",s:{chakra:3,control:2}},
+ {lv:60,n:"Shape transformation",g:"Rasengan line opens · +3 Control",s:{control:3},j:"Rasengan"},
+ {lv:75,n:"Multi Shadow Clone",g:"+5 Chakra · +3 Stamina",s:{chakra:5,stamina:3},j:"Multi Shadow Clone Technique"},
+ {lv:80,n:"Second nature",g:"A secondary affinity becomes trainable",s:{chakra:3}},
+ {lv:95,n:"Grand technique",g:"+6 Chakra · +4 Control",s:{chakra:6,control:4}}]},
+
+{k:"genjutsu",n:"Genjutsu",col:"#8E7BC0",desc:"Illusion: hijacking the senses, the memory, and eventually the will of a target.",nodes:[
+ {lv:5, n:"Focus discipline",g:"+1 Intelligence",s:{intelligence:1}},
+ {lv:10,n:"Illusion release (Kai)",g:"+2 Intelligence",s:{intelligence:2},j:"Genjutsu Release"},
+ {lv:20,n:"False Surroundings",g:"+2 Control",s:{control:2},j:"Demonic Illusion: False Surroundings"},
+ {lv:25,n:"Hell Viewing",g:"+3 Willpower",s:{willpower:3},j:"Demonic Illusion: Hell Viewing"},
+ {lv:40,n:"Layered casting",g:"+4 Intelligence",s:{intelligence:4}},
+ {lv:55,n:"Mist Servant",g:"+3 Control",s:{control:3},j:"Demonic Illusion: Mist Servant"},
+ {lv:60,n:"Sensory hijack",g:"Cast without hand seals · +3 Willpower",s:{willpower:3}},
+ {lv:75,n:"Sly Mind Affect",g:"+4 Intelligence",s:{intelligence:4},j:"Sly Mind Affect Technique"},
+ {lv:80,n:"Bringer of Darkness",g:"+6 Intelligence",s:{intelligence:6},j:"Bringer of Darkness"},
+ {lv:95,n:"Absolute illusion",g:"+6 Intelligence · +4 Willpower",s:{intelligence:6,willpower:4}}]},
+
+{k:"fuinjutsu",n:"Sealing",col:"#C29B2B",desc:"Written chakra: storage, barriers, explosive tags, contracts, and beast-grade containment.",nodes:[
+ {lv:5, n:"Brushwork",g:"+1 Control",s:{control:1}},
+ {lv:10,n:"Storage scrolls",g:"+2 Control",s:{control:2},j:"Generic Sealing Technique"},
+ {lv:20,n:"Tag reading",g:"+2 Intelligence",s:{intelligence:2}},
+ {lv:25,n:"Explosive tag scripting",g:"+3 Control",s:{control:3},j:"Explosive Tag Detonation"},
+ {lv:40,n:"Barrier seals",g:"+4 Control",s:{control:4},j:"Four Corner Sealing Barrier"},
+ {lv:50,n:"Five Elements Seal",g:"+3 Control · +2 Chakra",s:{control:3,chakra:2},j:"Five Elements Seal"},
+ {lv:60,n:"Contract writing",g:"Summoning contracts open · +3 Chakra",s:{chakra:3},j:"Summoning Technique"},
+ {lv:75,n:"Flying Thunder God groundwork",g:"+4 Control · +3 Intelligence",s:{control:4,intelligence:3}},
+ {lv:80,n:"Living seals",g:"Beast-grade sealing opens · +5 Control",s:{control:5}},
+ {lv:95,n:"Eight Trigrams Sealing",g:"+6 Control · +5 Chakra",s:{control:6,chakra:5},j:"Eight Trigrams Sealing Style"}]},
+
+{k:"kenjutsu",n:"Swordsmanship",col:"#D4552F",desc:"The blade: draw speed, forms, chakra flow through steel, and eventually forging your own.",nodes:[
+ {lv:5, n:"Grip and guard",g:"+1 Strength",s:{strength:1}},
+ {lv:10,n:"Blade forms",g:"+2 Strength",s:{strength:2}},
+ {lv:20,n:"Parry timing",g:"+2 Agility",s:{agility:2}},
+ {lv:25,n:"Iaidō draw",g:"+3 Agility",s:{agility:3},j:"Iaidō Draw"},
+ {lv:40,n:"Chakra flow",g:"+3 Control",s:{control:3},j:"Chakra Flow: Blade"},
+ {lv:55,n:"Crescent Moon Dance",g:"+3 Agility · +2 Strength",s:{agility:3,strength:2},j:"Crescent Moon Dance"},
+ {lv:60,n:"Two-blade style",g:"+5 Agility",s:{agility:5}},
+ {lv:75,n:"Blade of wind",g:"+4 Control · +2 Chakra",s:{control:4,chakra:2}},
+ {lv:80,n:"Chakra blade forging",g:"Forge a named weapon · +4 Strength",s:{strength:4}},
+ {lv:95,n:"Sword saint",g:"+6 Agility · +5 Strength",s:{agility:6,strength:5}}]},
+
+{k:"bukijutsu",n:"Weapons",col:"#5E8C4E",desc:"Thrown steel and rigged ground: shuriken, senbon, wire traps, and oversized ordnance.",nodes:[
+ {lv:5, n:"Throwing stance",g:"+1 Agility",s:{agility:1}},
+ {lv:10,n:"Shuriken accuracy",g:"+2 Agility",s:{agility:2},j:"Shuriken Throw"},
+ {lv:20,n:"Senbon precision",g:"+2 Control",s:{control:2},j:"Senbon Volley"},
+ {lv:25,n:"Wire trap rigging",g:"+3 Intelligence",s:{intelligence:3},j:"Wire Trap"},
+ {lv:40,n:"Curved throw",g:"+3 Luck",s:{luck:3}},
+ {lv:55,n:"Multi-target release",g:"+3 Agility",s:{agility:3}},
+ {lv:60,n:"Shadow Shuriken",g:"+4 Agility",s:{agility:4},j:"Shadow Shuriken Technique"},
+ {lv:75,n:"Explosive rigging",g:"+4 Intelligence",s:{intelligence:4}},
+ {lv:80,n:"Thousand-needle rain",g:"+6 Control",s:{control:6},j:"Thousand Needles of Death"},
+ {lv:95,n:"Weapon master",g:"+5 Agility · +5 Luck",s:{agility:5,luck:5}}]},
+
+{k:"medical",n:"Medical",col:"#4CA394",desc:"Medical ninjutsu: triage, the healing palm, poison work, and the regeneration seals.",nodes:[
+ {lv:5, n:"Anatomy basics",g:"+1 Intelligence",s:{intelligence:1}},
+ {lv:10,n:"Field triage",g:"+2 Intelligence",s:{intelligence:2}},
+ {lv:20,n:"Chakra sensitivity",g:"+2 Control",s:{control:2}},
+ {lv:25,n:"Healing palm",g:"+3 Control",s:{control:3},j:"Mystical Palm Technique"},
+ {lv:40,n:"Poison extraction",g:"+4 Intelligence",s:{intelligence:4},j:"Poison Extraction Technique"},
+ {lv:55,n:"Cell activation",g:"+3 Stamina",s:{stamina:3}},
+ {lv:60,n:"Chakra scalpel",g:"+5 Control",s:{control:5},j:"Chakra Scalpel"},
+ {lv:75,n:"Delicate Illness Extraction",g:"+4 Control · +3 Intelligence",s:{control:4,intelligence:3}},
+ {lv:80,n:"Strength of a Hundred",g:"Regeneration line opens · +5 Stamina",s:{stamina:5},j:"Strength of a Hundred Seal"},
+ {lv:95,n:"Creation Rebirth",g:"+6 Stamina · +5 Control",s:{stamina:6,control:5},j:"Creation Rebirth"}]},
+
+{k:"senjutsu",n:"Sage Arts",col:"#B58DB6",desc:"Natural energy: stillness, sensing, and the long dangerous road to Sage Mode.",nodes:[
+ {lv:5, n:"Breathing discipline",g:"+1 Willpower",s:{willpower:1}},
+ {lv:10,n:"Stillness training",g:"+2 Willpower",s:{willpower:2}},
+ {lv:20,n:"Ambient awareness",g:"+2 Intelligence",s:{intelligence:2}},
+ {lv:25,n:"Natural energy sensing",g:"+3 Willpower",s:{willpower:3},j:"Natural Energy Sensing"},
+ {lv:40,n:"Gathering without moving",g:"+4 Control",s:{control:4}},
+ {lv:55,n:"Balanced intake",g:"+3 Control · +2 Chakra",s:{control:3,chakra:2}},
+ {lv:60,n:"Imperfect Sage Mode",g:"Petrification risk · +4 Chakra",s:{chakra:4}},
+ {lv:75,n:"Sustained gathering",g:"+4 Willpower · +3 Stamina",s:{willpower:4,stamina:3}},
+ {lv:80,n:"Sage Mode",g:"+10 to physical stats while active",s:{strength:4,agility:4,chakra:4},j:"Sage Mode"},
+ {lv:95,n:"Perfect Sage Mode",g:"+6 across the board",s:{strength:6,agility:6,chakra:6,control:6}}]}
+];
+
+/* ═══ JUTSU LIBRARY ═══ grounding data so the interpreter can validate a technique
+   the narrator invents, rather than inventing stats for it. rank is academy/D/C/B/A/S. */
+const JUTSU_LIBRARY = [
+{n:"Clone Technique",rank:"academy",cost:3,el:"none",req:{ninjutsu:15},d:"Produces intangible copies of yourself to confuse an opponent."},
+{n:"Body Replacement Technique",rank:"academy",cost:4,el:"none",req:{ninjutsu:25},d:"Swaps your body with a nearby object at the moment of impact."},
+{n:"Transformation Technique",rank:"academy",cost:3,el:"none",req:{ninjutsu:20},d:"Changes your appearance into another person or object."},
+{n:"Rope Escape Technique",rank:"academy",cost:2,el:"none",req:{ninjutsu:10},d:"Loosens bindings through fine chakra control."},
+{n:"Shadow Clone Technique",rank:"B",cost:25,el:"none",req:{ninjutsu:40,chakra:25},d:"Creates solid, independent copies that share your chakra and return their memories."},
+{n:"Multi Shadow Clone Technique",rank:"A",cost:60,el:"none",req:{ninjutsu:75,chakra:60},d:"Creates shadow clones by the hundred. Ruinous without enormous reserves."},
+{n:"Rasengan",rank:"A",cost:35,el:"none",req:{ninjutsu:60,control:50},d:"A sphere of pure rotating chakra held in the palm, requiring no hand seals."},
+{n:"Leaf Whirlwind",rank:"academy",cost:0,el:"none",req:{taijutsu:10},d:"A low-high spinning kick combination taught at the Academy."},
+{n:"Dynamic Entry",rank:"D",cost:0,el:"none",req:{taijutsu:25},d:"A flying kick delivered from an unexpected angle."},
+{n:"Shadow of the Dancing Leaf",rank:"C",cost:0,el:"none",req:{taijutsu:40},d:"Shadows an airborne opponent's movements exactly, staying beneath them."},
+{n:"Leaf Great Whirlwind",rank:"C",cost:0,el:"none",req:{taijutsu:55},d:"A three-stage kick chain of escalating force."},
+{n:"Front Lotus",rank:"B",cost:0,el:"none",req:{taijutsu:70},d:"Suplexes an airborne target headfirst. Tears the user's own muscle."},
+{n:"Eight Gates: Gate of Opening",rank:"A",cost:0,el:"none",req:{taijutsu:80},d:"Releases the brain's restraint on muscle output. Immense strain."},
+{n:"Genjutsu Release",rank:"academy",cost:5,el:"none",req:{genjutsu:10},d:"Disrupts your own chakra flow to break an illusion."},
+{n:"Demonic Illusion: False Surroundings",rank:"C",cost:12,el:"none",req:{genjutsu:20},d:"Alters what the target sees of the terrain around them."},
+{n:"Demonic Illusion: Hell Viewing",rank:"C",cost:15,el:"none",req:{genjutsu:25},d:"Shows the target their deepest fear as though it stood before them."},
+{n:"Demonic Illusion: Mist Servant",rank:"C",cost:18,el:"none",req:{genjutsu:55},d:"Surrounds the target with illusory copies that attack from the mist."},
+{n:"Sly Mind Affect Technique",rank:"B",cost:25,el:"none",req:{genjutsu:75},d:"Traps the target in a looping corridor of their own memory."},
+{n:"Bringer of Darkness",rank:"A",cost:35,el:"none",req:{genjutsu:80},d:"Blinds the target absolutely while leaving their other senses intact."},
+{n:"Generic Sealing Technique",rank:"D",cost:8,el:"none",req:{fuinjutsu:10},d:"Draws an object into a scroll for storage and transport."},
+{n:"Explosive Tag Detonation",rank:"D",cost:5,el:"none",req:{fuinjutsu:25},d:"Triggers written explosive tags remotely through a chakra thread."},
+{n:"Four Corner Sealing Barrier",rank:"B",cost:30,el:"none",req:{fuinjutsu:40},d:"Raises a four-point barrier that nothing crosses without breaking a corner."},
+{n:"Five Elements Seal",rank:"B",cost:28,el:"none",req:{fuinjutsu:50},d:"A five-fingered strike that slams a target's chakra flow shut."},
+{n:"Summoning Technique",rank:"B",cost:30,el:"none",req:{fuinjutsu:60,chakra:40},d:"Calls a bound creature to your side across any distance."},
+{n:"Eight Trigrams Sealing Style",rank:"S",cost:90,el:"none",req:{fuinjutsu:95},d:"Seals a tailed beast into a living vessel. Usually costs the sealer's life."},
+{n:"Iaidō Draw",rank:"C",cost:0,el:"none",req:{kenjutsu:25},d:"Draws, cuts and sheathes in a single motion too fast to read."},
+{n:"Chakra Flow: Blade",rank:"B",cost:15,el:"none",req:{kenjutsu:40,control:35},d:"Channels chakra along the edge, extending reach and cutting power."},
+{n:"Crescent Moon Dance",rank:"A",cost:20,el:"none",req:{kenjutsu:55},d:"A three-way assault using clones and a single blade."},
+{n:"Shuriken Throw",rank:"academy",cost:0,el:"none",req:{bukijutsu:10},d:"Accurate throwing of shuriken at a fixed target."},
+{n:"Senbon Volley",rank:"D",cost:0,el:"none",req:{bukijutsu:20},d:"Needle throwing aimed at nerve clusters and pressure points."},
+{n:"Wire Trap",rank:"D",cost:2,el:"none",req:{bukijutsu:25},d:"Rigs near-invisible wire into a killing geometry."},
+{n:"Shadow Shuriken Technique",rank:"C",cost:6,el:"none",req:{bukijutsu:60},d:"Hides a second shuriken in the shadow of the first."},
+{n:"Thousand Needles of Death",rank:"B",cost:22,el:"water",req:{bukijutsu:80},d:"Turns falling water into a rain of piercing needles."},
+{n:"Mystical Palm Technique",rank:"A",cost:20,el:"none",req:{medical:25,control:35},d:"Knits torn flesh and mends bone with concentrated chakra."},
+{n:"Poison Extraction Technique",rank:"A",cost:25,el:"none",req:{medical:40},d:"Draws venom out of a body and into a basin of water."},
+{n:"Chakra Scalpel",rank:"A",cost:18,el:"none",req:{medical:60},d:"A blade of chakra that cuts muscle and vessel without breaking skin."},
+{n:"Strength of a Hundred Seal",rank:"S",cost:0,el:"none",req:{medical:80},d:"A forehead reservoir of stored chakra funding instant regeneration."},
+{n:"Creation Rebirth",rank:"S",cost:80,el:"none",req:{medical:95},d:"Rebuilds every cell in your body at the cost of your remaining lifespan."},
+{n:"Natural Energy Sensing",rank:"B",cost:10,el:"none",req:{senjutsu:25},d:"Feels life and chakra moving through the terrain around you."},
+{n:"Sage Mode",rank:"S",cost:50,el:"none",req:{senjutsu:80,control:60},d:"Blends natural energy into your own chakra, multiplying everything."},
+{n:"Fireball Technique",rank:"C",cost:18,el:"fire",req:{ninjutsu:30},d:"Exhales a wide sphere of flame. The Uchiha coming-of-age technique."},
+{n:"Phoenix Sage Fire",rank:"C",cost:16,el:"fire",req:{ninjutsu:35},d:"Multiple small fireballs that can be guided around obstacles."},
+{n:"Great Fireball",rank:"B",cost:30,el:"fire",req:{ninjutsu:50},d:"A fireball large enough to scorch a treeline."},
+{n:"Wind Scythe",rank:"C",cost:18,el:"wind",req:{ninjutsu:30},d:"Blades of compressed air that cut at a distance."},
+{n:"Great Breakthrough",rank:"C",cost:20,el:"wind",req:{ninjutsu:35},d:"A gale strong enough to flatten a treeline and feed a fire."},
+{n:"Wind Rasengan",rank:"S",cost:55,el:"wind",req:{ninjutsu:85,control:70},d:"Rasengan laced with wind nature. Shreds on contact."},
+{n:"Chidori",rank:"A",cost:35,el:"lightning",req:{ninjutsu:65,control:55},d:"Lightning concentrated in the hand, thrust straight through a target."},
+{n:"Lightning Bolt",rank:"C",cost:16,el:"lightning",req:{ninjutsu:30},d:"A short discharge that numbs and burns on contact."},
+{n:"Earth Wall",rank:"C",cost:15,el:"earth",req:{ninjutsu:28},d:"Raises a wall of packed earth as a shield."},
+{n:"Earth Dragon Bullet",rank:"B",cost:28,el:"earth",req:{ninjutsu:50},d:"Launches a dragon-headed mass of earth at a target."},
+{n:"Hiding Like a Mole",rank:"D",cost:10,el:"earth",req:{ninjutsu:25},d:"Sinks you through soil to travel or escape unseen."},
+{n:"Water Bullet",rank:"C",cost:16,el:"water",req:{ninjutsu:28},d:"Fires a compressed sphere of water with crushing force."},
+{n:"Water Dragon Bullet",rank:"B",cost:32,el:"water",req:{ninjutsu:55},d:"A serpent of water that strikes and drowns."},
+{n:"Hidden Mist Technique",rank:"D",cost:12,el:"water",req:{ninjutsu:25},d:"Blankets the field in mist thick enough to hide in."}
+];
+
+/* ═══ STATUS EFFECTS ═══ conditions the interpreter can apply by name. Each carries a
+   per-turn stat modifier the engine applies automatically while active. */
+const STATUS_EFFECTS = [
+{n:"Exhausted",sev:"minor",mod:{agility:-2,strength:-1},d:"Fatigue past the point of clean movement. Everything is a half-second slow."},
+{n:"Starving",sev:"major",mod:{strength:-3,agility:-2,intelligence:-2},d:"The body has begun eating itself. Thought comes slowly and hands shake."},
+{n:"Concussed",sev:"major",mod:{intelligence:-4,control:-3},d:"The world tilts and will not sit still. Chakra control is badly degraded."},
+{n:"Broken arm",sev:"major",mod:{strength:-5,taijutsu:-3},d:"The bone is out of line. Any weight on it whites out your vision."},
+{n:"Broken leg",sev:"major",mod:{agility:-6},d:"You cannot run and can barely stand. Every step is a negotiation."},
+{n:"Chakra exhaustion",sev:"major",mod:{chakra:-5,control:-4},d:"The coils are empty and raw. Even a basic technique feels like lifting a house."},
+{n:"Poisoned",sev:"major",mod:{stamina:-4,strength:-2},d:"Something is working through your blood. Time is not on your side."},
+{n:"Bleeding",sev:"minor",mod:{stamina:-2},d:"A wound that has not closed. It will get worse before it gets better."},
+{n:"Sprained ankle",sev:"minor",mod:{agility:-3},d:"Weight-bearing is possible but ugly. Sprinting is out."},
+{n:"Burned",sev:"minor",mod:{agility:-1,willpower:-1},d:"Scorched skin that pulls and stings with every movement."},
+{n:"Blinded",sev:"major",mod:{agility:-5,intelligence:-3},d:"You cannot see. Everything must be done by sound and memory."},
+{n:"Malnourished",sev:"minor",mod:{stamina:-2,strength:-1},d:"Never quite enough food for long enough. Growth is stunted."},
+{n:"Inspired",sev:"boon",mod:{willpower:3,intelligence:2},d:"Something lit a fire. The work feels possible in a way it did not yesterday."},
+{n:"Well-fed",sev:"boon",mod:{stamina:2,strength:1},d:"A real meal, recently. The body has fuel to spend."},
+{n:"Well-rested",sev:"boon",mod:{agility:2,control:2},d:"Real sleep, uninterrupted. Reactions are crisp."}
+];
+
+/* ═══ RANK LADDER ═══ what the village formally calls you, and roughly when. */
+const RANKS = [
+{k:"civilian",n:"Civilian",minAge:0,d:"No standing in the shinobi system at all."},
+{k:"academy student",n:"Academy Student",minAge:6,d:"Enrolled at the Academy. Not yet a shinobi in any legal sense."},
+{k:"genin",n:"Genin",minAge:11,d:"Graduated. Assigned to a three-person cell under a jōnin sensei."},
+{k:"chunin",n:"Chūnin",minAge:13,d:"Passed the Exams. Trusted to lead a squad and make calls in the field."},
+{k:"jonin",n:"Jōnin",minAge:17,d:"Elite. Takes A-rank work and trains genin cells of their own."},
+{k:"anbu",n:"ANBU",minAge:17,d:"Masked operations answering directly to the Hokage."},
+{k:"special jonin",n:"Special Jōnin",minAge:16,d:"Jōnin-grade in one narrow speciality, ordinary elsewhere."},
+{k:"sannin",n:"Sannin",minAge:25,d:"A title given, not earned through examination. Legendary standing."},
+{k:"kage",n:"Kage",minAge:25,d:"The village's leader. There is exactly one."},
+{k:"missing-nin",n:"Missing-nin",minAge:0,d:"Defected. Hunted. Your name is in the Bingo Book."}
+];
+
+/* ═══ LIFE STAGES ═══ drives what the narrator is allowed to let you attempt at all. */
+const LIFE_STAGES = [
+{max:1, label:"infant", can:"Nurse, cry, grip a finger, track movement with your eyes. Nothing else."},
+{max:3, label:"toddler", can:"Crawl, walk unsteadily, grab and carry small objects, speak in fragments. No chakra, no seals."},
+{max:5, label:"young child", can:"Run, climb low things, speak fully, mimic movements. Chakra is still inaccessible without a teacher."},
+{max:9, label:"child", can:"Academy-age. Basic conditioning, first chakra exercises, throwing practice, reading."},
+{max:12, label:"academy student", can:"Full Academy curriculum: the three basic techniques, sparring, weapon drills, chakra paper."},
+{max:15, label:"adolescent", can:"Genin-grade work. Real missions, elemental training, team tactics."},
+{max:17, label:"young adult", can:"Chūnin-grade. Leading squads, advanced elemental and shape transformation."},
+{max:29, label:"adult", can:"Full physical prime. Anything your stats support."},
+{max:44, label:"veteran", can:"Peak experience, slowly declining raw physicals."},
+{max:200,label:"elder", can:"Wisdom and technique over speed and strength."}
 ];
 
 const ELEMENTS = [
@@ -576,105 +803,120 @@ const ELEMENTS = [
  {k:"earth",n:"Earth",abbr:"ERT",beats:"water"},
  {k:"water",n:"Water",abbr:"WTR",beats:"fire"}
 ];
+
+/* Words that make an option generic. If the narrator returns options matching these,
+   the engine rejects them and asks the interpreter to write scene-specific ones. */
+const GENERIC_OPTION_PATTERNS = [
+  /^look around$/i, /^wait( and (listen|see))?$/i, /^try to move$/i, /^do nothing$/i,
+  /^observe$/i, /^think$/i, /^continue$/i, /^keep going$/i, /^rest$/i, /^explore$/i,
+  /^listen$/i, /^watch$/i, /^stay put$/i, /^move$/i, /^act$/i, /^proceed$/i
+];
 </script>
 
 <script type="text/plain" id="core-rules">
-You are the Game Master of a brutally honest Naruto life-simulation RPG. The player is born at age 0 in the Hidden Leaf and lives forward from there. You narrate, you adjudicate, and you refuse.
+You are the NARRATOR of a Naruto life-simulation RPG. The player is born at age 0 in the Hidden Leaf and lives forward from there. Your only job is to write what happens next, in prose, and to offer three concrete choices. A separate system reads your prose afterward and converts it into mechanics — so what you WRITE is what becomes real. Write clearly about outcomes and you will never be misread.
 
 ## VOICE
-Second person, present tense, concrete and physical. Two to four short paragraphs, never a wall of text. Show consequence rather than summary. Write entirely in English — no non-English script anywhere in your output.
+Second person, present tense, concrete and physical. Two to four short paragraphs. Show consequence rather than summary. Write entirely in English — no non-English script anywhere in your output. Name people, places and objects specifically; a scene with a named character and a named object in it is worth three scenes of atmosphere.
 
-## THE IRON RULE — capability gating applies to ATTEMPTS, not training
-This governs the player trying to pull off a feat right now — landing a punch on something dangerous, using an unlearned jutsu, surviving a fight, pulling off a stunt. Before narrating that kind of outcome, check the player's numbers against what the feat actually requires. If they fall short, it FAILS — no soft partial success, no determination substituting for a stat.
+## THE PRIME DIRECTIVE — say the numbers out loud
+Whenever something mechanical happens, state it plainly in the prose using an explicit signed number, because that sentence is what the mechanics system reads:
+- Training or practice: "Your strength rises by +1." / "Taijutsu improves by +2."
+- Damage: "You take -4 health." Healing: "You recover +6 health."
+- Chakra spent: "-8 chakra." Chakra restored: "+10 chakra."
+- Getting an item: "You pick up a smooth grey rock." Losing one: "The rice ball is gone."
+- Meeting someone: name them. "Old Mani, the neighbour woman, watches you."
+- Learning a technique: "You have learned the Clone Technique."
+- Injury: "Your left wrist is sprained." Recovery: "The sprain has healed."
+Never write an absolute like "your strength is now 4" unless you genuinely mean to overwrite it; prefer the signed form "+1 strength". Signed numbers are unambiguous and always land correctly.
 
-When an attempt fails a gate, do all three:
-1. State plainly that it does not work.
-2. Explain the failure in physical, sensory detail.
-3. Name the gap in-fiction. A veteran watching would say what they actually need.
+## TRAINING ALWAYS PAYS — this is not negotiable
+If the player describes practice, drilling, studying, conditioning or any deliberate effort with ANY specificity at all, it MUST produce a stated gain. Being weak is the reason to train, never a reason to refuse the gain. A child with strength 0 who punches a dummy for twenty minutes gets "+1 strength" — the low number is exactly why the training matters. You may narrate that it hurts, that it is clumsy, that a veteran would laugh, that progress is slow. You may NOT narrate that it produced nothing.
+Scale: a described session is +1. A long, focused, well-taught, or narratively significant session is +2. Never more than +2 per stat in one turn. Only a bare, contextless word like "train" with no detail whatsoever earns nothing — and then you must say in the prose exactly what detail would have made it count.
+The Iron Rule below governs ATTEMPTING FEATS, not training. Do not confuse the two. Practising a kick is training. Kicking down a door is a feat.
 
-Bands: 1-15 small child, 16-30 academy student, 31-45 fresh genin, 46-60 chūnin, 61-75 jōnin, 76-90 elite, 91-100 kage. Attempting a feat two bands above your stat fails. Three bands above fails AND injures.
+## THE IRON RULE — gating feats, not practice
+When the player attempts a feat right now (fighting, using an unlearned technique, a physical stunt, intimidating an adult), check their numbers. If they fall short, the attempt FAILS: state plainly it does not work, explain the failure physically, and name in-fiction what they would actually need. No partial credit, no determination substituting for a stat.
+Bands: 1-15 small child, 16-30 academy student, 31-45 fresh genin, 46-60 chunin, 61-75 jonin, 76-90 elite, 91-100 kage. Two bands above your stat fails. Three bands above fails AND injures.
+A failed feat can still produce a small training gain if they genuinely exerted themselves — say so if it applies.
 
-Age gates come first and override everything. A newborn cannot crawl. A toddler cannot form a hand seal. A six-year-old cannot mould chakra without instruction.
+## AGE AND TIME — the engine owns the clock, you obey it
+Every turn you are told the character's exact current age and day in the CAPABILITY ENVELOPE. That number is the truth. NEVER narrate a birthday, an age, a school year, or a life event that contradicts it. If the envelope says age 1, this is a one-year-old: no Academy, no teams, no missions, no headband, no kunai, no speech beyond fragments. If you want the story to skip ahead, do not do it yourself — instead end your prose by noting that time could pass, and let the player press Age Up.
+Consult the LIFE STAGE line in the envelope for exactly what this body can physically do right now, and never let the character exceed it regardless of stats.
 
-Never invent a stat, ability, jutsu, or item the player does not have per the CURRENT TOTALS block. If they claim a power, check the compendium gate. If they do not meet it, they do not have it, and you say so.
+## HUNGER, FATIGUE AND DEATH
+Hunger climbs about 6-10 per day without food; fatigue 4-8 per day without rest. At hunger 70+ state a health loss in the prose ("-2 health, weak with hunger"). At 95+ make it severe ("-8 health"). At 0 health the character DIES — when that happens, say so plainly and finally, describe the death in two or three sentences, and do not offer options.
 
-## TRAINING IS DIFFERENT FROM ATTEMPTING — do not gate it the same way
-Deliberate practice (drilling on a dummy, running laps, sparring under supervision, studying, meditating for control) is NOT an attempt at a feat, and the Iron Rule bands above do not apply to whether it succeeds. Being weak is the reason training matters, not a reason to deny it. The only questions for training are: (a) is it physically possible at this age at all, and (b) how detailed and sustained was the description — see the Stat Contract below. Do not refuse or zero out a training gain just because the character is currently unskilled; that's backwards. Reserve genuine refusals for things that are age-impossible (an infant cannot "train" in any meaningful sense) or where the player is describing an attempt at a feat, not practice.
-
-## THE STAT CONTRACT — guaranteed, not just likely
-If the player describes training, practice, or effortful on-topic work in real physical detail (what, how, for how long), you MUST report a non-zero delta on at least one relevant stat or skill in statDeltas/skillDeltas — this is a guarantee, not a maybe. Size it to the specificity, duration and intensity described. "I train on the punching dummy for 20 minutes, focusing on straight punches" easily earns +1, sometimes +2 if it's a real breakthrough moment (first time, big narrative beat, well-taught). Only a genuinely one-word, zero-detail action like "train" with nothing else gets a 0 — and even then, say in the prose exactly what detail would have made it count, so the player knows how to phrase the next attempt.
-Deltas are ADDED to a running total the client already tracks — you are never restating an absolute stat value, only what changed this turn. Never more than +2 in a single turn. Skills climb the same way, 1 per solid session, 2 under a real teacher. Untouched stats decay by 1 roughly every 30 in-game days of total neglect — mention it in prose when it happens and put the negative number in statDeltas.
-
-## HUNGER & FATIGUE
-Hunger rises roughly 6-10 per in-game day without eating; fatigue rises roughly 4-8 per day without rest. This applies from birth — infants get hungry fast and need frequent feeding. At hunger 70+, apply -1 to -3 hp that turn; at hunger 95+, apply -5 to -10 hp, and say so plainly in the prose ("weak with hunger", "vision swims"). The client also enforces a minimum accrual as a safety net, so err on the side of including realistic hunger/fatigue deltas whenever meaningful time has passed rather than omitting them.
+## INVENTORY, BONDS, TECHNIQUES
+Any object that ends up in the character's hands: say so explicitly. Anything lost, eaten, broken or given away: say so explicitly. Every named person the character meaningfully interacts with: name them in the prose. Any technique learned: state that it was learned, by name. The mechanics system can only record what you actually wrote.
 
 ## ELEMENTAL AFFINITY
-Undiscovered until chakra paper or a teacher reveals it, impossible before roughly age 6 and some real chakra control. Once known via affinityDiscover: the primary nature costs 25% less chakra and trains at normal speed, an unrelated nature costs 50% more and trains at a third pace, and the nature that beats yours trains at a tenth pace — say so honestly. Fire beats wind, wind beats lightning, lightning beats earth, earth beats water, water beats fire.
+Undiscovered until chakra paper or a teacher reveals it — impossible before roughly age 6 with real chakra control. Once discovered, say which nature it is. Primary nature costs 25% less and trains normally; an unrelated nature costs 50% more and trains at a third pace; the nature that beats yours trains at a tenth pace. Fire beats wind, wind beats lightning, lightning beats earth, earth beats water, water beats fire.
 
-## INVENTORY — mandatory, not optional
-Any object the player ends up physically holding this turn — found, given, picked up, crafted, looted, no matter how small (a rock, a stick, a scrap of cloth) — MUST appear in inventoryAdd, unless doing so is physically impossible for their current age/stats, in which case narrate the failure honestly and add nothing. Anything consumed, lost, stolen, given away, or broken MUST appear in inventoryRemove. Never let an item silently vanish or appear by only mentioning it in prose — the JSON patch is what actually matters mechanically.
+## THE THREE OPTIONS — the most important formatting rule you have
+End every reply (unless the character just died) with exactly three options in this exact format, each on its own line, nothing else on the line:
 
-## BONDS
-Every named person the player meaningfully interacts with belongs in relationshipsUpdate. A bond, once established, is permanent state the client keeps automatically — you do not need to and should not resend an unchanged bond every turn, but you must never try to remove one by simply leaving it out. To end a bond (death, banishment, estrangement) you must explicitly list that name in relationshipsRemove and narrate why.
+[[OPTION]] Short imperative label | one clipped line naming the real cost or risk | risk
+[[OPTION]] Short imperative label | one clipped line naming the real cost or risk | risk
+[[OPTION]] Short imperative label | one clipped line naming the real cost or risk | risk
 
-## TIME, AGE, AND DAYS — you do not control these, the engine does
-The game engine advances the calendar automatically (roughly 1 in-game day per 2 player actions during normal play, a bigger jump of several months on an [AGE UP]) and tells you the player's current age and day every turn via the CURRENT CAPABILITY ENVELOPE. Do NOT include day, age, or ageLabel in your patch — there is no field for them anymore. Just narrate consistently with the age you're given that turn. When you see [AGE UP], the engine has already advanced the calendar before calling you, so the envelope already reflects the new age — narrate the intervening stretch as one tight paragraph (a birthday, a milestone, an interruption) landing them in a scene at the age you were just given, apply the training gains and neglect decay they earned over that stretch, and move on.
+risk is exactly one of: low, medium, high, lethal.
 
-## DEATH
-At 0 HP the character dies and the run ends. Say so plainly.
+Every option must be SPECIFIC TO THIS SCENE and reference something concrete you just wrote — a named person, a named object, a named place, a stated threat. If an option would still make sense pasted into a different scene, it is wrong and you must rewrite it.
+BANNED labels, never use these or anything like them: "Look around", "Wait and listen", "Wait", "Try to move", "Observe", "Do nothing", "Continue", "Explore", "Think about it", "Rest".
+GOOD examples: "Ask Old Mani what the drums mean", "Grab the fallen kunai before Rina does", "Copy the sensei's hand seal", "Bite the hand holding you".
+Vary the three: one cautious, one bolder, and one tied to a specific object or person just introduced. Never reuse an option you offered last turn. Never offer an option the character is too young or too weak to attempt.
+</script>
 
-## OUTPUT FORMAT — mandatory, exact
-Narrate in prose first (2-4 short paragraphs, no numbered menu in the prose). Then end EVERY reply with exactly one fenced json code block. This is a PATCH describing only what changed this turn — the client owns the running totals and merges your patch in. Omit any key whose value would be zero, empty, or unchanged; never send a key just to zero something out, since omission always means "no change."
+<script type="text/plain" id="interpreter-rules">
+You are the MECHANICS INTERPRETER for a Naruto life-simulation RPG. You do not write story. You read one turn of narration that has already been written, compare it against the character's current sheet, and output ONLY a JSON object describing exactly what changed. You are the component that makes the game's numbers real, so you must be precise, literal, and complete.
 
-```json
-{
-  "time": "morning",
-  "weather": "clear",
-  "location": "",
-  "rank": "civilian",
-  "statDeltas": {"strength": 1},
-  "skillDeltas": {"taijutsu": 1},
-  "statusDeltas": {"hp": 0, "cp": 0, "fatigue": 4, "hunger": 6},
-  "hpMaxDelta": 0,
-  "cpMaxDelta": 0,
-  "moneyDelta": 0,
-  "reputationDelta": 0,
-  "karmaDelta": 0,
-  "affinityDiscover": {"primary": "none", "secondary": "none"},
-  "affinityMasteryDeltas": {"fire": 0},
-  "inventoryAdd": [{"name": "smooth grey rock", "qty": 1}],
-  "inventoryRemove": [{"name": "wrapped fish", "qty": 1}],
-  "equipmentSet": {"weapon": "none"},
-  "relationshipsUpdate": {"Old Mani": {"affection": 12}},
-  "relationshipsRemove": [],
-  "jutsuAdd": [{"name": "Body Replacement Technique", "cost": 5, "element": "none", "mastery": 10}],
-  "jutsuRemove": [],
-  "abilitiesAdd": [{"name": "Sharingan", "status": "dormant", "note": "not yet awakened"}],
-  "abilitiesRemove": [],
-  "missionsUpdate": [{"name": "", "rank": "", "status": ""}],
-  "achievementsAdd": [],
-  "injuriesAdd": [""],
-  "injuriesHeal": [""],
-  "options": [
-    {"label": "", "detail": "", "risk": "low"},
-    {"label": "", "detail": "", "risk": "medium"},
-    {"label": "", "detail": "", "risk": "high"}
-  ]
-}
-```
+## YOUR ONE OUTPUT
+Output a single raw JSON object and nothing else. No prose, no explanation, no apology, no markdown fence. If nothing changed, output {}. Never output any key whose value is zero, empty, or unchanged.
 
-There is no such thing as invalid player input. If the action is impossible, nonsensical, rude, or completely out of character, that is handled by narrating an in-fiction failure or reaction and still returning a fully valid patch and three options — never by refusing the format, apologizing, explaining yourself outside the schema, or returning a "reason"/error object instead of complying. The format is never optional, no matter what the player typed. Keep your prose reasonably concise (2-4 short paragraphs) so the full json block always fits comfortably within your reply.
+## WHAT TO EXTRACT
+Read the narration literally and capture every mechanical consequence it states or unambiguously implies.
+
+statDeltas — signed changes to: strength, agility, intelligence, chakra, stamina, control, willpower, luck.
+  "your strength rises by +1" -> {"strength": 1}
+  "you are slower now, -2 agility" -> {"agility": -2}
+statSet — ONLY when the narration states a new absolute value ("your strength is now 4", "control rises to 2"). Use the final number. Prefer statDeltas whenever the text is a change rather than a total.
+skillDeltas / skillSet — same rules, for: taijutsu, ninjutsu, genjutsu, fuinjutsu, kenjutsu, bukijutsu, medical, senjutsu.
+statusDeltas — signed hp, cp, fatigue, hunger. Damage taken is negative hp. Eating reduces hunger (negative). Sleeping reduces fatigue (negative). Spending chakra is negative cp.
+ageSet — ONLY if the narration explicitly states the character's age or celebrates a specific birthday ("your seventh birthday"). Output the integer age. Otherwise omit entirely.
+inventoryAdd / inventoryRemove — arrays of {"name": "...", "qty": n}. Anything picked up, given, found, crafted, bought. Anything eaten, lost, broken, sold, stolen, given away. Be literal: if the text says a rock was picked up, the rock goes in.
+equipmentSet — {"headband": "...", "outfit": "...", "weapon": "..."} when something is worn or wielded.
+relationshipsUpdate — {"Name": {"affection": 0-100, "note": "who they are"}}. Every named person interacted with. Estimate affection from the tone of the interaction; a warm moment with a parent is high, a hostile stranger is low. Existing bonds keep their value unless the scene changed it.
+relationshipsRemove — array of names, ONLY on death or permanent severance stated in the text.
+jutsuAdd — [{"name": "...", "cost": n, "element": "...", "mastery": 0-100}] when a technique is explicitly learned. jutsuRemove for one permanently lost.
+abilitiesAdd — [{"name": "...", "status": "awakened"|"dormant", "note": "..."}] for bloodline abilities that manifest.
+injuriesAdd / injuriesHeal — arrays of condition names. Prefer names from the STATUS EFFECTS list you were given; invent one only if nothing fits.
+moneyDelta, reputationDelta, karmaDelta — signed integers.
+affinityDiscover — {"primary": "fire|wind|lightning|earth|water", "secondary": "..."} only when the narration reveals it.
+affinityMasteryDeltas — signed per-element progress.
+achievementsAdd — array of short strings for genuine milestones.
+missionsUpdate — [{"name": "...", "rank": "D", "status": "active|complete|failed"}].
+location, time, weather, rank — strings, only if the narration changed them.
+died — true ONLY if the narration states the character has died.
+
+## HARD RULES
+1. Extract only what the narration supports. Never invent a gain the text did not describe.
+2. But never DROP a gain the text did describe. If the narration says strength rose, it must appear. This is the single most important thing you do — a missed stat change is a broken game.
+3. Absolute vs delta: "rises by 2" is a delta. "rises to 2" is a set. Read carefully.
+4. Cap any single stat or skill delta at +2 / -6. Damage and hunger are uncapped.
+5. Do not touch day. The engine owns it. Only set age if a birthday or explicit age was narrated.
+6. Names must match the character sheet's existing spelling exactly when updating something that already exists.
+7. Output valid JSON. Double quotes. No trailing commas. No comments.
 
 ## OPTIONS
-Exactly three, always. Each label is a short imperative the player would say out loud. Each detail is one clipped line naming the real cost or risk. Options must be concretely tied to what just happened in THIS scene — never generic filler like "wait" or "look around" unless the scene genuinely offers nothing else — and must be things this character could plausibly attempt at their current age and stats. Vary the three: something cautious, something bolder, and a third that's either a distinct approach or tied to a specific object/person/detail just introduced this turn. Never reuse an option from a previous turn verbatim. Never offer an option you would then refuse.
-
-abilities[] additions list only what this character has awakened or carries dormant per their blood. Dōjutsu especially are inherited, never trained.
+If you are explicitly asked to also produce options, add an "options" key: an array of exactly three {"label": "...", "detail": "...", "risk": "low|medium|high|lethal"}. Each must reference something concrete and specific from the narration you just read — a named person, object, place or threat. Never generic ("look around", "wait", "continue"). Otherwise omit the key entirely.
 </script>
 
 <script>
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const CORE = document.getElementById("core-rules").textContent.trim();
+const INTERP_RULES = document.getElementById("interpreter-rules").textContent.trim();
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const esc = s => String(s ?? "").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 
@@ -682,74 +924,185 @@ let provider = CONFIG.provider, apiKey = "", model = "";
 let messages = [], state = null, prevStats = null, prevSkills = null, busy = false, dead = false;
 let draft = { name:"", gender:"male", orphan:false, clan:null };
 let rerolls = 3, abFilter = "All", lastOptions = [];
+let turnLog = [];   /* per-turn record of what the interpreter actually applied, for the delta ribbon */
 
 /* ---------- default player & age labeling ---------- */
 const DEFAULT_PLAYER = () => ({
-  name:"", gender:"", age:0, ageLabel:"newborn", rank:"civilian", clan:"", orphan:false,
+  name:"", gender:"", age:0, ageLabel:"infant", rank:"civilian", clan:"", orphan:false,
   stats:{strength:0,agility:0,intelligence:0,chakra:0,stamina:0,control:0,willpower:0,luck:0},
   skills:{taijutsu:0,ninjutsu:0,genjutsu:0,fuinjutsu:0,kenjutsu:0,bukijutsu:0,medical:0,senjutsu:0},
   affinity:{discovered:false,primary:"unknown",secondary:"none",mastery:{fire:0,wind:0,lightning:0,earth:0,water:0}},
   abilities:[], jutsu:[], inventory:[],
   equipment:{headband:"none",outfit:"none",weapon:"none"},
   status:{hp:20,hpMax:20,cp:0,cpMax:10,fatigue:10,hunger:15,injuries:[]},
-  money:0, reputation:0, karma:0, day:1, time:"morning", weather:"clear", location:"",
+  money:0, reputation:0, karma:0, day:1, time:"morning", weather:"clear", location:"Hidden Leaf Village",
   relationships:{}, missions:[], achievements:[],
-  actionTicks:0 /* internal only — counts toward the next in-game day, never shown or sent to the model */
+  unlockedNodes:[],  /* "branchKey:lv" strings, so a milestone bonus is granted exactly once */
+  causeOfDeath:"",
+  actionTicks:0      /* internal only — counts toward the next in-game day, never sent to any model */
 });
-function deriveAgeLabel(age){
-  if(age < 2) return "infant";
-  if(age < 6) return "toddler";
-  if(age < 12) return "child";
-  if(age < 15) return "academy student";
-  if(age < 18) return "genin-aged";
-  if(age < 30) return "adult";
-  return "elder";
+
+/* Age -> life stage, used both for the label and to tell the narrator what this body can do. */
+function lifeStageFor(age){
+  for(const s of LIFE_STAGES) if(age <= s.max) return s;
+  return LIFE_STAGES[LIFE_STAGES.length - 1];
+}
+const deriveAgeLabel = age => lifeStageFor(age).label;
+
+/* ---------- deterministic time engine — the client owns day and age entirely ----------
+   day is absolute days since birth, so age is always exactly floor(day / 365) and the two
+   can never disagree. Regular actions tick 1 day per 2 actions. Age Up advances a full year
+   so pressing it visibly moves the character's life forward. The interpreter may also set an
+   age directly (via ageSet) if the narration explicitly stated a birthday, and the day count
+   is snapped to match so they stay consistent. */
+let pendingDaysPassed = 0;
+const DAYS_PER_YEAR = 365;
+const ACTIONS_PER_DAY = 2;
+
+function ageFromDay(day){ return Math.max(0, Math.floor((Number(day) || 0) / DAYS_PER_YEAR)); }
+
+function syncAgeFields(p){
+  p.age = ageFromDay(p.day);
+  p.ageLabel = deriveAgeLabel(p.age);
+  return p;
 }
 
-/* ---------- deterministic time engine — the client owns day/age entirely ----------
-   Regular actions: 1 in-game day passes every 2 player actions (exactly what was asked for).
-   Age up: a bigger jump, roughly 3-18 months, so the story actually moves somewhere.
-   This runs BEFORE the API call so the model is always told the correct, already-updated
-   age/day and never has to (and no longer can) report its own — eliminates drift entirely. */
-let pendingDaysPassed = 0;
 function advanceTime(isAgeUp){
   const p = state.player;
-  const before = Number(p.day) || 1;
+  const before = Number(p.day) || 0;
   if(isAgeUp){
-    p.day = before + 90 + Math.floor(Math.random() * 450); // ~3 to ~18 months
+    // Advance to the same point in the following year, so age always ticks exactly +1.
+    p.day = before + DAYS_PER_YEAR;
+    p.actionTicks = 0;
   } else {
     p.actionTicks = (Number(p.actionTicks) || 0) + 1;
-    if(p.actionTicks >= 2){
+    if(p.actionTicks >= ACTIONS_PER_DAY){
       p.actionTicks = 0;
       p.day = before + 1;
     }
   }
-  p.age = Math.max(0, Math.floor(((Number(p.day) || 1) - 1) / 365));
-  p.ageLabel = deriveAgeLabel(p.age);
-  pendingDaysPassed = (Number(p.day) || 1) - before;
+  syncAgeFields(p);
+  pendingDaysPassed = (Number(p.day) || 0) - before;
 }
 
-/* ---------- patch engine: the model sends what changed, the client owns the totals ----------
-   Time/age are no longer driven by the model at all — advanceTime() below moves them forward
-   deterministically before each call, and daysPassed (computed there) is passed in explicitly
-   so hunger/fatigue accrual stays consistent regardless of what the model does or doesn't send. */
+/* Interpreter told us the narration stated an explicit age. Trust it, and move `day` to match
+   so the two never drift apart again. Keeps the day-of-year offset intact. */
+function forceAge(p, newAge){
+  const target = clamp(Math.floor(Number(newAge) || 0), 0, 120);
+  const dayOfYear = (Number(p.day) || 0) % DAYS_PER_YEAR;
+  p.day = target * DAYS_PER_YEAR + dayOfYear;
+  syncAgeFields(p);
+  return p;
+}
+
+/* ---------- patch engine ----------------------------------------------------------
+   The interpreter reports what changed; this function is the ONLY thing that mutates
+   the sheet. It also writes a human-readable record of every change into `log`, which
+   the UI shows under the narration so the player can see their points actually land.
+   Day and age are engine-owned (see advanceTime), with one exception: ageSet, used when
+   the narration explicitly stated a birthday. */
+const STAT_KEYS = ["strength","agility","intelligence","chakra","stamina","control","willpower","luck"];
+const SKILL_KEYS = ["taijutsu","ninjutsu","genjutsu","fuinjutsu","kenjutsu","bukijutsu","medical","senjutsu"];
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
 function applyPatch(prevPlayerIn, patch, daysPassed){
   const p = JSON.parse(JSON.stringify(prevPlayerIn || DEFAULT_PLAYER()));
+  patch = patch || {};
   daysPassed = Number(daysPassed) || 0;
+  const log = [];   /* {text, dir} where dir is "up" | "dn" | "flat" */
+  const note = (text, dir) => log.push({ text, dir: dir || "flat" });
+
+  /* --- simple scene strings --- */
   ["time","weather","location","rank","name","gender","clan"].forEach(k => {
-    if(typeof patch[k] === "string" && patch[k].trim() !== "") p[k] = patch[k];
+    if(typeof patch[k] === "string" && patch[k].trim() !== "" && patch[k] !== p[k]){
+      p[k] = patch[k].trim();
+      if(k === "location") note("Moved to " + p.location, "flat");
+      if(k === "rank") note("Rank is now " + p.rank, "up");
+    }
   });
   if(typeof patch.orphan === "boolean") p.orphan = patch.orphan;
 
+  /* --- explicit age from the narration (a stated birthday) --- */
+  if(typeof patch.ageSet === "number" && Number.isFinite(patch.ageSet)){
+    const before = p.age;
+    forceAge(p, patch.ageSet);
+    if(p.age !== before) note("Age is now " + p.age, p.age > before ? "up" : "dn");
+  }
+
+  /* --- stats: deltas then absolute sets --- */
   p.stats = p.stats || {};
+  STAT_KEYS.forEach(k => { if(typeof p.stats[k] !== "number") p.stats[k] = 0; });
   Object.entries(patch.statDeltas || {}).forEach(([k, v]) => {
-    p.stats[k] = clamp((Number(p.stats[k]) || 0) + (Number(v) || 0), 0, 100);
+    if(!STAT_KEYS.includes(k)) return;
+    const d = clamp(Math.round(Number(v) || 0), -6, 2);
+    if(!d) return;
+    const before = p.stats[k];
+    p.stats[k] = clamp(before + d, 0, 100);
+    const real = p.stats[k] - before;
+    if(real) note(`${cap(k)} ${real > 0 ? "+" : ""}${real} (${before} → ${p.stats[k]})`, real > 0 ? "up" : "dn");
   });
-  p.skills = p.skills || {};
-  Object.entries(patch.skillDeltas || {}).forEach(([k, v]) => {
-    p.skills[k] = clamp((Number(p.skills[k]) || 0) + (Number(v) || 0), 0, 100);
+  Object.entries(patch.statSet || {}).forEach(([k, v]) => {
+    if(!STAT_KEYS.includes(k) || !Number.isFinite(Number(v))) return;
+    const before = p.stats[k];
+    p.stats[k] = clamp(Math.round(Number(v)), 0, 100);
+    if(p.stats[k] !== before) note(`${cap(k)} set to ${p.stats[k]} (was ${before})`, p.stats[k] > before ? "up" : "dn");
   });
 
+  /* --- skills, and the milestone bonuses their thresholds grant --- */
+  p.skills = p.skills || {};
+  SKILL_KEYS.forEach(k => { if(typeof p.skills[k] !== "number") p.skills[k] = 0; });
+  const skillsBefore = { ...p.skills };
+  Object.entries(patch.skillDeltas || {}).forEach(([k, v]) => {
+    if(!SKILL_KEYS.includes(k)) return;
+    const d = clamp(Math.round(Number(v) || 0), -6, 2);
+    if(!d) return;
+    const before = p.skills[k];
+    p.skills[k] = clamp(before + d, 0, 100);
+    const real = p.skills[k] - before;
+    if(real){
+      const branch = TREE.find(b => b.k === k);
+      note(`${branch ? branch.n : cap(k)} ${real > 0 ? "+" : ""}${real} (${before} → ${p.skills[k]})`, real > 0 ? "up" : "dn");
+    }
+  });
+  Object.entries(patch.skillSet || {}).forEach(([k, v]) => {
+    if(!SKILL_KEYS.includes(k) || !Number.isFinite(Number(v))) return;
+    const before = p.skills[k];
+    p.skills[k] = clamp(Math.round(Number(v)), 0, 100);
+    if(p.skills[k] !== before){
+      const branch = TREE.find(b => b.k === k);
+      note(`${branch ? branch.n : cap(k)} set to ${p.skills[k]} (was ${before})`, p.skills[k] > before ? "up" : "dn");
+    }
+  });
+
+  /* Milestone crossings are granted by the ENGINE, never by a model, so the tree's
+     printed bonuses are always honoured exactly once each. */
+  p.unlockedNodes = p.unlockedNodes || [];
+  TREE.forEach(branch => {
+    const lv = Number(p.skills[branch.k]) || 0;
+    branch.nodes.forEach(nd => {
+      const id = branch.k + ":" + nd.lv;
+      if(lv >= nd.lv && !p.unlockedNodes.includes(id)){
+        p.unlockedNodes.push(id);
+        note(`UNLOCKED — ${branch.n} ${nd.lv}: ${nd.n}`, "up");
+        Object.entries(nd.s || {}).forEach(([sk, sv]) => {
+          if(!STAT_KEYS.includes(sk)) return;
+          const before = p.stats[sk];
+          p.stats[sk] = clamp(before + Number(sv), 0, 100);
+          if(p.stats[sk] !== before) note(`  ${cap(sk)} +${p.stats[sk] - before} (milestone)`, "up");
+        });
+        if(nd.j){
+          p.jutsu = p.jutsu || [];
+          if(!p.jutsu.some(x => String(x.name).toLowerCase() === nd.j.toLowerCase())){
+            const lib = JUTSU_LIBRARY.find(x => x.n.toLowerCase() === nd.j.toLowerCase());
+            p.jutsu.push({ name: nd.j, cost: lib ? lib.cost : 0, element: lib ? lib.el : "none", mastery: 5 });
+            note(`  Technique available: ${nd.j}`, "up");
+          }
+        }
+      }
+    });
+  });
+
+  /* --- vitals --- */
   p.status = p.status || {};
   const sd = patch.statusDeltas || {};
   let hunD = Number(sd.hunger) || 0, fatD = Number(sd.fatigue) || 0;
@@ -757,98 +1110,219 @@ function applyPatch(prevPlayerIn, patch, daysPassed){
     hunD = Math.max(hunD, daysPassed * 5);
     fatD = Math.max(fatD, daysPassed * 3);
   }
-  p.status.hunger = clamp((Number(p.status.hunger) || 0) + hunD, 0, 100);
-  p.status.fatigue = clamp((Number(p.status.fatigue) || 0) + fatD, 0, 100);
+  const hunBefore = Number(p.status.hunger) || 0, fatBefore = Number(p.status.fatigue) || 0;
+  p.status.hunger = clamp(hunBefore + hunD, 0, 100);
+  p.status.fatigue = clamp(fatBefore + fatD, 0, 100);
+  if(p.status.hunger !== hunBefore) note(`Hunger ${p.status.hunger > hunBefore ? "+" : ""}${p.status.hunger - hunBefore} (${p.status.hunger}/100)`, p.status.hunger > hunBefore ? "dn" : "up");
+  if(p.status.fatigue !== fatBefore) note(`Fatigue ${p.status.fatigue > fatBefore ? "+" : ""}${p.status.fatigue - fatBefore} (${p.status.fatigue}/100)`, p.status.fatigue > fatBefore ? "dn" : "up");
+
   if(typeof patch.hpMaxDelta === "number") p.status.hpMax = Math.max(1, (Number(p.status.hpMax) || 1) + patch.hpMaxDelta);
   if(typeof patch.cpMaxDelta === "number") p.status.cpMax = Math.max(0, (Number(p.status.cpMax) || 0) + patch.cpMaxDelta);
+
+  /* Growth: a child's body gets tougher and holds more chakra as it ages. */
+  const wantHpMax = 20 + Math.min(80, p.age * 6) + Math.floor((Number(p.stats.stamina) || 0) * 0.8);
+  const wantCpMax = 10 + Math.min(90, p.age * 4) + Math.floor((Number(p.stats.chakra) || 0) * 1.2);
+  if(wantHpMax > (p.status.hpMax || 0)) p.status.hpMax = wantHpMax;
+  if(wantCpMax > (p.status.cpMax || 0)) p.status.cpMax = wantCpMax;
+
   let starveLoss = 0;
-  if(p.status.hunger >= 95) starveLoss = 6; else if(p.status.hunger >= 70) starveLoss = 2;
-  const hpD = (Number(sd.hp) || 0) - starveLoss;
-  const cpD = Number(sd.cp) || 0;
-  p.status.hp = clamp((Number(p.status.hp) || 0) + hpD, 0, p.status.hpMax || 100);
-  p.status.cp = clamp((Number(p.status.cp) || 0) + cpD, 0, p.status.cpMax || 100);
+  if(p.status.hunger >= 95) starveLoss = 8;
+  else if(p.status.hunger >= 80) starveLoss = 4;
+  else if(p.status.hunger >= 70) starveLoss = 2;
+  const hpBefore = Number(p.status.hp) || 0, cpBefore = Number(p.status.cp) || 0;
+  p.status.hp = clamp(hpBefore + (Number(sd.hp) || 0) - starveLoss, 0, p.status.hpMax || 100);
+  p.status.cp = clamp(cpBefore + (Number(sd.cp) || 0), 0, p.status.cpMax || 100);
+  if(p.status.hp !== hpBefore) note(`Health ${p.status.hp > hpBefore ? "+" : ""}${p.status.hp - hpBefore} (${p.status.hp}/${p.status.hpMax})`, p.status.hp > hpBefore ? "up" : "dn");
+  if(p.status.cp !== cpBefore) note(`Chakra ${p.status.cp > cpBefore ? "+" : ""}${p.status.cp - cpBefore} (${p.status.cp}/${p.status.cpMax})`, p.status.cp > cpBefore ? "up" : "dn");
+  if(starveLoss) note(`Starvation is doing damage (hunger ${p.status.hunger})`, "dn");
 
+  /* --- injuries / conditions --- */
   p.status.injuries = p.status.injuries || [];
-  (patch.injuriesAdd || []).forEach(i => { if(i && !p.status.injuries.includes(i)) p.status.injuries.push(i); });
-  (patch.injuriesHeal || []).forEach(i => { p.status.injuries = p.status.injuries.filter(x => x !== i); });
-
-  p.money = Math.max(0, (Number(p.money) || 0) + (Number(patch.moneyDelta) || 0));
-  p.reputation = clamp((Number(p.reputation) || 0) + (Number(patch.reputationDelta) || 0), -100, 100);
-  p.karma = clamp((Number(p.karma) || 0) + (Number(patch.karmaDelta) || 0), -100, 100);
-
-  p.affinity = p.affinity || { discovered:false, primary:"unknown", secondary:"none", mastery:{} };
-  p.affinity.mastery = p.affinity.mastery || {};
-  if(patch.affinityDiscover && patch.affinityDiscover.primary && patch.affinityDiscover.primary !== "none"){
-    p.affinity.discovered = true;
-    p.affinity.primary = patch.affinityDiscover.primary;
-    if(patch.affinityDiscover.secondary) p.affinity.secondary = patch.affinityDiscover.secondary;
-  }
-  Object.entries(patch.affinityMasteryDeltas || {}).forEach(([k, v]) => {
-    p.affinity.mastery[k] = clamp((Number(p.affinity.mastery[k]) || 0) + (Number(v) || 0), 0, 100);
+  (patch.injuriesAdd || []).forEach(i => {
+    const nm = typeof i === "string" ? i : (i && i.name);
+    if(nm && !p.status.injuries.includes(nm)){ p.status.injuries.push(nm); note("Condition: " + nm, "dn"); }
   });
-
-  p.inventory = p.inventory || [];
-  (patch.inventoryAdd || []).forEach(item => {
-    if(!item || !item.name) return;
-    const ex = p.inventory.find(i => i.name.toLowerCase() === item.name.toLowerCase());
-    if(ex) ex.qty = (Number(ex.qty) || 1) + (Number(item.qty) || 1);
-    else p.inventory.push({ name:item.name, qty:Number(item.qty) || 1 });
-  });
-  (patch.inventoryRemove || []).forEach(item => {
-    if(!item || !item.name) return;
-    const idx = p.inventory.findIndex(i => i.name.toLowerCase() === item.name.toLowerCase());
-    if(idx > -1){
-      const rem = Number(item.qty) || p.inventory[idx].qty;
-      p.inventory[idx].qty = (Number(p.inventory[idx].qty) || 0) - rem;
-      if(p.inventory[idx].qty <= 0) p.inventory.splice(idx, 1);
+  (patch.injuriesHeal || []).forEach(i => {
+    const nm = typeof i === "string" ? i : (i && i.name);
+    if(nm && p.status.injuries.includes(nm)){
+      p.status.injuries = p.status.injuries.filter(x => x !== nm);
+      note("Recovered from " + nm, "up");
     }
   });
 
+  /* --- standing --- */
+  const mBefore = Number(p.money) || 0;
+  p.money = Math.max(0, mBefore + (Number(patch.moneyDelta) || 0));
+  if(p.money !== mBefore) note(`${p.money > mBefore ? "+" : ""}${p.money - mBefore} ryo (${p.money} total)`, p.money > mBefore ? "up" : "dn");
+  const rBefore = Number(p.reputation) || 0;
+  p.reputation = clamp(rBefore + (Number(patch.reputationDelta) || 0), -100, 100);
+  if(p.reputation !== rBefore) note(`Reputation ${p.reputation > rBefore ? "+" : ""}${p.reputation - rBefore}`, p.reputation > rBefore ? "up" : "dn");
+  const kBefore = Number(p.karma) || 0;
+  p.karma = clamp(kBefore + (Number(patch.karmaDelta) || 0), -100, 100);
+  if(p.karma !== kBefore) note(`Karma ${p.karma > kBefore ? "+" : ""}${p.karma - kBefore}`, p.karma > kBefore ? "up" : "dn");
+
+  /* --- affinity --- */
+  p.affinity = p.affinity || { discovered:false, primary:"unknown", secondary:"none", mastery:{} };
+  p.affinity.mastery = p.affinity.mastery || {};
+  const ad = patch.affinityDiscover;
+  if(ad && ad.primary && ad.primary !== "none" && ad.primary !== "unknown"){
+    const known = ELEMENTS.find(e => e.k === String(ad.primary).toLowerCase());
+    if(known && !p.affinity.discovered){
+      p.affinity.discovered = true;
+      p.affinity.primary = known.k;
+      if(ad.secondary && ELEMENTS.some(e => e.k === String(ad.secondary).toLowerCase())) p.affinity.secondary = String(ad.secondary).toLowerCase();
+      note(`Affinity discovered: ${known.n}`, "up");
+    }
+  }
+  Object.entries(patch.affinityMasteryDeltas || {}).forEach(([k, v]) => {
+    if(!ELEMENTS.some(e => e.k === k)) return;
+    const before = Number(p.affinity.mastery[k]) || 0;
+    p.affinity.mastery[k] = clamp(before + (Number(v) || 0), 0, 100);
+    if(p.affinity.mastery[k] !== before){
+      const el = ELEMENTS.find(e => e.k === k);
+      note(`${el.n} mastery ${p.affinity.mastery[k] > before ? "+" : ""}${p.affinity.mastery[k] - before}`, p.affinity.mastery[k] > before ? "up" : "dn");
+    }
+  });
+
+  /* --- inventory --- */
+  p.inventory = p.inventory || [];
+  (patch.inventoryAdd || []).forEach(item => {
+    const nm = typeof item === "string" ? item : (item && item.name);
+    if(!nm) return;
+    const qty = Math.max(1, Number((item && item.qty) || 1));
+    const ex = p.inventory.find(i => i.name.toLowerCase() === String(nm).toLowerCase());
+    if(ex) ex.qty = (Number(ex.qty) || 1) + qty;
+    else p.inventory.push({ name:String(nm), qty });
+    note(`Picked up ${nm}${qty > 1 ? " ×" + qty : ""}`, "up");
+  });
+  (patch.inventoryRemove || []).forEach(item => {
+    const nm = typeof item === "string" ? item : (item && item.name);
+    if(!nm) return;
+    const idx = p.inventory.findIndex(i => i.name.toLowerCase() === String(nm).toLowerCase());
+    if(idx > -1){
+      const rem = Number((item && item.qty)) || p.inventory[idx].qty;
+      p.inventory[idx].qty = (Number(p.inventory[idx].qty) || 0) - rem;
+      if(p.inventory[idx].qty <= 0) p.inventory.splice(idx, 1);
+      note(`Lost ${nm}`, "dn");
+    }
+  });
+
+  /* --- equipment --- */
   if(patch.equipmentSet && typeof patch.equipmentSet === "object"){
-    p.equipment = { ...(p.equipment || {}), ...patch.equipmentSet };
+    Object.entries(patch.equipmentSet).forEach(([slot, val]) => {
+      if(typeof val !== "string" || !val.trim()) return;
+      const before = (p.equipment || {})[slot];
+      p.equipment = p.equipment || {};
+      p.equipment[slot] = val.trim();
+      if(p.equipment[slot] !== before && val !== "none") note(`Equipped ${slot}: ${val}`, "up");
+    });
   }
 
+  /* --- bonds --- */
   p.relationships = p.relationships || {};
   Object.entries(patch.relationshipsUpdate || {}).forEach(([name, val]) => {
-    p.relationships[name] = { ...(p.relationships[name] || {}), ...(val || {}) };
+    if(!name) return;
+    const existed = !!p.relationships[name];
+    const beforeAff = existed ? (Number(p.relationships[name].affection) || 0) : 0;
+    const incoming = (val && typeof val === "object") ? val : { affection: Number(val) || 0 };
+    p.relationships[name] = { ...(p.relationships[name] || {}), ...incoming };
+    const afterAff = Number(p.relationships[name].affection) || 0;
+    if(!existed) note(`New bond: ${name}`, "up");
+    else if(afterAff !== beforeAff) note(`${name} ${afterAff > beforeAff ? "+" : ""}${afterAff - beforeAff} affection`, afterAff > beforeAff ? "up" : "dn");
   });
-  (patch.relationshipsRemove || []).forEach(name => { delete p.relationships[name]; });
+  (patch.relationshipsRemove || []).forEach(name => {
+    if(p.relationships[name]){ delete p.relationships[name]; note(`Bond lost: ${name}`, "dn"); }
+  });
 
+  /* --- techniques --- */
   p.jutsu = p.jutsu || [];
   (patch.jutsuAdd || []).forEach(j => {
-    if(!j || !j.name) return;
-    const idx = p.jutsu.findIndex(x => x.name.toLowerCase() === j.name.toLowerCase());
-    if(idx > -1) p.jutsu[idx] = { ...p.jutsu[idx], ...j };
-    else p.jutsu.push(j);
+    const nm = typeof j === "string" ? j : (j && j.name);
+    if(!nm) return;
+    const lib = JUTSU_LIBRARY.find(x => x.n.toLowerCase() === String(nm).toLowerCase());
+    const idx = p.jutsu.findIndex(x => String(x.name).toLowerCase() === String(nm).toLowerCase());
+    const rec = {
+      name: lib ? lib.n : String(nm),
+      cost: Number((j && j.cost)) || (lib ? lib.cost : 0),
+      element: (j && j.element) || (lib ? lib.el : "none"),
+      mastery: clamp(Number((j && j.mastery)) || 5, 0, 100)
+    };
+    if(idx > -1){ p.jutsu[idx] = { ...p.jutsu[idx], ...rec }; note(`${rec.name} refined`, "up"); }
+    else { p.jutsu.push(rec); note(`Learned technique: ${rec.name}`, "up"); }
   });
   (patch.jutsuRemove || []).forEach(name => {
-    p.jutsu = p.jutsu.filter(x => x.name.toLowerCase() !== String(name).toLowerCase());
+    const nm = typeof name === "string" ? name : (name && name.name);
+    if(!nm) return;
+    if(p.jutsu.some(x => String(x.name).toLowerCase() === String(nm).toLowerCase())) note(`Lost technique: ${nm}`, "dn");
+    p.jutsu = p.jutsu.filter(x => String(x.name).toLowerCase() !== String(nm).toLowerCase());
   });
 
+  /* --- bloodline abilities --- */
   p.abilities = p.abilities || [];
   (patch.abilitiesAdd || []).forEach(a => {
-    if(!a || !a.name) return;
-    const idx = p.abilities.findIndex(x => x.name.toLowerCase() === a.name.toLowerCase());
-    if(idx > -1) p.abilities[idx] = { ...p.abilities[idx], ...a };
-    else p.abilities.push(a);
+    const nm = typeof a === "string" ? a : (a && a.name);
+    if(!nm) return;
+    const idx = p.abilities.findIndex(x => String(x.name).toLowerCase() === String(nm).toLowerCase());
+    const rec = { name:String(nm), status:(a && a.status) || "dormant", note:(a && a.note) || "" };
+    if(idx > -1){
+      const was = p.abilities[idx].status;
+      p.abilities[idx] = { ...p.abilities[idx], ...rec };
+      if(was !== rec.status) note(`${rec.name} is now ${rec.status}`, "up");
+    } else {
+      p.abilities.push(rec);
+      note(`Bloodline ability ${rec.status}: ${rec.name}`, "up");
+    }
   });
   (patch.abilitiesRemove || []).forEach(name => {
-    p.abilities = p.abilities.filter(x => x.name.toLowerCase() !== String(name).toLowerCase());
+    const nm = typeof name === "string" ? name : (name && name.name);
+    p.abilities = p.abilities.filter(x => String(x.name).toLowerCase() !== String(nm).toLowerCase());
   });
 
+  /* --- missions & achievements --- */
   p.missions = p.missions || [];
   (patch.missionsUpdate || []).forEach(m => {
     if(!m || !m.name) return;
     const idx = p.missions.findIndex(x => x.name === m.name);
-    if(idx > -1) p.missions[idx] = { ...p.missions[idx], ...m };
-    else p.missions.push(m);
+    if(idx > -1){
+      const was = p.missions[idx].status;
+      p.missions[idx] = { ...p.missions[idx], ...m };
+      if(m.status && m.status !== was) note(`Mission ${m.name}: ${m.status}`, m.status === "complete" ? "up" : "flat");
+    } else {
+      p.missions.push(m);
+      note(`New mission: ${m.name}`, "flat");
+    }
   });
 
   p.achievements = p.achievements || [];
-  (patch.achievementsAdd || []).forEach(a => { if(a && !p.achievements.includes(a)) p.achievements.push(a); });
+  (patch.achievementsAdd || []).forEach(a => {
+    const nm = typeof a === "string" ? a : (a && a.name);
+    if(nm && !p.achievements.includes(nm)){ p.achievements.push(nm); note("Achievement: " + nm, "up"); }
+  });
 
-  return p;
+  /* --- death --- */
+  if(patch.died === true && p.status.hp > 0) p.status.hp = 0;
+  if(p.status.hp <= 0 && !p.causeOfDeath){
+    p.causeOfDeath = String(patch.causeOfDeath || "").trim() ||
+      (p.status.hunger >= 95 ? "Starvation" : (p.status.injuries[0] ? p.status.injuries[0] : "Wounds sustained in the field"));
+  }
+
+  syncAgeFields(p);
+  return { player: p, log };
 }
+
+/* Sum of every active status-effect modifier, shown in the UI as the effective value. */
+function effectiveStats(p){
+  const out = { ...(p.stats || {}) };
+  (p.status && p.status.injuries || []).forEach(nm => {
+    const eff = STATUS_EFFECTS.find(e => e.n.toLowerCase() === String(nm).toLowerCase());
+    if(!eff) return;
+    Object.entries(eff.mod || {}).forEach(([k, v]) => {
+      if(k in out) out[k] = clamp((Number(out[k]) || 0) + Number(v), 0, 100);
+    });
+  });
+  return out;
+}
+
 
 /* Strip zero/empty/default values before a snapshot rides along as read-only context. */
 function compactState(st){
@@ -905,12 +1379,60 @@ function treeBlock(){
 function envelope(){
   if(!state || !state.player) return "";
   const p = state.player, s = p.stats || {}, st = p.status || {};
-  const band = v => v<16?"child":v<31?"academy":v<46?"genin":v<61?"chūnin":v<76?"jōnin":v<91?"elite":"kage";
-  return `## CURRENT CAPABILITY ENVELOPE\nAge ${p.age} (${p.ageLabel||""}), Day ${p.day||1}. ` +
-    Object.entries(s).map(([k,v]) => `${k} ${v} (${band(v)})`).join(", ") +
-    `. Hunger ${st.hunger ?? 0}/100, Fatigue ${st.fatigue ?? 0}/100, HP ${st.hp ?? 0}/${st.hpMax ?? 100}. Affinity: ${p.affinity && p.affinity.discovered ? p.affinity.primary : "undiscovered"}. Refuse anything above these bands.`;
+  const eff = effectiveStats(p);
+  const band = v => v<16?"small child":v<31?"academy student":v<46?"fresh genin":v<61?"chunin":v<76?"jonin":v<91?"elite":"kage";
+  const stage = lifeStageFor(p.age);
+  const skillLine = SKILL_KEYS.map(k => {
+    const branch = TREE.find(b => b.k === k);
+    return `${branch ? branch.n : k} ${Number(p.skills[k]) || 0}`;
+  }).join(", ");
+  const bonds = Object.keys(p.relationships || {});
+  const inv = (p.inventory || []).map(i => `${i.name}${i.qty > 1 ? " x" + i.qty : ""}`);
+  const ju = (p.jutsu || []).map(j => j.name);
+
+  return `## CURRENT CAPABILITY ENVELOPE — this is the authoritative truth about the character
+AGE: ${p.age} years old. DAY: ${p.day || 0}. LIFE STAGE: ${stage.label}.
+WHAT THIS BODY CAN PHYSICALLY DO RIGHT NOW: ${stage.can}
+!! The character is ${p.age}. Do NOT narrate any birthday, age, school year, rank or life event that contradicts age ${p.age}. If age is under 6 there is no Academy, no team, no sensei, no headband, no missions and no weapons. !!
+RANK: ${p.rank || "civilian"}. LOCATION: ${p.location || "Hidden Leaf Village"}. TIME: ${p.time || "morning"}, ${p.weather || "clear"}.
+STATS: ${STAT_KEYS.map(k => `${k} ${Number(s[k]) || 0}${eff[k] !== s[k] ? ` (effective ${eff[k]})` : ""} [${band(Number(s[k]) || 0)}]`).join(", ")}
+SKILLS: ${skillLine}
+VITALS: health ${st.hp ?? 0}/${st.hpMax ?? 20}, chakra ${st.cp ?? 0}/${st.cpMax ?? 10}, hunger ${st.hunger ?? 0}/100, fatigue ${st.fatigue ?? 0}/100.
+CONDITIONS: ${(st.injuries || []).length ? st.injuries.join(", ") : "none"}
+AFFINITY: ${p.affinity && p.affinity.discovered ? p.affinity.primary : "undiscovered"}
+KNOWN TECHNIQUES: ${ju.length ? ju.join(", ") : "none"}
+CARRIED: ${inv.length ? inv.join(", ") : "nothing"}
+KNOWN PEOPLE: ${bonds.length ? bonds.join(", ") : "no one yet"}
+MONEY: ${p.money || 0} ryo.`;
 }
 const systemPrompt = () => [CORE, clanBlock(), abilityBlock(), treeBlock(), envelope()].filter(Boolean).join("\n\n");
+
+/* ---------- interpreter prompt ----------
+   Deliberately narrow: the interpreter sees the sheet, the reference lists it is allowed to
+   draw names from, and the narration it must convert. Nothing else. */
+function interpreterSystemPrompt(){
+  const p = (state && state.player) || DEFAULT_PLAYER();
+  const sheet = {
+    age: p.age, day: p.day, rank: p.rank, location: p.location,
+    stats: p.stats, skills: p.skills,
+    status: { hp: p.status.hp, hpMax: p.status.hpMax, cp: p.status.cp, cpMax: p.status.cpMax,
+              hunger: p.status.hunger, fatigue: p.status.fatigue, injuries: p.status.injuries },
+    affinity: p.affinity,
+    inventory: p.inventory, equipment: p.equipment,
+    relationships: Object.fromEntries(Object.entries(p.relationships || {}).map(([k, v]) => [k, v.affection ?? 0])),
+    jutsu: (p.jutsu || []).map(j => j.name),
+    abilities: (p.abilities || []).map(a => `${a.name} (${a.status})`),
+    money: p.money, reputation: p.reputation, karma: p.karma
+  };
+  return [
+    INTERP_RULES,
+    "## CHARACTER SHEET BEFORE THIS TURN\n" + JSON.stringify(sheet),
+    "## VALID STAT KEYS\n" + STAT_KEYS.join(", "),
+    "## VALID SKILL KEYS\n" + SKILL_KEYS.join(", "),
+    "## STATUS EFFECT NAMES you should prefer for injuriesAdd\n" + STATUS_EFFECTS.map(e => e.n).join(", "),
+    "## KNOWN TECHNIQUE NAMES you should prefer for jutsuAdd\n" + JUTSU_LIBRARY.map(j => `${j.n} (${j.rank}, ${j.cost}cp, ${j.el})`).join("; ")
+  ].join("\n\n");
+}
 
 /* ---------- setup ---------- */
 function paintProvider(){
@@ -1010,16 +1532,20 @@ const hideTip = () => { $("#tip").style.opacity = 0; };
 
 $("#btnBirth").onclick = () => {
   if(!draft.clan) return;
+  hideDeathScreen();
   $("#gate").style.display = "none";
   $("#app").hidden = false;
-  dead = false;
+  dead = false; turnLog = []; pendingDaysPassed = 0;
   const seed = DEFAULT_PLAYER();
   seed.name = draft.name; seed.gender = draft.gender; seed.clan = draft.clan.n; seed.orphan = draft.orphan;
+  seed.day = 0;
+  syncAgeFields(seed);
   state = { player: seed };
+  prevStats = prevSkills = null;
   paintDossier();
   messages = [{ role:"user", content:
 `Begin the life. Name: ${draft.name}. Sex: ${draft.gender}. Household: ${draft.orphan ? "orphaned at birth" : "born to living parents"}. Blood: ${draft.clan.n} (${draft.clan.t} lineage).
-Open at the moment of birth, age 0, day 1. Baseline newborn stats/status are already seeded client-side (near-zero physical stats, hp 20/20, hunger 15, fatigue 10) — do not restate them as absolutes, just narrate the birth scene and give the three options a true newborn has (reaching, crying, watching, feeding).` }];
+Open at the moment of birth — age 0, day 0, a literal newborn infant. Name the parents (or the person who found this child, if orphaned) and the room. Do not narrate any skill, technique, weapon or age beyond a newborn's. End with exactly three [[OPTION]] lines describing things a NEWBORN could actually do in this specific room, referencing what you just described.` }];
   turn();
 };
 
@@ -1063,6 +1589,38 @@ function extractJSON(raw){
 const stripJSON = raw => raw.replace(/```(?:json)?[\s\S]*?```/gi,"").trim();
 
 const RISKS = ["low","medium","high","lethal"];
+
+/* Options now arrive as plain marker lines in the prose:
+     [[OPTION]] label | detail | risk
+   which is far more robust than asking a small model to nest them in JSON.
+   Returns {options, prose} with the marker lines stripped out of the prose. */
+function parseOptionMarkers(text){
+  const options = [];
+  const kept = [];
+  String(text || "").split("\n").forEach(line => {
+    const m = line.match(/^\s*(?:\[\[OPTION\]\]|\[OPTION\]|OPTION:)\s*(.+)$/i);
+    if(!m){ kept.push(line); return; }
+    const parts = m[1].split("|").map(s => s.trim());
+    const label = (parts[0] || "").replace(/^[-*\d.)\s]+/, "").trim();
+    if(!label) return;
+    options.push({
+      label,
+      detail: parts[1] || "",
+      risk: RISKS.includes(String(parts[2] || "").toLowerCase()) ? String(parts[2]).toLowerCase() : "medium"
+    });
+  });
+  return { options, prose: kept.join("\n").trim() };
+}
+
+const isGenericOption = label => GENERIC_OPTION_PATTERNS.some(rx => rx.test(String(label || "").trim()));
+
+/* An option set is usable only if we have three of them and they aren't boilerplate. */
+function optionsAreUsable(opts){
+  if(!Array.isArray(opts) || opts.length < 3) return false;
+  const good = opts.filter(o => o && String(o.label || "").trim() && !isGenericOption(o.label));
+  return good.length >= 3;
+}
+
 function sanitizeOptions(opts){
   const cleaned = (Array.isArray(opts) ? opts : []).map(o => ({
     label: String((o && o.label) || "").trim(),
@@ -1070,11 +1628,12 @@ function sanitizeOptions(opts){
     risk: RISKS.includes(String(o && o.risk).toLowerCase()) ? String(o.risk).toLowerCase() : "medium"
   })).filter(o => o.label.length > 0);
   const fallback = [
-    {label:"Look around", detail:"Costs a moment", risk:"low"},
-    {label:"Wait and see", detail:"Costs a moment", risk:"low"},
-    {label:"Try something", detail:"Uncertain outcome", risk:"medium"}
+    {label:"Press on", detail:"Uncertain outcome", risk:"medium"},
+    {label:"Hold back and reassess", detail:"Costs a moment", risk:"low"},
+    {label:"Take the risk", detail:"This could go badly", risk:"high"}
   ];
-  while(cleaned.length < 3) cleaned.push(fallback[cleaned.length]);
+  let i = 0;
+  while(cleaned.length < 3) cleaned.push(fallback[i++]);
   return cleaned.slice(0, 3);
 }
 const CHOICE_NUM = ["1","2","3"];
@@ -1131,10 +1690,14 @@ function paintDossier(){
     ? `<div class="tags" style="margin-top:8px">${inj.map(i => `<span class="tag" style="border-color:#5A2A22;color:#D08A7C">${esc(typeof i === "string" ? i : i.name)}</span>`).join("")}</div>` : "";
 
   const st = p.stats || {};
+  const eff = effectiveStats(p);
   $("#stats").innerHTML = Object.keys(STAT_COLOR).map(k => {
     const v = Number(st[k]) || 0;
+    const e = Number(eff[k]) || 0;
     const d = prevStats && typeof prevStats[k] === "number" ? v - prevStats[k] : 0;
-    return bar(k[0].toUpperCase()+k.slice(1), v, 100, STAT_COLOR[k], d);
+    // When a condition is dragging a stat down, show the effective value in the label.
+    const label = cap(k) + (e !== v ? ` → ${e}` : "");
+    return bar(label, v, 100, STAT_COLOR[k], d);
   }).join("");
   prevStats = {}; Object.keys(STAT_COLOR).forEach(k => prevStats[k] = Number(st[k]) || 0);
 
@@ -1261,36 +1824,155 @@ $$(".tabs button").forEach(b => b.onclick = () => {
   $$(".pane").forEach(p => p.classList.toggle("on", p.id === "pane-" + b.dataset.pane));
 });
 
-/* ---------- turn ---------- */
-function payload(retryCount, hintShorten){
+/* ================================================================================
+   TURN PIPELINE
+   Pass 1 (NARRATOR): writes prose + three [[OPTION]] marker lines.
+   Pass 2 (INTERPRETER): reads that prose against the sheet and returns strict JSON
+           describing every mechanical change. This is what makes stat points real.
+   The interpreter is authoritative for mechanics; the narrator is authoritative for
+   story. Neither can silently break the other.
+   ================================================================================ */
+
+function narratorPayload(retryCount, hintShorten){
   const head = messages.slice(0,1), tail = messages.slice(-CONFIG.historyTurns);
   const body = messages.length > CONFIG.historyTurns ? [...head, ...tail] : messages;
-  const out = [{role:"system", content:systemPrompt()}, ...body];
-  if(state) out.splice(1, 0, {role:"system",
-    content:"CURRENT TOTALS (read-only reference, defaults omitted) — do not resend these as absolutes, report only what changes THIS turn as a patch per the schema:\n" + JSON.stringify(compactState(state))});
+  const out = [{ role:"system", content: systemPrompt() }, ...body];
   if(retryCount > 0){
-    let nudge = "Your previous reply did not match the required format (missing the json patch block, missing 'options', or it contained a refusal/'reason' field instead of complying). Resend now: continue the SAME scene you were just narrating, do not restart it, output prose then exactly one fenced json patch block per the schema. Do not explain or refuse — just comply with the format.";
-    if(hintShorten) nudge += " Your previous reply also looks like it ran out of room before finishing the JSON block — this time keep the prose to 1-2 short sentences so the full json block fits.";
-    out.push({role:"system", content: nudge});
+    let nudge = "Your previous reply was unusable: it did not contain three [[OPTION]] lines, or the options were generic filler. Rewrite it now. Continue the SAME scene — do not restart it. End with exactly three lines in the form: [[OPTION]] label | detail | risk. Each option must name something concrete from the scene you just wrote.";
+    if(hintShorten) nudge += " Your reply also ran out of room. Keep the prose to two short paragraphs this time.";
+    out.push({ role:"system", content: nudge });
   }
   return out;
 }
 
+/* Non-streaming helper used by the interpreter pass. */
+async function callModelOnce(msgs, opts){
+  opts = opts || {};
+  const res = await fetch(PROVIDERS[provider].url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + apiKey,
+      ...(provider === "openrouter" ? {"X-Title":"Shinobi Registry"} : {})
+    },
+    body: JSON.stringify({
+      model: opts.model || model,
+      stream: false,
+      temperature: opts.temperature ?? 0.1,
+      max_tokens: opts.maxTokens || 700,
+      messages: msgs
+    })
+  });
+  if(!res.ok) throw new Error(res.status + " — " + (await res.text()).slice(0, 200));
+  const data = await res.json();
+  const choice = data && data.choices && data.choices[0];
+  return (choice && choice.message && choice.message.content) || "";
+}
+
+/* Pass 2. Converts narration into a mechanics patch. Retries once on bad JSON, and
+   degrades gracefully to a local text-scan rather than losing the player's progress. */
+async function interpretNarration(prose, playerAction, needOptions){
+  const ask = [
+    { role:"system", content: interpreterSystemPrompt() },
+    { role:"user", content:
+`The player's action this turn was:
+"""${playerAction || "(scene opening)"}"""
+
+The narration that resulted was:
+"""${prose}"""
+
+Output the JSON patch describing every mechanical change this narration states or clearly implies.${needOptions ? " Also include an \"options\" array of exactly three specific, scene-grounded choices." : ""} Remember: if the narration says a stat rose, that stat MUST appear in your output. JSON only, no prose.` }
+  ];
+
+  for(let attempt = 0; attempt < 2; attempt++){
+    try{
+      const raw = await callModelOnce(attempt === 0 ? ask : [...ask, {
+        role:"system", content:"Your previous output was not valid JSON. Output ONLY a single raw JSON object this time. No markdown, no commentary."
+      }], { temperature: 0.05, maxTokens: 700 });
+      const parsed = extractJSON(raw);
+      if(parsed && typeof parsed === "object") return { patch: parsed, source: "interpreter" };
+    }catch(e){
+      if(attempt === 1) break;
+    }
+  }
+  /* Both interpreter attempts failed — fall back to reading the narration locally so
+     the player still gets credit for what the prose plainly said. */
+  return { patch: localFallbackExtract(prose), source: "fallback" };
+}
+
+/* A deliberately simple regex pass over the narration, used only when the interpreter
+   model is unreachable or keeps emitting garbage. Catches the common explicit forms
+   the narrator is instructed to write, e.g. "+1 strength" / "strength rises by 2". */
+function localFallbackExtract(prose){
+  const patch = { statDeltas:{}, skillDeltas:{}, statusDeltas:{} };
+  const text = String(prose || "");
+  const allKeys = [...STAT_KEYS, ...SKILL_KEYS];
+
+  allKeys.forEach(key => {
+    const bucket = STAT_KEYS.includes(key) ? patch.statDeltas : patch.skillDeltas;
+    // "+2 strength" / "-1 agility"
+    let rx = new RegExp("([+-]\\s*\\d+)\\s*(?:points?\\s*)?(?:to\\s*)?" + key + "\\b", "ig");
+    let m;
+    while((m = rx.exec(text))){
+      const v = parseInt(m[1].replace(/\s+/g, ""), 10);
+      if(v) bucket[key] = (bucket[key] || 0) + v;
+    }
+    // "strength rises by 2" / "strength increases by +1" / "strength drops by 1"
+    rx = new RegExp(key + "\\b[^.\\n]{0,40}?\\b(rises?|increases?|improves?|climbs?|grows?|gains?|drops?|falls?|decreases?|declines?|slips?)\\b[^.\\n]{0,20}?by\\s*([+-]?\\d+)", "ig");
+    while((m = rx.exec(text))){
+      let v = parseInt(m[2], 10);
+      if(!v) continue;
+      if(/drops?|falls?|decreases?|declines?|slips?/i.test(m[1])) v = -Math.abs(v);
+      bucket[key] = (bucket[key] || 0) + v;
+    }
+  });
+
+  // health / chakra changes
+  let m2;
+  const hpRx = /([+-]\s*\d+)\s*(?:points?\s*)?(?:of\s*)?(health|hp)\b/ig;
+  while((m2 = hpRx.exec(text))) patch.statusDeltas.hp = (patch.statusDeltas.hp || 0) + parseInt(m2[1].replace(/\s+/g,""), 10);
+  const cpRx = /([+-]\s*\d+)\s*(?:points?\s*)?(?:of\s*)?(chakra points|cp)\b/ig;
+  while((m2 = cpRx.exec(text))) patch.statusDeltas.cp = (patch.statusDeltas.cp || 0) + parseInt(m2[1].replace(/\s+/g,""), 10);
+
+  // explicit birthday / stated age
+  const ageRx = /\b(?:your|the)\s+(\w+)\s+birthday\b/i;
+  const ordinals = { first:1, second:2, third:3, fourth:4, fifth:5, sixth:6, seventh:7, eighth:8, ninth:9,
+                     tenth:10, eleventh:11, twelfth:12, thirteenth:13, fourteenth:14, fifteenth:15,
+                     sixteenth:16, seventeenth:17, eighteenth:18, nineteenth:19, twentieth:20 };
+  const am = text.match(ageRx);
+  if(am && ordinals[am[1].toLowerCase()]) patch.ageSet = ordinals[am[1].toLowerCase()];
+
+  if(/\byou (?:are dead|have died|die)\b/i.test(text)) patch.died = true;
+
+  ["statDeltas","skillDeltas","statusDeltas"].forEach(k => {
+    if(!Object.keys(patch[k]).length) delete patch[k];
+  });
+  return patch;
+}
+
 const MAX_RETRIES = 2;
+
 async function turn(retryCount, hintShorten){
   retryCount = retryCount || 0;
   busy = true; setBusy(true); paintChoices([]);
   const entry = addEntry("gm","…",`<p><span class="caret"></span></p>`);
   const body = entry.querySelector(".body");
+  const playerAction = (() => {
+    for(let i = messages.length - 1; i >= 0; i--) if(messages[i].role === "user") return messages[i].content;
+    return "";
+  })();
+
   let raw = "", finishReason = null;
-  const tokensThisCall = CONFIG.maxTokens + retryCount * 400;
+  const tokensThisCall = CONFIG.maxTokens + retryCount * 300;
+
   try{
+    /* ---- PASS 1: narration (streamed so the player watches it arrive) ---- */
     const res = await fetch(PROVIDERS[provider].url, {
       method:"POST",
       headers:{ "Content-Type":"application/json", "Authorization":"Bearer " + apiKey,
         ...(provider === "openrouter" ? {"X-Title":"Shinobi Registry"} : {}) },
       body: JSON.stringify({ model, stream:true, temperature:CONFIG.temperature,
-        max_tokens:tokensThisCall, messages:payload(retryCount, hintShorten) })
+        max_tokens:tokensThisCall, messages:narratorPayload(retryCount, hintShorten) })
     });
     if(!res.ok) throw new Error(res.status + " — " + (await res.text()).slice(0,280));
 
@@ -1312,7 +1994,7 @@ async function turn(retryCount, hintShorten){
             raw += t;
             if(performance.now() - last > 55){
               last = performance.now();
-              body.innerHTML = md(stripJSON(raw).split("```")[0]) + `<span class="caret"></span>`;
+              body.innerHTML = md(parseOptionMarkers(stripJSON(raw)).prose) + `<span class="caret"></span>`;
               scrollDown();
             }
           }
@@ -1321,43 +2003,68 @@ async function turn(retryCount, hintShorten){
     }
     if(!raw.trim()) throw new Error("Empty reply. Try a different model.");
 
-    const parsed = extractJSON(raw);
-    const isValid = parsed && !parsed.reason && Array.isArray(parsed.options) &&
-      parsed.options.filter(o => o && String(o.label||"").trim()).length > 0;
+    /* ---- parse narration + options ---- */
+    const cleanedRaw = stripJSON(raw);
+    let { options, prose } = parseOptionMarkers(cleanedRaw);
 
-    if(!isValid){
+    /* Some models still nest options in a JSON block; accept that too. */
+    const strayJson = extractJSON(raw);
+    if(!options.length && strayJson && Array.isArray(strayJson.options)) options = strayJson.options;
+
+    if(!prose.trim()){
       entry.remove();
-      if(retryCount < MAX_RETRIES){
-        return turn(retryCount + 1, finishReason === "length");
-      }
-      addEntry("note","Format error", `<p>The storyteller sent a malformed reply ${MAX_RETRIES + 1} times in a row. Nothing was lost — press Act or Age up again, or try a stronger model from <b>New life</b> (DeepSeek or Claude 3.5 Sonnet via OpenRouter hold the format best).</p>`);
-      busy = false; setBusy(false);
-      paintChoices(lastOptions);
+      if(retryCount < MAX_RETRIES) return turn(retryCount + 1, finishReason === "length");
+      addEntry("note","Narration failed", `<p>The storyteller returned nothing usable ${MAX_RETRIES + 1} times. Press Act again, or switch to a stronger model from <b>New life</b>.</p>`);
+      busy = false; setBusy(false); paintChoices(lastOptions);
       return;
     }
 
+    body.innerHTML = md(prose);
+    scrollDown();
+
+    /* ---- PASS 2: mechanics ---- */
+    const needOptions = !optionsAreUsable(options);
+    const statusEl = addEntry("interp", null, `<p><span class="spin"></span> Reading the scene for consequences…</p>`);
+    let patch = {}, source = "interpreter";
+    try{
+      const r = await interpretNarration(prose, playerAction, needOptions);
+      patch = r.patch || {}; source = r.source;
+    }catch(e){
+      patch = localFallbackExtract(prose); source = "fallback";
+    }
+    statusEl.remove();
+
+    if(needOptions && Array.isArray(patch.options) && patch.options.length) options = patch.options;
+
+    /* ---- apply ---- */
     const prevPlayer = (state && state.player) || DEFAULT_PLAYER();
-    const nextPlayer = applyPatch(prevPlayer, parsed, pendingDaysPassed);
+    const result = applyPatch(prevPlayer, patch, pendingDaysPassed);
     pendingDaysPassed = 0;
-    state = { player: nextPlayer };
+    state = { player: result.player };
+    turnLog = result.log;
     paintDossier();
 
-    const prose = stripJSON(raw);
-    body.innerHTML = md(prose);
     entry.querySelector(".eyebrow").textContent =
-      `Age ${nextPlayer.age ?? 0} · Day ${nextPlayer.day ?? 1} · ${nextPlayer.location || "Konoha"}`;
+      `Age ${result.player.age ?? 0} · Day ${result.player.day ?? 0} · ${result.player.location || "Hidden Leaf Village"}`;
 
-    lastOptions = sanitizeOptions(parsed.options);
-    if(nextPlayer.status && nextPlayer.status.hp <= 0){
+    if(result.log.length) addEntry("delta", null, renderDeltaRibbon(result.log, source));
+
+    messages.push({ role:"assistant", content: prose });
+
+    /* ---- death ---- */
+    if(result.player.status && result.player.status.hp <= 0){
       dead = true;
       paintChoices([]);
-      addEntry("note","The story ends here", `<p>${esc(nextPlayer.name || "This shinobi")}'s life ends at age ${nextPlayer.age}, day ${nextPlayer.day}. Start <b>New life</b> to begin again, or load an earlier save.</p>`);
-    } else {
-      paintChoices(lastOptions);
+      setBusy(false);
+      showDeathScreen(result.player);
+      busy = false;
+      return;
     }
 
-    messages.push({role:"assistant", content:prose});
+    lastOptions = sanitizeOptions(options);
+    paintChoices(lastOptions);
     scrollDown();
+
   }catch(err){
     entry.remove();
     const msg = err.name === "TypeError"
@@ -1366,6 +2073,77 @@ async function turn(retryCount, hintShorten){
     addEntry("note","Request failed",`<p>${msg}</p>`);
   }finally{ busy = false; setBusy(false); }
 }
+
+/* The visible receipt of what the interpreter actually applied. */
+function renderDeltaRibbon(log, source){
+  const rows = log.map(l => {
+    const sym = l.dir === "up" ? "▲" : l.dir === "dn" ? "▼" : "•";
+    return `<div class="dl ${esc(l.dir)}"><span class="s">${sym}</span><span>${esc(l.text)}</span></div>`;
+  }).join("");
+  const tag = source === "fallback"
+    ? `<div class="dsrc">applied locally — the interpreter was unreachable</div>` : "";
+  return `<div class="dwrap">${rows}${tag}</div>`;
+}
+
+/* ---------- death ---------- */
+function showDeathScreen(p){
+  const stage = lifeStageFor(p.age);
+  $("#dName").textContent = p.name || "Unnamed";
+  $("#dSub").textContent = [
+    (p.clan && p.clan !== "No clan") ? "of the " + p.clan : "no clan",
+    p.rank || "civilian",
+    `died at ${p.age} · day ${p.day}`
+  ].join("  ·  ");
+  $("#dCause").textContent = p.causeOfDeath
+    ? `"${p.causeOfDeath}"`
+    : "The record does not say how.";
+
+  const topSkill = SKILL_KEYS
+    .map(k => ({ k, v: Number(p.skills[k]) || 0, n: (TREE.find(b => b.k === k) || {}).n || k }))
+    .sort((a,b) => b.v - a.v)[0];
+  const statTotal = STAT_KEYS.reduce((a,k) => a + (Number(p.stats[k]) || 0), 0);
+
+  $("#dStats").innerHTML = [
+    ["Age reached", p.age],
+    ["Days lived", p.day],
+    ["Attribute total", statTotal],
+    ["Best discipline", topSkill && topSkill.v > 0 ? `${topSkill.v}` : "0"],
+    ["Techniques", (p.jutsu || []).length],
+    ["Bonds formed", Object.keys(p.relationships || {}).length]
+  ].map(([l, v]) => `<div class="dstat"><div class="l">${esc(l)}</div><div class="v">${esc(v)}</div></div>`).join("");
+
+  const bonds = Object.keys(p.relationships || {});
+  const notes = [];
+  notes.push(`Lived as ${stage.label === "infant" ? "an infant" : "a " + stage.label}, ${p.orphan ? "orphaned" : "with family"}, in ${p.location || "the Hidden Leaf"}.`);
+  if(topSkill && topSkill.v > 0) notes.push(`Strongest discipline: <b>${esc(topSkill.n)}</b> at ${topSkill.v}.`);
+  else notes.push(`Never trained a discipline past zero.`);
+  if((p.jutsu || []).length) notes.push(`Knew ${p.jutsu.length} technique${p.jutsu.length === 1 ? "" : "s"}: <b>${esc(p.jutsu.map(j => j.name).join(", "))}</b>.`);
+  if(bonds.length) notes.push(`Remembered by <b>${esc(bonds.join(", "))}</b>.`);
+  else notes.push(`No one alive knew this name.`);
+  if((p.achievements || []).length) notes.push(`Achievements: <b>${esc(p.achievements.join(", "))}</b>.`);
+  if(p.affinity && p.affinity.discovered) notes.push(`Chakra nature: <b>${esc(p.affinity.primary)}</b>.`);
+  $("#dNote").innerHTML = notes.map(n => `<div>${n}</div>`).join("");
+
+  $("#deathScreen").hidden = false;
+}
+
+function hideDeathScreen(){ $("#deathScreen").hidden = true; }
+
+function resetToGate(){
+  hideDeathScreen();
+  messages = []; state = null; prevStats = prevSkills = null; dead = false;
+  turnLog = []; pendingDaysPassed = 0;
+  draft = {name:"",gender:"male",orphan:false,clan:null}; rerolls = 3; lastOptions = [];
+  $("#log").querySelectorAll(".entry").forEach(n => n.remove());
+  $("#choices").innerHTML = "";
+  $("#app").hidden = true; $("#gate").style.display = "grid";
+  $("#btnRoll").disabled = false; $("#btnRoll").textContent = "Draw blood";
+  $("#btnBirth").disabled = true; showStep(1); paintProvider();
+}
+
+$("#dNew").onclick = resetToGate;
+$("#dSave").onclick = () => $("#btnSave").click();
+$("#dLoad").onclick = () => { hideDeathScreen(); $("#fileIn").click(); };
 
 function setBusy(v){
   $("#send").disabled = v || dead; $("#ageup").disabled = v || dead;
@@ -1399,10 +2177,10 @@ $("#send").onclick = () => send(say.value);
 $("#btnSave").onclick = () => {
   const n = (state && state.player && state.player.name) || draft.name || "shinobi";
   const a = (state && state.player && state.player.age) ?? 0;
-  const blob = new Blob([JSON.stringify({version:5, provider, model, draft, messages, state, lastOptions, dead, log:$("#log").innerHTML}, null, 2)], {type:"application/json"});
+  const blob = new Blob([JSON.stringify({version:6, provider, model, draft, messages, state, lastOptions, dead, log:$("#log").innerHTML}, null, 2)], {type:"application/json"});
   const el = document.createElement("a");
   el.href = URL.createObjectURL(blob);
-  el.download = `${String(n).toLowerCase().replace(/\s+/g,"-")}-age${a}.json`;
+  el.download = `${String(n).toLowerCase().replace(/\s+/g,"-")}-age${a}${dead ? "-final" : ""}.json`;
   el.click(); URL.revokeObjectURL(el.href);
 };
 const pick = () => $("#fileIn").click();
@@ -1415,28 +2193,34 @@ $("#fileIn").onchange = async e => {
     model = s.model || PROVIDERS[provider].models[0].id;
     apiKey = ($("#keyIn").value || CONFIG.keys[provider] || "").trim();
     draft = s.draft || draft; messages = s.messages || [];
-    state = s.state && s.state.player ? { player: { ...DEFAULT_PLAYER(), ...s.state.player } } : null;
+    /* Merge onto a fresh default so saves from older versions gain any new fields
+       (unlockedNodes, causeOfDeath, actionTicks) instead of arriving undefined. */
+    if(s.state && s.state.player){
+      const merged = { ...DEFAULT_PLAYER(), ...s.state.player };
+      merged.stats = { ...DEFAULT_PLAYER().stats, ...(s.state.player.stats || {}) };
+      merged.skills = { ...DEFAULT_PLAYER().skills, ...(s.state.player.skills || {}) };
+      merged.status = { ...DEFAULT_PLAYER().status, ...(s.state.player.status || {}) };
+      merged.unlockedNodes = Array.isArray(merged.unlockedNodes) ? merged.unlockedNodes : [];
+      syncAgeFields(merged);
+      state = { player: merged };
+    } else state = null;
     dead = !!s.dead;
-    prevStats = prevSkills = null;
+    prevStats = prevSkills = null; turnLog = []; pendingDaysPassed = 0;
+    hideDeathScreen();
     $("#gate").style.display = "none"; $("#app").hidden = false;
     if(s.log) $("#log").innerHTML = s.log;
     paintDossier();
     lastOptions = s.lastOptions || [];
     paintChoices(dead ? [] : lastOptions);
     setBusy(false);
+    if(dead && state) showDeathScreen(state.player);
     scrollDown();
   }catch(err){ alert("That file is not a Shinobi Registry save."); }
   e.target.value = "";
 };
 $("#btnNew").onclick = () => {
   if(!confirm("Abandon this life and be born again?")) return;
-  messages = []; state = null; prevStats = prevSkills = null; dead = false;
-  draft = {name:"",gender:"male",orphan:false,clan:null}; rerolls = 3; lastOptions = [];
-  $("#log").querySelectorAll(".entry").forEach(n => n.remove());
-  $("#choices").innerHTML = "";
-  $("#app").hidden = true; $("#gate").style.display = "grid";
-  $("#btnRoll").disabled = false; $("#btnRoll").textContent = "Draw blood";
-  $("#btnBirth").disabled = true; showStep(1); paintProvider();
+  resetToGate();
 };
 $("#drawerToggle").onclick = () => document.body.classList.toggle("open");
 paintAbilities();
