@@ -1,0 +1,2426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Shinobi Registry — Konoha Life Log</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sumi: #0F131A;
+            --sumi-2: #161C25;
+            --sumi-3: #212936;
+            --sumi-line: #2E3846;
+            --washi: #EBE0CB;
+            --washi-2: #E0D3B8;
+            --washi-edge: #CDBC9C;
+            --ink: #2B2519;
+            --hanko: #B23A2B;
+            --shu: #D4552F;
+            --leaf: #5E8C4E;
+            --chakra: #4C7FB8;
+            --gold: #C29B2B;
+            --violet: #8E7BC0;
+            --display: "Shippori Mincho B1", serif;
+            --body: "Newsreader", Georgia, serif;
+            --data: "DM Mono", ui-monospace, monospace;
+        }
+        * {
+            box-sizing: border-box
+        }
+        html,
+        body {
+            height: 100%
+        }
+        body {
+            margin: 0;
+            background: var(--sumi);
+            color: var(--washi);
+            font-family: var(--body);
+            font-size: 16px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased
+        }
+        button {
+            font: inherit;
+            color: inherit;
+            background: none;
+            border: none;
+            cursor: pointer
+        }
+        input,
+        textarea,
+        select {
+            font: inherit;
+            color: inherit
+        }
+        ::selection {
+            background: var(--shu);
+            color: #fff
+        }
+        :focus-visible {
+            outline: 2px solid var(--shu);
+            outline-offset: 2px
+        }
+
+        #app {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            height: 100dvh
+        }
+        .masthead {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--sumi-line);
+            background: linear-gradient(180deg, var(--sumi-2), var(--sumi))
+        }
+        .crest {
+            width: 28px;
+            height: 28px;
+            flex: none;
+            border-radius: 50%;
+            border: 1.5px solid var(--hanko);
+            display: grid;
+            place-items: center;
+            font-family: var(--display);
+            font-size: 14px;
+            color: var(--hanko);
+            transform: rotate(-6deg)
+        }
+        .age {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            font-family: var(--display)
+        }
+        .age b {
+            font-size: 26px;
+            font-weight: 800;
+            color: #F1E8D6;
+            line-height: 1
+        }
+        .age span {
+            font-family: var(--data);
+            font-size: 9px;
+            letter-spacing: .24em;
+            text-transform: uppercase;
+            color: #6F7C8D
+        }
+        .mast-meta {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-family: var(--data);
+            font-size: 11px;
+            color: #8A97A8;
+            flex-wrap: wrap;
+            justify-content: flex-end
+        }
+        .mast-meta b {
+            color: var(--gold);
+            font-weight: 500
+        }
+        .tbtn {
+            font-family: var(--data);
+            font-size: 10px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            padding: 6px 9px;
+            border: 1px solid var(--sumi-line);
+            color: #93A0B1;
+            transition: .18s
+        }
+        .tbtn:hover {
+            border-color: var(--shu);
+            color: var(--washi)
+        }
+        main {
+            display: grid;
+            grid-template-columns: 322px 1fr;
+            min-height: 0
+        }
+
+        #dossier {
+            background: var(--sumi-2);
+            border-right: 1px solid var(--sumi-line);
+            display: grid;
+            grid-template-rows: auto 1fr;
+            min-height: 0
+        }
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            border-bottom: 1px solid var(--sumi-line)
+        }
+        .tabs button {
+            padding: 9px 0 8px;
+            font-family: var(--data);
+            font-size: 9px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: #65717F;
+            border-bottom: 2px solid transparent;
+            transition: .16s
+        }
+        .tabs button:hover {
+            color: #A9B5C4
+        }
+        .tabs button[aria-selected="true"] {
+            color: var(--washi);
+            border-bottom-color: var(--shu)
+        }
+        #panes {
+            overflow-y: auto;
+            padding: 16px 14px 40px
+        }
+        #panes::-webkit-scrollbar,
+        #log::-webkit-scrollbar {
+            width: 8px
+        }
+        #panes::-webkit-scrollbar-thumb {
+            background: var(--sumi-3)
+        }
+        #log::-webkit-scrollbar-thumb {
+            background: var(--washi-edge)
+        }
+        .pane {
+            display: none
+        }
+        .pane.on {
+            display: block
+        }
+        .nameplate {
+            border-bottom: 1px solid var(--sumi-line);
+            padding-bottom: 12px;
+            margin-bottom: 14px
+        }
+        .nameplate .n {
+            font-family: var(--display);
+            font-size: 22px;
+            font-weight: 600;
+            color: #F1E8D6;
+            line-height: 1.2
+        }
+        .nameplate .r {
+            font-family: var(--data);
+            font-size: 10px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--shu);
+            margin-top: 4px
+        }
+        .clanchip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            padding: 4px 8px;
+            border: 1px solid var(--sumi-line);
+            font-family: var(--data);
+            font-size: 11px;
+            background: #131922;
+            cursor: help
+        }
+        .clanchip i {
+            font-style: normal;
+            font-size: 9px;
+            letter-spacing: .12em;
+            text-transform: uppercase
+        }
+        .sec {
+            margin-bottom: 18px
+        }
+        .sec>h2 {
+            font-family: var(--data);
+            font-size: 9px;
+            letter-spacing: .26em;
+            text-transform: uppercase;
+            color: #65717F;
+            margin: 0 0 9px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500
+        }
+        .sec>h2::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--sumi-line)
+        }
+        .bar {
+            margin-bottom: 8px
+        }
+        .bar .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-family: var(--data);
+            font-size: 10.5px;
+            color: #A9B5C4
+        }
+        .bar .top .v {
+            color: #E8DECB
+        }
+        .bar .top .v .d {
+            font-size: 9px;
+            margin-left: 4px
+        }
+        .d.up {
+            color: var(--leaf)
+        }
+        .d.dn {
+            color: var(--shu)
+        }
+        .track {
+            height: 4px;
+            background: var(--sumi-3);
+            margin-top: 3px;
+            overflow: hidden
+        }
+        .fill {
+            height: 100%;
+            width: 0;
+            transition: width .6s cubic-bezier(.2, .8, .3, 1)
+        }
+        .low .fill {
+            background: var(--hanko) !important
+        }
+        .kv {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-family: var(--data);
+            font-size: 11px;
+            padding: 3px 0;
+            color: #A9B5C4
+        }
+        .kv b {
+            color: #E8DECB;
+            font-weight: 500;
+            text-align: right
+        }
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px
+        }
+        .tag {
+            font-family: var(--data);
+            font-size: 10px;
+            padding: 3px 7px;
+            border: 1px solid var(--sumi-line);
+            color: #B9C4D2;
+            background: #131922
+        }
+        .tag em {
+            font-style: normal;
+            color: #65717F;
+            margin-left: 4px
+        }
+        .empty {
+            font-family: var(--data);
+            font-size: 10px;
+            color: #56616F;
+            letter-spacing: .05em
+        }
+        .branch {
+            margin-bottom: 16px;
+            border-left: 1px solid var(--sumi-line);
+            padding-left: 11px
+        }
+        .branch h3 {
+            font-family: var(--display);
+            font-size: 14px;
+            margin: 0 0 2px;
+            color: #E8DECB;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline
+        }
+        .branch h3 span {
+            font-family: var(--data);
+            font-size: 10px;
+            color: var(--gold)
+        }
+        .node {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            padding: 4px 0;
+            font-family: var(--data);
+            font-size: 10.5px;
+            color: #5B6673;
+            line-height: 1.45
+        }
+        .node.got {
+            color: #CBD5E1
+        }
+        .node .dot {
+            width: 7px;
+            height: 7px;
+            flex: none;
+            margin-top: 4px;
+            border: 1px solid #3A4553;
+            transform: rotate(45deg)
+        }
+        .node.got .dot {
+            background: var(--gold);
+            border-color: var(--gold)
+        }
+        .node .lv {
+            color: #4C5764;
+            flex: none
+        }
+        .node.got .lv {
+            color: var(--gold)
+        }
+        .node b {
+            font-weight: 500;
+            color: inherit
+        }
+        .node em {
+            font-style: normal;
+            color: #4C5764
+        }
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 12px
+        }
+        .filters button {
+            font-family: var(--data);
+            font-size: 9px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: 4px 7px;
+            border: 1px solid var(--sumi-line);
+            color: #65717F
+        }
+        .filters button[aria-pressed="true"] {
+            border-color: var(--shu);
+            color: var(--washi)
+        }
+        .ab {
+            border-left: 2px solid #2E3846;
+            padding: 6px 0 6px 10px;
+            margin-bottom: 7px
+        }
+        .ab .h {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: baseline
+        }
+        .ab .nm {
+            font-family: var(--display);
+            font-size: 13.5px;
+            color: #8894A3
+        }
+        .ab .st {
+            font-family: var(--data);
+            font-size: 8.5px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: #4C5764;
+            flex: none
+        }
+        .ab .g {
+            font-family: var(--data);
+            font-size: 10px;
+            color: #56616F;
+            line-height: 1.5;
+            margin-top: 3px
+        }
+        .ab.awakened {
+            border-left-color: var(--gold)
+        }
+        .ab.awakened .nm {
+            color: #F1E8D6
+        }
+        .ab.awakened .st {
+            color: var(--gold)
+        }
+        .ab.dormant {
+            border-left-color: var(--violet)
+        }
+        .ab.dormant .nm {
+            color: #C3B8DE
+        }
+        .ab.dormant .st {
+            color: var(--violet)
+        }
+        .el {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 8px
+        }
+        .el .sym {
+            width: 26px;
+            height: 26px;
+            flex: none;
+            display: grid;
+            place-items: center;
+            font-family: var(--display);
+            font-size: 14px;
+            border: 1px solid var(--sumi-line)
+        }
+        .el .wrap {
+            flex: 1
+        }
+        .el.prime .sym {
+            border-color: var(--gold);
+            color: var(--gold)
+        }
+        .affinity-hero {
+            border: 1px solid var(--sumi-line);
+            padding: 12px;
+            margin-bottom: 14px;
+            text-align: center;
+            background: #131922
+        }
+        .affinity-hero .k {
+            font-family: var(--display);
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1.1
+        }
+        .affinity-hero .l {
+            font-family: var(--data);
+            font-size: 9px;
+            letter-spacing: .24em;
+            text-transform: uppercase;
+            color: #65717F;
+            margin-top: 4px
+        }
+        .affinity-hero.unknown .k {
+            color: #3F4956
+        }
+
+        #scroll {
+            position: relative;
+            display: grid;
+            grid-template-rows: 1fr auto;
+            min-height: 0;
+            background: var(--washi)
+        }
+        #scroll::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(120% 80% at 50% -10%, rgba(255, 255, 255, .5), transparent 60%), radial-gradient(100% 100% at 50% 120%, rgba(120, 95, 55, .16), transparent 55%)
+        }
+        #log {
+            overflow-y: auto;
+            padding: 32px 7% 22px;
+            color: var(--ink);
+            position: relative;
+            background-image: repeating-linear-gradient(94deg, rgba(120, 100, 66, .035) 0 2px, transparent 2px 5px)
+        }
+        .seal {
+            position: absolute;
+            top: 20px;
+            right: 4.5%;
+            width: 70px;
+            height: 70px;
+            opacity: .45;
+            pointer-events: none;
+            transform: rotate(7deg)
+        }
+        .entry {
+            max-width: 64ch;
+            margin: 0 auto 26px;
+            animation: rise .45s ease both
+        }
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+        .entry .eyebrow {
+            font-family: var(--data);
+            font-size: 9px;
+            letter-spacing: .24em;
+            text-transform: uppercase;
+            color: #9A8A6C;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+        .entry .eyebrow::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(120, 100, 66, .28)
+        }
+        .entry p {
+            margin: 0 0 .9em;
+            font-size: 17px;
+            line-height: 1.7
+        }
+        .entry p:last-child {
+            margin-bottom: 0
+        }
+        .entry strong {
+            font-weight: 600;
+            color: #1F1A11
+        }
+        .entry em {
+            color: #5C4A2C
+        }
+        .entry.you .body {
+            border-left: 2px solid var(--hanko);
+            padding: 2px 0 2px 13px;
+            font-family: var(--data);
+            font-size: 12.5px;
+            color: #4A4132
+        }
+        .entry.note .body {
+            border: 1px solid rgba(178, 58, 43, .4);
+            background: rgba(178, 58, 43, .07);
+            padding: 11px 13px;
+            font-family: var(--data);
+            font-size: 12px;
+            color: #7A2E22;
+            line-height: 1.6
+        }
+        .caret {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--ink);
+            vertical-align: -2px;
+            animation: blink 1s steps(2) infinite
+        }
+        @keyframes blink {
+            50% {
+                opacity: 0
+            }
+        }
+
+        #actions {
+            position: relative;
+            z-index: 2;
+            border-top: 1px solid var(--washi-edge);
+            background: linear-gradient(180deg, var(--washi-2), #D6C8AC);
+            padding: 12px 7% 14px
+        }
+        #choices {
+            display: grid;
+            gap: 7px;
+            max-width: 64ch;
+            margin: 0 auto 10px
+        }
+        #choices:empty {
+            display: none
+        }
+        .choice {
+            display: grid;
+            grid-template-columns: 38px 1fr;
+            align-items: center;
+            gap: 11px;
+            background: #F2E9D7;
+            border: 1px solid var(--washi-edge);
+            border-left-width: 3px;
+            padding: 9px 12px;
+            text-align: left;
+            transition: transform .14s, background .14s
+        }
+        .choice:hover {
+            background: #FFF9EC;
+            transform: translateX(3px)
+        }
+        .choice .num {
+            font-family: var(--display);
+            font-size: 21px;
+            font-weight: 800;
+            color: var(--hanko);
+            text-align: center;
+            line-height: 1;
+            opacity: .85
+        }
+        .choice .t {
+            font-size: 16px;
+            color: #2B2519;
+            line-height: 1.25;
+            display: block
+        }
+        .choice .s {
+            font-family: var(--data);
+            font-size: 10.5px;
+            color: #8A7B60;
+            margin-top: 2px;
+            line-height: 1.4;
+            display: block
+        }
+        .choice[data-risk="low"] {
+            border-left-color: var(--leaf)
+        }
+        .choice[data-risk="medium"] {
+            border-left-color: var(--gold)
+        }
+        .choice[data-risk="high"] {
+            border-left-color: var(--shu)
+        }
+        .choice[data-risk="lethal"] {
+            border-left-color: #7A1D12
+        }
+        .choice[data-risk="lethal"] .num {
+            color: #7A1D12
+        }
+        .choice:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+            transform: none
+        }
+        .composer {
+            display: flex;
+            gap: 7px;
+            align-items: flex-end;
+            max-width: 64ch;
+            margin: 0 auto
+        }
+        #say {
+            flex: 1;
+            resize: none;
+            background: #F3EBDA;
+            border: 1px solid var(--washi-edge);
+            padding: 9px 11px;
+            color: #2B2519;
+            font-size: 15px;
+            min-height: 42px;
+            max-height: 140px
+        }
+        #say::placeholder {
+            color: #9A8A6C
+        }
+        .act {
+            height: 42px;
+            padding: 0 14px;
+            font-family: var(--data);
+            font-size: 10px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            transition: .16s;
+            flex: none;
+            border: 1px solid transparent
+        }
+        #send {
+            background: var(--hanko);
+            color: #F6EEDD
+        }
+        #send:hover {
+            background: #8F2C1F
+        }
+        #ageup {
+            background: #F3EBDA;
+            border-color: var(--washi-edge);
+            color: #6E6047
+        }
+        #ageup:hover {
+            border-color: var(--hanko);
+            color: var(--hanko)
+        }
+        .act:disabled {
+            opacity: .5;
+            cursor: not-allowed
+        }
+
+        #gate {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            background: radial-gradient(90% 70% at 50% 0%, #1A212C, #080B0F);
+            overflow-y: auto
+        }
+        .card {
+            width: min(620px, 100%);
+            background: var(--washi);
+            color: var(--ink);
+            padding: 30px 30px 24px;
+            position: relative;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
+            border-top: 3px solid var(--hanko)
+        }
+        .card .seal {
+            top: 16px;
+            right: 20px;
+            opacity: .5
+        }
+        .card .eyebrow {
+            font-family: var(--data);
+            font-size: 9px;
+            letter-spacing: .28em;
+            text-transform: uppercase;
+            color: #9A8A6C
+        }
+        .card h2 {
+            font-family: var(--display);
+            font-weight: 800;
+            font-size: 31px;
+            line-height: 1.1;
+            margin: 6px 0 5px;
+            color: #1F1A11
+        }
+        .card .lede {
+            font-size: 15.5px;
+            color: #4A4132;
+            margin: 0 0 18px;
+            max-width: 46ch
+        }
+        .step {
+            display: none
+        }
+        .step.on {
+            display: block
+        }
+        .field {
+            margin-bottom: 12px
+        }
+        .field label {
+            display: block;
+            font-family: var(--data);
+            font-size: 9.5px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: #7A6C51;
+            margin-bottom: 4px
+        }
+        .field input,
+        .field select {
+            width: 100%;
+            background: #F3EBDA;
+            border: 1px solid var(--washi-edge);
+            padding: 8px 10px;
+            font-size: 15px;
+            color: #2B2519
+        }
+        .field .hint {
+            font-family: var(--data);
+            font-size: 10px;
+            color: #8A7B60;
+            margin-top: 4px;
+            line-height: 1.5
+        }
+        .two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+        .seg {
+            display: flex;
+            border: 1px solid var(--washi-edge)
+        }
+        .seg button {
+            flex: 1;
+            padding: 8px 0;
+            font-family: var(--data);
+            font-size: 10px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: #7A6C51;
+            background: #F3EBDA;
+            transition: .16s
+        }
+        .seg button+button {
+            border-left: 1px solid var(--washi-edge)
+        }
+        .seg button[aria-pressed="true"] {
+            background: var(--hanko);
+            color: #F6EEDD
+        }
+        .row {
+            display: flex;
+            gap: 9px;
+            align-items: center;
+            margin-top: 18px;
+            flex-wrap: wrap
+        }
+        .prim {
+            background: var(--hanko);
+            color: #F6EEDD;
+            padding: 11px 24px;
+            font-family: var(--data);
+            font-size: 11px;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+            transition: .16s
+        }
+        .prim:hover {
+            background: #8F2C1F
+        }
+        .prim:disabled {
+            background: #A79779;
+            cursor: not-allowed
+        }
+        .ghost {
+            padding: 11px 16px;
+            border: 1px solid var(--washi-edge);
+            font-family: var(--data);
+            font-size: 10px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: #7A6C51;
+            transition: .16s
+        }
+        .ghost:hover {
+            border-color: var(--hanko);
+            color: var(--hanko)
+        }
+        .ghost:disabled {
+            opacity: .45;
+            cursor: not-allowed
+        }
+        .gate-note {
+            font-family: var(--data);
+            font-size: 10px;
+            line-height: 1.6;
+            color: #8A7B60;
+            margin-top: 16px;
+            border-top: 1px solid var(--washi-edge);
+            padding-top: 11px
+        }
+        #rollStage {
+            border: 1px solid var(--washi-edge);
+            background: #F3EBDA;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 14px;
+            min-height: 150px;
+            display: grid;
+            place-content: center;
+            gap: 4px
+        }
+        #rollTier {
+            font-family: var(--data);
+            font-size: 9.5px;
+            letter-spacing: .3em;
+            text-transform: uppercase
+        }
+        #rollName {
+            font-family: var(--display);
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.05;
+            color: #1F1A11
+        }
+        #rollJp {
+            font-family: var(--display);
+            font-size: 16px;
+            color: #8A7B60
+        }
+        #rollDesc {
+            font-size: 14.5px;
+            color: #4A4132;
+            max-width: 44ch;
+            margin: 8px auto 0;
+            line-height: 1.55
+        }
+        #rollStage.spin #rollName {
+            opacity: .4
+        }
+        .tier-civilian {
+            color: #8A7B60
+        }
+        .tier-common {
+            color: #6E7F5E
+        }
+        .tier-uncommon {
+            color: #3F6E86
+        }
+        .tier-rare {
+            color: #7A5BA6
+        }
+        .tier-legendary {
+            color: #B8860B
+        }
+        .tier-mythic {
+            color: var(--hanko)
+        }
+        .clangrid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            max-height: 132px;
+            overflow-y: auto;
+            padding: 2px
+        }
+        .clangrid button {
+            font-family: var(--data);
+            font-size: 10px;
+            padding: 3px 7px;
+            border: 1px solid var(--washi-edge);
+            color: #6E6047;
+            background: #F3EBDA;
+            transition: .14s
+        }
+        .clangrid button:hover {
+            border-color: var(--hanko);
+            color: var(--hanko)
+        }
+        #tip {
+            position: fixed;
+            z-index: 99;
+            max-width: 330px;
+            background: #12171F;
+            border: 1px solid var(--sumi-line);
+            border-top: 2px solid var(--shu);
+            padding: 12px 14px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .13s;
+            box-shadow: 0 14px 40px rgba(0, 0, 0, .5)
+        }
+        #tip .tn {
+            font-family: var(--display);
+            font-size: 16px;
+            color: #F1E8D6
+        }
+        #tip .tt {
+            font-family: var(--data);
+            font-size: 9px;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            margin: 2px 0 7px
+        }
+        #tip .td {
+            font-size: 13.5px;
+            line-height: 1.5;
+            color: #B9C4D2
+        }
+        #tip .tg {
+            font-family: var(--data);
+            font-size: 10px;
+            color: #8894A3;
+            margin-top: 7px;
+            border-top: 1px solid var(--sumi-line);
+            padding-top: 6px;
+            line-height: 1.5
+        }
+        #drawerToggle {
+            display: none
+        }
+        @media (max-width:900px) {
+            main {
+                grid-template-columns: 1fr
+            }
+            #dossier {
+                position: fixed;
+                inset: 47px 0 0;
+                z-index: 20;
+                transform: translateX(-101%);
+                transition: transform .3s;
+                border-right: none
+            }
+            body.open #dossier {
+                transform: none
+            }
+            #drawerToggle {
+                display: block
+            }
+            #log {
+                padding: 22px 18px
+            }
+            #actions {
+                padding: 10px 14px 12px
+            }
+            .seal {
+                width: 52px;
+                height: 52px;
+                right: 14px
+            }
+            .two {
+                grid-template-columns: 1fr
+            }
+            #rollName {
+                font-size: 30px
+            }
+        }
+        @media (prefers-reduced-motion:reduce) {
+            * {
+                animation: none !important;
+                transition: none !important
+            }
+        }
+
+        /* loading overlay for WebLLM init */
+        #llm-status {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            display: none;
+            place-items: center;
+            background: rgba(11, 14, 20, .92);
+            backdrop-filter: blur(4px);
+            color: var(--washi);
+            font-family: var(--data);
+            padding: 24px;
+            text-align: center
+        }
+        #llm-status.show {
+            display: grid
+        }
+        #llm-status .box {
+            max-width: 400px;
+            background: var(--sumi-2);
+            border: 1px solid var(--sumi-line);
+            padding: 32px 28px 28px
+        }
+        #llm-status .spinner {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 16px;
+            border: 3px solid var(--sumi-line);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin .8s linear infinite
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+        #llm-status .stat {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #A9B5C4
+        }
+        #llm-status .stat strong {
+            color: var(--washi)
+        }
+        #llm-status .stat .pct {
+            color: var(--gold)
+        }
+        #llm-status .err {
+            color: var(--shu);
+            font-size: 13px;
+            margin-top: 8px
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app" hidden>
+        <header class="masthead">
+            <div class="crest">忍</div>
+            <div class="age"><b id="mAge">0</b><span>years<br>old</span></div>
+            <div class="mast-meta">
+                <span id="mDay">Day 1</span><span id="mLoc">—</span><span id="mRyo"><b>0</b> ryo</span>
+                <button class="tbtn" id="drawerToggle">Sheet</button>
+                <button class="tbtn" id="btnSave">Save</button>
+                <button class="tbtn" id="btnLoad">Load</button>
+                <button class="tbtn" id="btnNew">New life</button>
+            </div>
+        </header>
+        <main>
+            <aside id="dossier">
+                <div class="tabs" role="tablist">
+                    <button role="tab" data-pane="status" aria-selected="true">Status</button>
+                    <button role="tab" data-pane="skills" aria-selected="false">Skills</button>
+                    <button role="tab" data-pane="chakra" aria-selected="false">Chakra</button>
+                    <button role="tab" data-pane="abilities" aria-selected="false">Blood</button>
+                    <button role="tab" data-pane="bonds" aria-selected="false">Bonds</button>
+                </div>
+                <div id="panes">
+                    <div class="pane on" id="pane-status">
+                        <div class="nameplate">
+                            <div class="n" id="pName">Newborn</div>
+                            <div class="r" id="pRank">Unranked</div>
+                            <div><span class="clanchip" id="pClan"><i>Clan</i> —</span></div>
+                        </div>
+                        <div class="sec"><h2>Condition</h2><div id="vitals"></div><div id="injuries"></div></div>
+                        <div class="sec"><h2>Attributes</h2><div id="stats"></div></div>
+                        <div class="sec"><h2>Standing</h2><div id="standing"></div></div>
+                        <div class="sec"><h2>Carried</h2><div class="tags" id="inv"></div></div>
+                        <div class="sec"><h2>Equipment</h2><div id="equip"></div></div>
+                    </div>
+                    <div class="pane" id="pane-skills"><div id="tree"></div></div>
+                    <div class="pane" id="pane-chakra">
+                        <div class="affinity-hero unknown" id="affHero"><div class="k" id="affK">？</div><div class="l" id="affL">Affinity undiscovered</div></div>
+                        <div class="sec"><h2>Nature mastery</h2><div id="elements"></div></div>
+                        <div class="sec"><h2>Jutsu</h2><div id="jutsu"></div></div>
+                    </div>
+                    <div class="pane" id="pane-abilities">
+                        <div class="filters" id="abFilters"></div>
+                        <div id="abList"></div>
+                    </div>
+                    <div class="pane" id="pane-bonds">
+                        <div class="sec"><h2>Bonds</h2><div id="bonds"></div></div>
+                        <div class="sec"><h2>Missions</h2><div id="missions"></div></div>
+                        <div class="sec"><h2>Achievements</h2><div class="tags" id="achievements"></div></div>
+                    </div>
+                </div>
+            </aside>
+
+            <section id="scroll">
+                <div id="log">
+                    <svg class="seal" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="#B23A2B" stroke-width="4"/><circle cx="50" cy="50" r="38" fill="none" stroke="#B23A2B" stroke-width="1.5"/><text x="50" y="40" text-anchor="middle" fill="#B23A2B" style="font:600 26px 'Shippori Mincho B1',serif">木ノ</text><text x="50" y="70" text-anchor="middle" fill="#B23A2B" style="font:600 26px 'Shippori Mincho B1',serif">葉</text></svg>
+                </div>
+                <div id="actions">
+                    <div id="choices"></div>
+                    <div class="composer">
+                        <textarea id="say" rows="1" placeholder="Or describe what you try…"></textarea>
+                        <button class="act" id="ageup" title="Let time carry you forward">Age up</button>
+                        <button class="act" id="send">Act</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="gate">
+        <div class="card">
+            <svg class="seal" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="#B23A2B" stroke-width="4"/><circle cx="50" cy="50" r="38" fill="none" stroke="#B23A2B" stroke-width="1.5"/><text x="50" y="40" text-anchor="middle" fill="#B23A2B" style="font:600 26px 'Shippori Mincho B1',serif">木ノ</text><text x="50" y="70" text-anchor="middle" fill="#B23A2B" style="font:600 26px 'Shippori Mincho B1',serif">葉</text></svg>
+
+            <div class="step on" id="step1">
+                <div class="eyebrow">Konoha · Records office</div>
+                <h2>A child is about to be born.</h2>
+                <p class="lede">Pick your storyteller. Both run <strong>entirely in your browser</strong> via WebLLM — no API keys, no daily caps, infinite requests. The only limit is your hardware.</p>
+                <div class="field"><label>Storyteller</label>
+                    <div class="seg" id="segProvider"><button data-p="llama" aria-pressed="true">Llama 3.2 3B</button><button data-p="phi" aria-pressed="false">Phi 3.5 Mini</button></div>
+                    <div class="hint" id="provHint"></div>
+                </div>
+                <div class="field"><label for="modelSel">Model</label><select id="modelSel"></select><div class="hint" id="modelHint"></div></div>
+                <div class="field"><label for="keyIn">API key</label><input id="keyIn" type="text" spellcheck="false" autocomplete="off" value="WebLLM — local, no key needed" readonly style="color:#8A7B60;background:#EDE4D0"><div class="hint">WebLLM runs 100% locally. No external API calls, no rate limits.</div></div>
+                <div class="row"><button class="prim" id="toStep2">Continue</button><button class="ghost" id="btnLoad2">Load a save</button></div>
+            </div>
+
+            <div class="step" id="step2">
+                <div class="eyebrow">Konoha · Records office</div>
+                <h2>Name the child.</h2>
+                <p class="lede">You begin at age zero. Everything after that is earned — you cannot walk before your legs will hold you.</p>
+                <div class="two">
+                    <div class="field"><label for="nameIn">Name</label><input id="nameIn" placeholder="Given name" spellcheck="false"></div>
+                    <div class="field"><label>Sex</label><div class="seg" id="segSex"><button data-v="male" aria-pressed="true">Boy</button><button data-v="female" aria-pressed="false">Girl</button></div></div>
+                </div>
+                <div class="field"><label>Household</label><div class="seg" id="segHome"><button data-v="family" aria-pressed="true">Family</button><button data-v="orphan" aria-pressed="false">Orphaned</button></div>
+                    <div class="hint">Orphans start poorer and colder, and harder in the ways that matter.</div></div>
+                <div class="row"><button class="ghost" id="backStep1">Back</button><button class="prim" id="toStep3">To the blood roll</button></div>
+            </div>
+
+            <div class="step" id="step3">
+                <div class="eyebrow">Konoha · Blood registry</div>
+                <h2>Whose blood runs in you?</h2>
+                <p class="lede">Lineage is drawn, not chosen. Hover any name below to read what that blood carries.</p>
+                <div id="rollStage"><div id="rollTier" class="tier-civilian">Unrolled</div><div id="rollName">— — —</div><div id="rollJp"></div><div id="rollDesc">Draw to see what you were born into.</div></div>
+                <div class="field"><label>Every recorded line <span id="rerollsLeft" style="float:right;text-transform:none;letter-spacing:0"></span></label><div class="clangrid" id="clanGrid"></div></div>
+                <div class="row"><button class="prim" id="btnRoll">Draw blood</button><button class="ghost" id="btnBirth" disabled>Be born</button><button class="ghost" id="backStep2">Back</button></div>
+                <p class="gate-note">Saves download as a .json file. Load one from the first screen to continue an old life.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="tip"><div class="tn"></div><div class="tt"></div><div class="td"></div><div class="tg"></div></div>
+    <input type="file" id="fileIn" accept="application/json" hidden>
+
+    <!-- WebLLM loading status overlay -->
+    <div id="llm-status">
+        <div class="box">
+            <div class="spinner"></div>
+            <div class="stat" id="llmStat">Loading model <strong id="llmModelName">…</strong> …</div>
+            <div class="stat" style="font-size:11px;color:#65717F;margin-top:4px" id="llmDetail">This may take a moment. The model runs entirely in your browser.</div>
+            <div class="err" id="llmErr"></div>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "@mlc-ai/web-llm": "https://esm.run/@mlc-ai/web-llm"
+            }
+        }
+    </script>
+
+    <script type="module">
+        // ------------------------------------------------------------
+        // WebLLM module — replaces all API calls with local inference
+        // ------------------------------------------------------------
+        import { MLCEngine } from "@mlc-ai/web-llm";
+
+        const statusEl = document.getElementById("llm-status");
+        const statEl = document.getElementById("llmStat");
+        const detailEl = document.getElementById("llmDetail");
+        const errEl = document.getElementById("llmErr");
+        const modelNameEl = document.getElementById("llmModelName");
+
+        let engine = null;
+        let currentModelId = "Llama-3.2-3B-Instruct";
+        let engineReady = false;
+        let initPromise = null;
+
+        // Two WebLLM models with effectively infinite rate limits
+        const WEBLLM_MODELS = {
+            llama: {
+                id: "Llama-3.2-3B-Instruct",
+                label: "Llama 3.2 3B",
+                desc: "Balanced, fast, good for most narrative tasks."
+            },
+            phi: {
+                id: "Phi-3.5-mini-instruct",
+                label: "Phi 3.5 Mini",
+                desc: "Smarter reasoning, slightly slower, better at complex adjudication."
+            }
+        };
+
+        function showStatus(show) {
+            statusEl.classList.toggle("show", show);
+        }
+
+        function setStatus(msg, detail = "") {
+            statEl.innerHTML = msg;
+            if (detail) detailEl.textContent = detail;
+        }
+
+        function setError(msg) {
+            errEl.textContent = msg;
+        }
+
+        function clearError() {
+            errEl.textContent = "";
+        }
+
+        async function initEngine(modelKey) {
+            if (engineReady && currentModelId === WEBLLM_MODELS[modelKey].id) return engine;
+            if (initPromise) {
+                await initPromise;
+                if (engineReady && currentModelId === WEBLLM_MODELS[modelKey].id) return engine;
+                initPromise = null;
+            }
+
+            const mod = WEBLLM_MODELS[modelKey];
+            if (!mod) throw new Error("Unknown model: " + modelKey);
+
+            currentModelId = mod.id;
+            showStatus(true);
+            clearError();
+            modelNameEl.textContent = mod.label;
+            setStatus(`Loading <strong>${mod.label}</strong> …`, "First load downloads ~2GB of model weights. Subsequent loads are cached.");
+
+            initPromise = (async () => {
+                try {
+                    const eng = new MLCEngine();
+                    const progress = (p) => {
+                        const pct = Math.round(p.progress * 100);
+                        const label = p.text || "downloading";
+                        setStatus(`Loading <strong>${mod.label}</strong> … <span class="pct">${pct}%</span>`, label);
+                    };
+                    await eng.reload(mod.id, { progressCallback: progress });
+                    engine = eng;
+                    engineReady = true;
+                    setStatus(`<strong>${mod.label}</strong> ready.`, "Infinite requests — no API keys, no daily caps.");
+                    setTimeout(() => { showStatus(false); }, 800);
+                    return engine;
+                } catch (e) {
+                    setError("Failed to load model: " + e.message);
+                    engineReady = false;
+                    engine = null;
+                    throw e;
+                } finally {
+                    initPromise = null;
+                }
+            })();
+
+            return await initPromise;
+        }
+
+        // ---- UI for WebLLM provider selection ----
+        const provButtons = document.querySelectorAll("#segProvider button");
+        const modelSel = document.getElementById("modelSel");
+        const provHint = document.getElementById("provHint");
+        const modelHint = document.getElementById("modelHint");
+
+        function paintProviderUI() {
+            const active = document.querySelector("#segProvider button[aria-pressed='true']");
+            const key = active ? active.dataset.p : "llama";
+            const mod = WEBLLM_MODELS[key];
+            provHint.textContent = mod.desc;
+            modelSel.innerHTML = `<option value="${mod.id}">${mod.id}</option>`;
+            modelHint.textContent = "WebLLM — local inference, no rate limits.";
+            const inp = document.getElementById("keyIn");
+            inp.value = "WebLLM — local, no key needed";
+        }
+
+        provButtons.forEach(b => {
+            b.onclick = () => {
+                provButtons.forEach(x => x.setAttribute("aria-pressed", "false"));
+                b.setAttribute("aria-pressed", "true");
+                paintProviderUI();
+                // re-init engine with new model if already in game
+                if (engineReady || engine) {
+                    const key = b.dataset.p;
+                    initEngine(key).catch(() => {});
+                }
+            };
+        });
+
+        paintProviderUI();
+
+        // ---- Keep the model selector but it's now display-only ----
+        modelSel.onchange = () => {};
+
+        // ---- override the key input ----
+        document.getElementById("keyIn").addEventListener("focus", (e) => {
+            e.target.blur();
+        });
+
+        // ---- expose init function to the main script ----
+        window.__webllm = {
+            initEngine,
+            getEngine: () => engine,
+            isReady: () => engineReady,
+            currentModel: () => currentModelId,
+            getProviderKey: () => {
+                const active = document.querySelector("#segProvider button[aria-pressed='true']");
+                return active ? active.dataset.p : "llama";
+            }
+        };
+
+        // ---- pre-warm on first interaction ----
+        let warmed = false;
+
+        async function warmEngine() {
+            if (warmed) return;
+            warmed = true;
+            const key = window.__webllm.getProviderKey();
+            try {
+                await initEngine(key);
+            } catch (e) {
+                // show error but don't block
+                console.warn("WebLLM warm failed:", e);
+            }
+        }
+
+        // warm when user clicks continue or draws blood
+        document.getElementById("toStep2").addEventListener("click", warmEngine);
+        document.getElementById("btnRoll").addEventListener("click", warmEngine);
+
+        // also warm on any keypress in the gate
+        document.querySelector("#gate").addEventListener("click", () => { if (!warmed) warmEngine(); });
+
+        console.log("WebLLM module loaded. Two local models with infinite rate limits.");
+    </script>
+
+    <script>
+        // ------------------------------------------------------------
+        // MAIN GAME SCRIPT — identical to original except turn() uses WebLLM
+        // ------------------------------------------------------------
+        const $ = s => document.querySelector(s);
+        const $$ = s => [...document.querySelectorAll(s)];
+        const CORE = document.getElementById("core-rules").textContent.trim();
+
+        let provider = "llama",
+            apiKey = "dummy",
+            model = "";
+        let messages = [],
+            state = null,
+            prevStats = null,
+            prevSkills = null,
+            busy = false;
+        let draft = { name: "", gender: "male", orphan: false, clan: null };
+        let rerolls = 3,
+            abFilter = "All",
+            lastOptions = [];
+
+        // ---------- prompt assembly ----------
+        function clanBlock() {
+            const c = draft.clan || CLANS[0];
+            return `## THIS CHARACTER'S BLOOD\n${c.n} (${c.jp}) — ${c.t} lineage.\n${c.d}\nCarries: ${c.g}\nAnything outside this lineage's reach stays outside it. Never grant another clan's kekkei genkai.`;
+        }
+
+        function abilityBlock() {
+            const cname = (draft.clan?.n || state?.player?.clan || "").split(" ")[0].toLowerCase();
+            const owned = new Set((state?.player?.abilities || []).map(a => String(a.name || "").toLowerCase()));
+            const mode = CONFIG.compendium || "gates";
+            const relevant = a => owned.has(a.n.toLowerCase()) ||
+                (cname && cname !== "no" && a.g.toLowerCase().includes(cname)) ||
+                ["Chakra arts", "Senjutsu"].includes(a.c);
+
+            const list = mode === "scoped" ? ABILITIES.filter(relevant) : ABILITIES;
+            const withEffect = a => mode === "full" || relevant(a);
+
+            const byCat = {};
+            list.forEach(a => (byCat[a.c] = byCat[a.c] || []).push(a));
+            const body = Object.entries(byCat).map(([cat, arr]) =>
+                `### ${cat}\n` + arr.map(a =>
+                    `- ${a.n} — REQUIRES: ${a.g}` + (withEffect(a) ? `. Effect: ${a.d}` : "")
+                ).join("\n")).join("\n");
+            return `## ABILITY COMPENDIUM — assess every claim against this\nIf the player asks for, attempts, or claims one of these, check the REQUIRES line against their blood, age, stats and skills in the state. If they do not meet it, they do not have it: refuse in-fiction and name what is actually missing. Dōjutsu especially are inherited, never trained — a player without the blood can never awaken a Sharingan, Byakugan or Rinnegan no matter what they do or how long they train.\n${body}`;
+        }
+
+        function treeBlock() {
+            return "## SKILL TREE — unlocks at these levels only\n" + TREE.map(b =>
+                `${b.n} (${b.jp}): ` + b.nodes.map(n => `${n.lv} ${n.n} [${n.g}]`).join(" · ")).join("\n") +
+                "\nWhen a skill crosses a threshold, announce the unlock in the narrative and apply the listed bonus to the state.";
+        }
+
+        function envelope() {
+            if (!state || !state.player) return "";
+            const p = state.player,
+                s = p.stats || {};
+            const band = v => v < 16 ? "child" : v < 31 ? "academy" : v < 46 ? "genin" : v < 61 ? "chūnin" : v < 76 ?
+                "jōnin" : v < 91 ? "elite" : "kage";
+            return `## CURRENT CAPABILITY ENVELOPE\nAge ${p.age} (${p.ageLabel||""}). ` +
+                Object.entries(s).map(([k, v]) => `${k} ${v} (${band(v)})`).join(", ") +
+                `. Affinity: ${p.affinity && p.affinity.discovered ? p.affinity.primary : "undiscovered"}. Refuse anything above these bands.`;
+        }
+
+        const systemPrompt = () => [CORE, clanBlock(), abilityBlock(), treeBlock(), envelope()].filter(Boolean).join(
+        "\n\n");
+
+        // ---------- setup ----------
+        function paintProvider() {
+            const active = document.querySelector("#segProvider button[aria-pressed='true']");
+            const key = active ? active.dataset.p : "llama";
+            const mod = WEBLLM_MODELS ? WEBLLM_MODELS[key] : { label: "WebLLM", desc: "" };
+            document.getElementById("provHint").textContent = mod.desc || "Local inference, no rate limits.";
+            document.getElementById("modelSel").innerHTML = `<option value="${mod.id||'llama'}">${mod.id||'Llama-3.2-3B-Instruct'}</option>`;
+            document.getElementById("keyIn").value = "WebLLM — local, no key needed";
+            document.getElementById("modelHint").textContent = "WebLLM — local inference, no rate limits.";
+        }
+
+        document.querySelectorAll("#segProvider button").forEach(b => {
+            b.onclick = () => {
+                document.querySelectorAll("#segProvider button").forEach(x => x.setAttribute("aria-pressed",
+                "false"));
+                b.setAttribute("aria-pressed", "true");
+                paintProvider();
+                // re-warm if needed
+                if (window.__webllm) {
+                    const key = b.dataset.p;
+                    window.__webllm.initEngine(key).catch(() => {});
+                }
+            };
+        });
+        paintProvider();
+
+        function seg(sel, cb) {
+            document.querySelectorAll(sel + " button").forEach(b => b.onclick = () => {
+                document.querySelectorAll(sel + " button").forEach(x => x.setAttribute("aria-pressed", "false"));
+                b.setAttribute("aria-pressed", "true");
+                cb(b.dataset.v);
+            });
+        }
+        seg("#segSex", v => draft.gender = v);
+        seg("#segHome", v => draft.orphan = v === "orphan");
+
+        const showStep = n => document.querySelectorAll(".step").forEach((s, i) => s.classList.toggle("on", i === n - 1));
+
+        document.getElementById("toStep2").onclick = () => {
+            // warm WebLLM if not already
+            if (window.__webllm && !window.__webllm.isReady()) {
+                const key = document.querySelector("#segProvider button[aria-pressed='true']")?.dataset.p || "llama";
+                window.__webllm.initEngine(key).catch(() => {});
+            }
+            showStep(2);
+        };
+
+        document.getElementById("backStep1").onclick = () => showStep(1);
+        document.getElementById("backStep2").onclick = () => showStep(2);
+
+        document.getElementById("toStep3").onclick = () => {
+            draft.name = document.getElementById("nameIn").value.trim() || "Unnamed";
+            showStep(3);
+            buildClanGrid();
+            // warm WebLLM
+            if (window.__webllm && !window.__webllm.isReady()) {
+                const key = document.querySelector("#segProvider button[aria-pressed='true']")?.dataset.p || "llama";
+                window.__webllm.initEngine(key).catch(() => {});
+            }
+        };
+
+        // ---------- clan roll ----------
+        const totalW = CLANS.reduce((a, c) => a + c.w, 0);
+
+        function drawClan() {
+            let r = Math.random() * totalW;
+            for (const c of CLANS) { if ((r -= c.w) <= 0) return c; }
+            return CLANS[0];
+        }
+
+        function paintRoll(c) {
+            document.getElementById("rollTier").className = "tier-" + c.t;
+            document.getElementById("rollTier").textContent = c.t + " lineage";
+            document.getElementById("rollName").textContent = c.n;
+            document.getElementById("rollJp").textContent = c.jp;
+            document.getElementById("rollDesc").textContent = c.d;
+        }
+
+        document.getElementById("btnRoll").onclick = () => {
+            if (rerolls <= 0) return;
+            const stage = document.getElementById("rollStage");
+            stage.classList.add("spin");
+            document.getElementById("btnRoll").disabled = true;
+            let ticks = 0;
+            const iv = setInterval(() => {
+                paintRoll(CLANS[Math.floor(Math.random() * CLANS.length)]);
+                if (++ticks > 14) {
+                    clearInterval(iv);
+                    stage.classList.remove("spin");
+                    draft.clan = drawClan();
+                    paintRoll(draft.clan);
+                    rerolls--;
+                    document.getElementById("btnBirth").disabled = false;
+                    document.getElementById("btnRoll").disabled = rerolls <= 0;
+                    document.getElementById("btnRoll").textContent = rerolls > 0 ? "Draw again" : "No draws left";
+                    document.getElementById("rerollsLeft").textContent = rerolls + " draw" + (rerolls === 1 ? "" :
+                    "s") + " left";
+                }
+            }, 55);
+        };
+
+        function buildClanGrid() {
+            document.getElementById("rerollsLeft").textContent = rerolls + " draws left";
+            const grid = document.getElementById("clanGrid");
+            grid.innerHTML = "";
+            CLANS.forEach(c => {
+                const b = document.createElement("button");
+                b.textContent = c.n;
+                const show = e => showTip(e, c.n + " " + c.jp, c.t + " lineage", c.d, "Carries: " + c.g,
+                "tier-" + c.t);
+                b.onmouseenter = show;
+                b.onfocus = show;
+                b.onmouseleave = hideTip;
+                b.onblur = hideTip;
+                grid.appendChild(b);
+            });
+        }
+
+        function showTip(e, name, tier, desc, gifts, cls) {
+            const t = document.getElementById("tip");
+            t.querySelector(".tn").textContent = name;
+            t.querySelector(".tt").textContent = tier;
+            t.querySelector(".tt").className = "tt " + (cls || "");
+            t.querySelector(".td").textContent = desc;
+            t.querySelector(".tg").textContent = gifts || "";
+            t.style.opacity = 1;
+            const r = e.currentTarget.getBoundingClientRect(),
+                w = t.offsetWidth,
+                h = t.offsetHeight;
+            t.style.left = Math.min(window.innerWidth - w - 10, Math.max(10, r.left)) + "px";
+            t.style.top = (r.top - h - 8 < 10 ? r.bottom + 8 : r.top - h - 8) + "px";
+        }
+        const hideTip = () => { document.getElementById("tip").style.opacity = 0; };
+
+        document.getElementById("btnBirth").onclick = () => {
+            if (!draft.clan) return;
+            document.getElementById("gate").style.display = "none";
+            document.getElementById("app").hidden = false;
+            messages = [{ role: "user", content:
+                    `Begin the life. Name: ${draft.name}. Sex: ${draft.gender}. Household: ${draft.orphan ? "orphaned at birth" : "born to living parents"}. Blood: ${draft.clan.n} (${draft.clan.t} lineage).\nOpen at the moment of birth, age 0. Set every stat to an infant's true values — nothing above 5, chakra unmoulded, all skills 0, affinity undiscovered. Give the three options an actual newborn has.`
+                }];
+            // ensure WebLLM is ready
+            const key = document.querySelector("#segProvider button[aria-pressed='true']")?.dataset.p || "llama";
+            if (window.__webllm) {
+                window.__webllm.initEngine(key).then(() => { turn(); }).catch(() => { turn(); });
+            } else {
+                turn();
+            }
+        };
+
+        // ---------- rendering ----------
+        const esc = s => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+        function md(t) {
+            return esc(t).split(/\n{2,}/).map(p => "<p>" + p.trim()
+                .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+                .replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+                .replace(/^#{1,6}\s*/gm, "").replace(/\n/g, "<br>") + "</p>").join("");
+        }
+
+        function addEntry(kind, eyebrow, html) {
+            const el = document.createElement("div");
+            el.className = "entry " + kind;
+            el.innerHTML = (eyebrow ? `<div class="eyebrow">${esc(eyebrow)}</div>` : "") +
+                `<div class="body">${html}</div>`;
+            document.getElementById("log").appendChild(el);
+            el.scrollIntoView({ block: "end", behavior: "smooth" });
+            return el;
+        }
+        const scrollDown = () => { const l = document.getElementById("log");
+            l.scrollTop = l.scrollHeight; };
+
+        function extractJSON(raw) {
+            const fences = [...raw.matchAll(/```(?:json)?\s*([\s\S]*?)```/gi)];
+            for (let i = fences.length - 1; i >= 0; i--) {
+                try { const o = JSON.parse(fences[i][1].trim()); if (o && o.player) return o; } catch (e) {}
+            }
+            const i = raw.lastIndexOf('{"player"');
+            if (i > -1) { try { return JSON.parse(raw.slice(i)); } catch (e) {} }
+            return null;
+        }
+        const stripJSON = raw => raw.replace(/```(?:json)?[\s\S]*?```/gi, "").trim();
+
+        function fallbackMenu(text) {
+            const out = [];
+            text.split("\n").forEach(l => {
+                const m = l.replace(/\*\*/g, "").trim().match(/^([1-9])[.)]\s+(.{2,100})$/);
+                if (m && out.length < 3) out.push({ label: m[2], detail: "", risk: "medium" });
+            });
+            return out;
+        }
+        const KANJI = ["一", "二", "三"];
+
+        function paintChoices(opts) {
+            const box = document.getElementById("choices");
+            box.innerHTML = "";
+            opts.slice(0, 3).forEach((o, i) => {
+                const b = document.createElement("button");
+                b.className = "choice";
+                b.dataset.risk = String(o.risk || "medium").toLowerCase();
+                b.innerHTML =
+                    `<span class="num">${KANJI[i]}</span><span><span class="t">${esc(o.label)}</span>${o.detail ? `<span class="s">${esc(o.detail)}</span>` : ""}</span>`;
+                b.onclick = () => send(o.label + (o.detail ? ` (${o.detail})` : ""));
+                box.appendChild(b);
+            });
+        }
+
+        const STAT_COLOR = { strength: "#B23A2B", agility: "#5E8C4E", intelligence: "#8E7BC0", chakra: "#4C7FB8",
+            stamina: "#C29B2B", control: "#4CA394", willpower: "#D4552F", luck: "#B58DB6" };
+
+        function bar(label, val, max, color, delta) {
+            const v = Number(val) || 0;
+            const pct = Math.max(0, Math.min(100, (v / (max || 100)) * 100));
+            const d = delta ? `<span class="d ${delta>0?"up":"dn"}">${delta>0?"▲":"▼"}${Math.abs(delta)}</span>` : "";
+            return `<div class="bar${v<10?" low":""}"><div class="top"><span>${esc(label)}</span>
+        <span class="v">${v}${max && max !== 100 ? "/"+max : ""}${d}</span></div>
+        <div class="track"><div class="fill" style="width:${pct}%;background:${color}"></div></div></div>`;
+        }
+
+        function paintDossier() {
+            if (!state || !state.player) return;
+            const p = state.player;
+            document.getElementById("mAge").textContent = p.age ?? 0;
+            document.getElementById("mDay").textContent = "Day " + (p.day ?? 1);
+            document.getElementById("mLoc").textContent = [p.location, p.weather].filter(Boolean).join(" · ") || "—";
+            document.getElementById("mRyo").innerHTML = `<b>${(Number(p.money)||0).toLocaleString()}</b> ryo`;
+            document.getElementById("pName").textContent = p.name || draft.name;
+            document.getElementById("pRank").textContent = [p.rank, p.ageLabel, p.orphan ? "orphan" : null].filter(Boolean)
+                .join(" · ");
+
+            const c = CLANS.find(x => x.n === p.clan) || draft.clan;
+            if (c) {
+                const chip = document.getElementById("pClan");
+                chip.innerHTML = `<i class="tier-${c.t}">${c.t}</i> ${esc(c.n)}`;
+                chip.onmouseenter = e => showTip(e, c.n + " " + c.jp, c.t + " lineage", c.d, "Carries: " + c.g, "tier-" +
+                    c.t);
+                chip.onmouseleave = hideTip;
+            }
+
+            const s = p.status || {};
+            document.getElementById("vitals").innerHTML =
+                bar("Health", s.hp ?? 0, s.hpMax || 100, "#B23A2B") +
+                bar("Chakra", s.cp ?? 0, s.cpMax || 100, "#4C7FB8") +
+                bar("Fatigue", s.fatigue ?? 0, 100, "#8A7B60") +
+                bar("Hunger", s.hunger ?? 0, 100, "#C29B2B");
+            const inj = s.injuries || [];
+            document.getElementById("injuries").innerHTML = inj.length ?
+                `<div class="tags" style="margin-top:8px">${inj.map(i => `<span class="tag" style="border-color:#5A2A22;color:#D08A7C">${esc(typeof i === "string" ? i : i.name)}</span>`).join("")}</div>` :
+                "";
+
+            const st = p.stats || {};
+            document.getElementById("stats").innerHTML = Object.keys(STAT_COLOR).map(k => {
+                const v = Number(st[k]) || 0;
+                const d = prevStats && typeof prevStats[k] === "number" ? v - prevStats[k] : 0;
+                return bar(k[0].toUpperCase() + k.slice(1), v, 100, STAT_COLOR[k], d);
+            }).join("");
+            prevStats = {};
+            Object.keys(STAT_COLOR).forEach(k => prevStats[k] = Number(st[k]) || 0);
+
+            document.getElementById("standing").innerHTML = bar("Reputation", p.reputation ?? 0, 100, "#C29B2B") +
+                `<div class="kv"><span>Karma</span><b>${(p.karma||0) > 10 ? "Light" : (p.karma||0) < -10 ? "Dark" : "Neutral"} (${p.karma ?? 0})</b></div>`;
+
+            const inv = (p.inventory || []).map(i => typeof i === "string" ? { name: i, qty: 1 } : i).filter(i => i && i
+            .name);
+            document.getElementById("inv").innerHTML = inv.length ?
+                inv.map(i =>
+                    `<span class="tag">${esc(i.name)}${i.qty>1?`<em>×${i.qty}</em>`:""}</span>`).join("") :
+                `<span class="empty">Nothing</span>`;
+            const eq = Object.entries(p.equipment || {}).filter(([, v]) => v && v !== "none");
+            document.getElementById("equip").innerHTML = eq.length ?
+                eq.map(([k, v]) => `<div class="kv"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join("") :
+                `<span class="empty">Nothing equipped</span>`;
+
+            const sk = p.skills || {};
+            document.getElementById("tree").innerHTML = TREE.map(b => {
+                const lv = Number(sk[b.k]) || 0;
+                const d = prevSkills && typeof prevSkills[b.k] === "number" ? lv - prevSkills[b.k] : 0;
+                return `<div class="branch"><h3>${b.n} <span>${b.jp} ${lv}${d ? ` <span class="d ${d>0?"up":"dn"}">${d>0?"▲":"▼"}${Math.abs(d)}</span>` : ""}</span></h3>
+              <div class="track" style="margin-bottom:6px"><div class="fill" style="width:${Math.min(100,lv)}%;background:var(--gold)"></div></div>
+              ${b.nodes.map(n => `<div class="node ${lv >= n.lv ? "got":""}"><span class="dot"></span><span class="lv">${n.lv}</span>
+                <span><b>${esc(n.n)}</b><br><em>${esc(n.g)}</em></span></div>`).join("")}</div>`;
+            }).join("");
+            prevSkills = {};
+            TREE.forEach(b => prevSkills[b.k] = Number(sk[b.k]) || 0);
+
+            const af = p.affinity || {};
+            const prim = ELEMENTS.find(e => e.k === String(af.primary || "").toLowerCase());
+            const known = af.discovered && prim;
+            document.getElementById("affHero").className = "affinity-hero" + (known ? "" : " unknown");
+            document.getElementById("affK").textContent = known ? prim.jp : "？";
+            document.getElementById("affL").textContent = known ?
+                prim.n + " primary" + (af.secondary && af.secondary !== "none" ? " · " + af.secondary + " secondary" :
+                    "") :
+                "Affinity undiscovered — you need chakra paper";
+            const mas = af.mastery || {};
+            document.getElementById("elements").innerHTML = ELEMENTS.map(e => {
+                const isP = known && prim.k === e.k;
+                const uphill = known && e.beats === prim.k;
+                return `<div class="el ${isP?"prime":""}"><div class="sym">${e.jp}</div><div class="wrap">
+              ${bar(e.n + (isP ? " (primary)" : uphill ? " (uphill)" : ""), mas[e.k] ?? 0, 100, isP ? "#C29B2B" : "#4C7FB8")}</div></div>`;
+            }).join("");
+
+            const ju = (p.jutsu || []).map(j => typeof j === "string" ? { name: j } : j).filter(j => j && j.name);
+            document.getElementById("jutsu").innerHTML = ju.length ?
+                ju.map(j =>
+                    `<div class="kv"><span>${esc(j.name)}${j.element && j.element !== "none" ? ` <em style="color:#65717F;font-style:normal">${esc(j.element)}</em>` : ""}</span>
+               <b>${j.cost ? j.cost + "cp" : ""}${j.mastery ? " · " + j.mastery + "%" : ""}</b></div>`).join("") :
+                `<span class="empty">No techniques learned</span>`;
+
+            const rel = Object.entries(p.relationships || {});
+            document.getElementById("bonds").innerHTML = rel.length ?
+                rel.map(([k, v]) => {
+                    const n = typeof v === "object" && v !== null ? (v.affection ?? v.respect ?? 0) : v;
+                    return bar(k, Number(n) || 0, 100, "#5E8C4E");
+                }).join("") :
+                `<span class="empty">No one knows you yet</span>`;
+            const ms = (p.missions || []).filter(m => m && m.name);
+            document.getElementById("missions").innerHTML = ms.length ?
+                ms.map(m =>
+                    `<div class="kv"><span>${esc(m.rank||"?")}-rank · ${esc(m.name)}</span><b>${esc(m.status||"")}</b></div>`
+                    ).join("") :
+                `<span class="empty">No assignment</span>`;
+            const ach = (p.achievements || []).filter(Boolean);
+            document.getElementById("achievements").innerHTML = ach.length ?
+                ach.map(a => `<span class="tag">${esc(typeof a === "string" ? a : a.name)}</span>`).join("") :
+                `<span class="empty">Nothing yet</span>`;
+
+            paintAbilities();
+        }
+
+        function paintAbilities() {
+            const owned = {};
+            ((state && state.player && state.player.abilities) || []).forEach(a => {
+                if (a && a.name) owned[String(a.name).toLowerCase()] = a;
+            });
+            const cats = ["All", ...new Set(ABILITIES.map(a => a.c))];
+            document.getElementById("abFilters").innerHTML = cats.map(c =>
+                `<button data-c="${c}" aria-pressed="${c === abFilter}">${c}</button>`).join("");
+            document.querySelectorAll("#abFilters button").forEach(b => b.onclick = () => { abFilter = b.dataset.c;
+                paintAbilities(); });
+
+            const rank = a => { const o = owned[a.n.toLowerCase()]; return !o ? 2 : (o.status === "awakened" ? 0 : 1); };
+            const list = ABILITIES.filter(a => abFilter === "All" || a.c === abFilter).sort((a, b) => rank(a) - rank(b));
+            document.getElementById("abList").innerHTML = list.map(a => {
+                const o = owned[a.n.toLowerCase()];
+                const st = o ? (o.status || "dormant") : "locked";
+                return `<div class="ab ${esc(st)}"><div class="h"><span class="nm">${esc(a.n)}</span><span class="st">${esc(st)}</span></div>
+              <div class="g">${esc(o && o.note ? o.note : a.d)}</div>
+              <div class="g" style="color:#4C5764">${esc(a.g)}</div></div>`;
+            }).join("");
+        }
+
+        document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+            document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", "false"));
+            b.setAttribute("aria-selected", "true");
+            document.querySelectorAll(".pane").forEach(p => p.classList.toggle("on", p.id === "pane-" + b.dataset.pane));
+        });
+
+        // ---------- turn() with WebLLM ----------
+        function payload() {
+            const head = messages.slice(0, 1),
+                tail = messages.slice(-CONFIG.historyTurns);
+            const body = messages.length > CONFIG.historyTurns ? [...head, ...tail] : messages;
+            const out = [{ role: "system", content: systemPrompt() }, ...body];
+            if (state) out.splice(1, 0, { role: "system",
+                content: "AUTHORITATIVE STATE — continue from exactly these numbers, never reset them:\n" + JSON
+                    .stringify(state) });
+            return out;
+        }
+
+        async function turn() {
+            busy = true;
+            setBusy(true);
+            paintChoices([]);
+            const entry = addEntry("gm", "…", `<p><span class="caret"></span></p>`);
+            const body = entry.querySelector(".body");
+            let raw = "";
+
+            try {
+                // Ensure WebLLM is ready
+                const key = document.querySelector("#segProvider button[aria-pressed='true']")?.dataset.p || "llama";
+                if (!window.__webllm) throw new Error("WebLLM not loaded.");
+                const eng = await window.__webllm.initEngine(key);
+                if (!eng) throw new Error("WebLLM engine failed to initialize.");
+
+                const msgs = payload();
+                // Convert to WebLLM format
+                const llmMsgs = msgs.map(m => ({
+                    role: m.role,
+                    content: m.content
+                }));
+
+                const chunks = await eng.chat.completions.create({
+                    messages: llmMsgs,
+                    stream: true,
+                    temperature: CONFIG.temperature || 0.85,
+                    max_tokens: CONFIG.maxTokens || 1500,
+                });
+
+                let last = 0;
+                for await (const chunk of chunks) {
+                    const content = chunk.choices[0]?.delta?.content;
+                    if (content) {
+                        raw += content;
+                        if (performance.now() - last > 55) {
+                            last = performance.now();
+                            const display = stripJSON(raw).split("```")[0];
+                            body.innerHTML = md(display) + `<span class="caret"></span>`;
+                            scrollDown();
+                        }
+                    }
+                }
+
+                if (!raw.trim()) throw new Error("Empty reply from WebLLM. Try a different model.");
+
+                const parsed = extractJSON(raw);
+                if (parsed && parsed.player) { state = { player: parsed.player };
+                    paintDossier(); }
+                const prose = stripJSON(raw);
+                body.innerHTML = md(prose);
+                const eyebrow = entry.querySelector(".eyebrow");
+                if (eyebrow) eyebrow.textContent = state && state.player ?
+                    `Age ${state.player.age ?? 0} · Day ${state.player.day ?? 1} · ${state.player.location || "Konoha"}` :
+                    "Game Master";
+                const opts = (parsed && parsed.options && parsed.options.length) ? parsed.options : fallbackMenu(prose);
+                lastOptions = opts.length ? opts : [
+                    { label: "Look around", detail: "Costs a moment", risk: "low" },
+                    { label: "Wait and listen", detail: "Costs a moment", risk: "low" },
+                    { label: "Try to move", detail: "Unknown", risk: "medium" }
+                ];
+                paintChoices(lastOptions);
+                messages.push({ role: "assistant", content: prose });
+                scrollDown();
+            } catch (err) {
+                entry.remove();
+                const msg = err.message.includes("WebGPU") ?
+                    "Your browser does not support WebGPU, which WebLLM requires. Please use Chrome, Edge, or Firefox Nightly with WebGPU enabled." :
+                    esc(err.message);
+                addEntry("note", "WebLLM error", `<p>${msg}</p>`);
+            } finally {
+                busy = false;
+                setBusy(false);
+            }
+        }
+
+        function setBusy(v) {
+            document.getElementById("send").disabled = v;
+            document.getElementById("ageup").disabled = v;
+            document.getElementById("send").textContent = v ? "…" : "Act";
+            document.querySelectorAll(".choice").forEach(c => c.disabled = v);
+        }
+
+        function send(text) {
+            if (busy || !text.trim()) return;
+            addEntry("you", null, esc(text));
+            messages.push({ role: "user", content: text });
+            document.getElementById("say").value = "";
+            autosize();
+            turn();
+        }
+
+        document.getElementById("ageup").onclick = () => {
+            if (busy) return;
+            addEntry("you", null, "Let time pass.");
+            messages.push({ role: "user",
+                content: "[AGE UP] Carry me forward to the next meaningful moment. Apply what I trained, decay what I neglected, raise my age, and land me in a scene."
+            });
+            turn();
+        };
+
+        const say = document.getElementById("say");
+
+        function autosize() { say.style.height = "auto";
+            say.style.height = Math.min(140, say.scrollHeight) + "px"; }
+        say.oninput = autosize;
+        say.onkeydown = e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault();
+                send(say.value); } };
+        document.getElementById("send").onclick = () => send(say.value);
+
+        // ---------- save / load / reset ----------
+        document.getElementById("btnSave").onclick = () => {
+            const n = (state && state.player && state.player.name) || draft.name || "shinobi";
+            const a = (state && state.player && state.player.age) ?? 0;
+            const blob = new Blob([JSON.stringify({ version: 3, provider, model, draft, messages, state, lastOptions,
+                    log: document.getElementById("log").innerHTML }, null, 2)], { type: "application/json" });
+            const el = document.createElement("a");
+            el.href = URL.createObjectURL(blob);
+            el.download = `${String(n).toLowerCase().replace(/\s+/g,"-")}-age${a}.json`;
+            el.click();
+            URL.revokeObjectURL(el.href);
+        };
+        const pick = () => document.getElementById("fileIn").click();
+        document.getElementById("btnLoad").onclick = pick;
+        document.getElementById("btnLoad2").onclick = pick;
+
+        document.getElementById("fileIn").onchange = async e => {
+            const f = e.target.files[0];
+            if (!f) return;
+            try {
+                const s = JSON.parse(await f.text());
+                provider = s.provider || provider;
+                model = s.model || "Llama-3.2-3B-Instruct";
+                draft = s.draft || draft;
+                messages = s.messages || [];
+                state = s.state || null;
+                prevStats = prevSkills = null;
+                document.getElementById("gate").style.display = "none";
+                document.getElementById("app").hidden = false;
+                if (s.log) document.getElementById("log").innerHTML = s.log;
+                paintDossier();
+                lastOptions = s.lastOptions || [];
+                paintChoices(lastOptions);
+                scrollDown();
+            } catch (err) { alert("That file is not a Shinobi Registry save."); }
+            e.target.value = "";
+        };
+
+        document.getElementById("btnNew").onclick = () => {
+            if (!confirm("Abandon this life and be born again?")) return;
+            messages = [];
+            state = null;
+            prevStats = prevSkills = null;
+            draft = { name: "", gender: "male", orphan: false, clan: null };
+            rerolls = 3;
+            lastOptions = [];
+            document.getElementById("log").querySelectorAll(".entry").forEach(n => n.remove());
+            document.getElementById("choices").innerHTML = "";
+            document.getElementById("app").hidden = true;
+            document.getElementById("gate").style.display = "grid";
+            document.getElementById("btnRoll").disabled = false;
+            document.getElementById("btnRoll").textContent = "Draw blood";
+            document.getElementById("btnBirth").disabled = true;
+            showStep(1);
+            paintProvider();
+        };
+
+        document.getElementById("drawerToggle").onclick = () => document.body.classList.toggle("open");
+        paintAbilities();
+
+        // ---- expose CONFIG for WebLLM module ----
+        window.CONFIG = CONFIG;
+
+        console.log("Shinobi Registry with WebLLM — two local models, infinite rate limits.");
+    </script>
+
+    <script>
+        // ---- static data (unchanged from original) ----
+        const CONFIG = {
+            provider: "llama",
+            temperature: 0.85,
+            maxTokens: 1500,
+            historyTurns: 14,
+            compendium: "gates"
+        };
+
+        const WEBLLM_MODELS = {
+            llama: { id: "Llama-3.2-3B-Instruct", label: "Llama 3.2 3B",
+            desc: "Balanced, fast, good for most narrative tasks." },
+            phi: { id: "Phi-3.5-mini-instruct", label: "Phi 3.5 Mini",
+                desc: "Smarter reasoning, slightly slower, better at complex adjudication." }
+        };
+
+        const CLANS = [
+            { k: "civilian", n: "No clan", jp: "平民", t: "civilian", w: 320,
+            g: "Nothing but your own two hands",
+            d: "Merchant stock, farmers, tea-house families. No inherited technique, no name that opens doors, no expectations either. Everything you become you will have built yourself, and the village will be slower to notice you for it." },
+            { k: "sarutobi", n: "Sarutobi", jp: "猿飛", t: "common", w: 95,
+            g: "Broad elemental talent, monkey summons, founding-family respect",
+            d: "One of Konoha's founding families and the line of the Third Hokage. Sarutobi are known for unusually wide nature affinity rather than a single kekkei genkai, for the Adamantine Staff and the monkey contract, and for a stubborn willingness to teach anyone who asks." },
+            { k: "hatake", n: "Hatake", jp: "はたけ", t: "common", w: 78,
+            g: "Lightning aptitude, ninken contract, blade instinct",
+            d: "A small line with an outsized reputation, carried by the White Fang. Hatake produce natural Lightning users, work with ninken tracking hounds, and tend toward chakra-flow blades. Their gift is speed of thought under pressure, not raw power." },
+            { k: "shiranui", n: "Shiranui", jp: "不知火", t: "common", w: 66,
+            g: "Poison craft, senbon precision",
+            d: "Field-medic stock turned specialist. Shiranui work in poisons, anaesthetics and senbon — the sort of shinobi who wins by knowing exactly which nerve to reach. No bloodline, just several generations of very precise knowledge." },
+            { k: "kamizuki", n: "Kamizuki", jp: "神月", t: "common", w: 60,
+            g: "Barrier sensing, gate-guard discipline",
+            d: "Career gatekeepers and barrier technicians. The Kamizuki maintain Konoha's perimeter seals and identity checks, which makes them unglamorous, extremely well-informed, and quietly connected to everyone who enters the village." },
+            { k: "wagarashi", n: "Wagarashi", jp: "和辛子", t: "common", w: 52,
+            g: "Money, muscle, ugly politics",
+            d: "A Land of Tea family closer to a syndicate than a shinobi clan: wealth, hired thugs and rigged races. Being born to them means resources and a reputation you will spend your life either using or escaping." },
+            { k: "wasabi", n: "Wasabi", jp: "山葵", t: "common", w: 52,
+            g: "Rivalry-forged taijutsu, coastal networks",
+            d: "The Wagarashi's ancestral rivals in the Land of Tea. Leaner, poorer, better fighters. Generations of feud have made them excellent close-quarters brawlers with a very long memory." },
+            { k: "kohaku", n: "Kohaku", jp: "琥珀", t: "common", w: 44,
+            g: "The Kohaku no Jōhei sealing pot",
+            d: "Keepers of the Kohaku no Jōhei, a sealing vessel able to draw in a target and trap them permanently. A small line whose worth lies in a single inherited artefact and the sealing knowledge to operate it safely." },
+            { k: "fuma", n: "Fūma", jp: "風魔", t: "common", w: 44,
+            g: "Giant shuriken, oversized weaponry",
+            d: "The Land of Sound's great weapon clan, famous for the Fūma Shuriken and a whole armoury of oversized folding steel. Once powerful, now fractured by infighting and outside manipulation." },
+            { k: "yotsuki", n: "Yotsuki", jp: "四月", t: "common", w: 44,
+            g: "Raw physical power, Kumo lightning conditioning",
+            d: "A Kumogakure line built on brute strength and lightning-natured body conditioning. Yotsuki fight like landslides: forward, loud, and very difficult to stop once they have started." },
+            { k: "nara", n: "Nara", jp: "奈良", t: "uncommon", w: 62,
+            g: "Shadow Imitation, medical deer forest, ruinous intelligence",
+            d: "Shadow manipulation: the Nara extend their own shadow to bind, mirror and eventually strangle a target's movement. The technique costs chakra in proportion to distance and fails in darkness, so it rewards planning over force. Nara are also Konoha's pharmacists, tending the deer forest, and are famously the smartest and laziest people in the village." },
+            { k: "yamanaka", n: "Yamanaka", jp: "山中", t: "uncommon", w: 62,
+            g: "Mind Transfer, mind reading, sensor network",
+            d: "Mind-body techniques. A Yamanaka can throw their consciousness into another body and pilot it, read memories directly, or link an entire army's minds into one battlefield network. A miss leaves you drifting outside your own skull, so control matters far more than power." },
+            { k: "akimichi", n: "Akimichi", jp: "秋道", t: "uncommon", w: 62,
+            g: "Body expansion, calorie conversion, the Three Coloured Pills",
+            d: "Calorie conversion. Akimichi turn stored body mass directly into chakra, enlarging limbs or their entire body to enormous scale. The Three Coloured Pills push this to Butterfly Mode, which grants terrifying output and can cost the user their life. Never comment on their weight." },
+            { k: "aburame", n: "Aburame", jp: "油女", t: "uncommon", w: 56,
+            g: "Kikaichū symbiosis, chakra-draining insects",
+            d: "At birth an Aburame's body is offered to a kikaichū colony, which lives inside them and feeds on their chakra. In exchange the insects scout, track, drain enemy chakra and can be left behind as living markers. The clan speaks little and is unsettling to be near, which they use deliberately." },
+            { k: "inuzuka", n: "Inuzuka", jp: "犬塚", t: "uncommon", w: 56,
+            g: "Ninken partner, feral transformation, scent tracking",
+            d: "Raised alongside ninken from childhood. Inuzuka possess extraordinary smell and hearing, fight in fused human-dog forms like the Passing Fang, and are almost impossible to escape once they have your scent. Loud, loyal and territorial." },
+            { k: "kurama", n: "Kurama", jp: "鞍馬", t: "rare", w: 26,
+            g: "Genjutsu strong enough to kill by belief",
+            d: "Not the fox. The Kurama clan produce the most potent genjutsu users alive — illusions so absolute that a wound imagined inside them appears on the real body. The gift occasionally manifests as an uncontrollable second personality, which is why the clan has nearly wiped itself out policing its own children." },
+            { k: "iburi", n: "Iburi", jp: "藺武里", t: "rare", w: 22,
+            g: "Smoke body, involuntary dispersal",
+            d: "An underground clan able to turn their bodies into smoke, passing through gaps and blows alike. Untrained, the transformation triggers on its own and a child can dissipate permanently, which is why the Iburi live sealed away from wind and sun." },
+            { k: "chinoike", n: "Chinoike", jp: "血 池", t: "rare", w: 18,
+            g: "Ketsuryūgan, blood manipulation",
+            d: "Blood-users, bearers of the Ketsuryūgan — a crimson dōjutsu granting control over the iron in blood, including the blood inside a living body. Hunted almost to extinction and exiled to a scorched valley for it. Bearing this name means someone, somewhere, still wants you dead." },
+            { k: "hozuki", n: "Hōzuki", jp: "鬼灯", t: "rare", w: 24,
+            g: "Hydrification, liquid body, limb reshaping",
+            d: "Hydrification: the body liquefies at will, so blades and fists pass straight through. A Hōzuki can reshape limbs, flow through cracks and drink water to rebuild mass — but a lightning technique through a liquid body is lethal, and drying out is a real death." },
+            { k: "yuki", n: "Yuki", jp: "雪", t: "rare", w: 16,
+            g: "Ice Release, crystal ice mirrors",
+            d: "Ice Release, a wind-and-water kekkei genkai that shapes ice out of moisture in the air. The Demon Ice Mirrors let the user move between reflective surfaces faster than the eye can follow. The Yuki were massacred during the Land of Water's bloodline purges; survivors hide the ability their whole lives." },
+            { k: "jugo", n: "Jūgo's kin", jp: "重吾の一族", t: "rare", w: 13,
+            g: "Natural energy absorption, Sage Transformation, murderous fits",
+            d: "A nameless line whose bodies absorb natural energy from the air without any training. It grants Sage Transformation — body parts warping into weapons, strength past human scale — and comes bundled with violent psychotic episodes the user cannot control. This blood is the origin of the cursed seals." },
+            { k: "kaguya", n: "Kaguya", jp: "かぐや", t: "rare", w: 11,
+            g: "Shikotsumyaku, living bone weaponry",
+            d: "Shikotsumyaku, the dead bone pulse: total control over your own skeleton — blades grown from the arms, finger bones fired like bullets, a spine regrown mid-fight. The clan was a berserker warrior line that destroyed itself attacking Kirigakure unprovoked. Almost no one is left." },
+            { k: "uzumaki", n: "Uzumaki", jp: "うずまき", t: "legendary", w: 20,
+            g: "Vast chakra, brutal longevity, Adamantine Sealing Chains",
+            d: "Whirlpool blood. Uzumaki carry enormous chakra reserves and a life force so strong they age slowly and survive wounds that should end them. The clan built the world's finest sealing tradition, and some members manifest Adamantine Sealing Chains straight from their chakra, strong enough to bind a tailed beast. Uzushiogakure was destroyed precisely because other nations feared this." },
+            { k: "hyuga", n: "Hyūga", jp: "日向", t: "legendary", w: 13,
+            g: "Byakugan, Gentle Fist, the caged bird",
+            d: "Bearers of the Byakugan: near-360-degree vision, sight through solid matter, and direct sight of the chakra network and its 361 points. Paired with the Gentle Fist it lets a Hyūga shut an opponent's chakra down from the inside without breaking skin. The clan is split into a main house and a branch house sealed with a curse mark, and that division will shape your life whichever side you are born to." },
+            { k: "uchiha", n: "Uchiha", jp: "うちは", t: "legendary", w: 9,
+            g: "Sharingan, Fire mastery, the Curse of Hatred",
+            d: "The Sharingan does not come free. It awakens under severe emotional trauma, usually loss, and deepens the same way — copying techniques, reading movement before it happens, and at its extremes bending perception itself. Uchiha are born with a dominant Fire nature and unusual talent, and with a temperament the clan itself calls the Curse of Hatred: they love more intensely than others and break harder for it." },
+            { k: "senju", n: "Senju", jp: "千手", t: "legendary", w: 5,
+            g: "Colossal vitality, all-nature aptitude, the ghost of Wood Release",
+            d: "The Clan of the Thousand Hands, founders of Konoha alongside the Uchiha. Senju carry no single kekkei genkai but an extraordinary breadth: strong life force, huge stamina, aptitude across every nature. Wood Release appeared exactly once, in Hashirama, and has never been reproduced naturally since — so this blood grants you an enormous ceiling and no guarantee at all." },
+            { k: "otsutsuki", n: "Ōtsutsuki", jp: "大筒木", t: "mythic", w: 1,
+            g: "Divine chakra, Byakugan birthright, an inheritance that will hunt you",
+            d: "Not human. Ōtsutsuki descend from the ones who brought chakra to this world: born with the Byakugan, an absurd chakra pool, durability far past shinobi norms, and a lifespan measured in centuries. This blood is a target painted on your back — the clan harvests its own, and something will eventually come looking for what you carry." }
+        ];
+
+        const ABILITIES = [
+            { c: "Modes", n: "Sage Mode",
+            g: "Signed sage contract + Senjutsu 40 + Control 60; requires perfect stillness while gathering — failure petrifies you",
+            d: "Draws natural energy into your own chakra, multiplying strength, speed, durability and sensing range." },
+            { c: "Modes", n: "Six Paths Sage Mode",
+            g: "Sage Mode + Six Paths chakra granted by an Ōtsutsuki-tier being. Effectively unreachable by training",
+            d: "Sage Mode at divine scale: truth-seeking orbs, flight, sensing across a whole battlefield." },
+            { c: "Modes", n: "Tailed Beast Mode",
+            g: "Be a jinchūriki and either win the beast's consent or dominate it",
+            d: "Cloaks or fully manifests the sealed beast's chakra as a body of your own." },
+            { c: "Modes", n: "Nine-Tails Chakra Mode", g: "Kurama jinchūriki only",
+            d: "A golden chakra shroud granting reaction speed and sensing far past human limits." },
+            { c: "Modes", n: "Baryon Mode", g: "Full partnership with Kurama. Burns the life force of user and beast alike",
+            d: "Fuses your chakra with the beast's like nuclear fusion. It will kill one of you." },
+            { c: "Modes", n: "Sage Transformation",
+            g: "Jūgo's bloodline only. Uncontrollable below Willpower 60",
+            d: "Absorbed natural energy warps the body into weapons and inhuman strength, with rage you may not survive." },
+            { c: "Modes", n: "Butterfly Mode", g: "Akimichi blood + all three Coloured Pills. The red pill is frequently fatal",
+            d: "Converts stored calories wholesale into chakra wings and monstrous striking power." },
+            { c: "Modes", n: "Lightning Release Chakra Mode",
+            g: "Lightning primary affinity + Control 55 + Stamina 55",
+            d: "Overcharges the nervous system, collapsing reaction time and multiplying speed." },
+            { c: "Modes", n: "Slithering Snake Mode",
+            g: "Orochimaru-line body modification. Not naturally inherited",
+            d: "Reshapes the body into a mass of serpents; shedding it replaces damaged flesh." },
+
+            { c: "Kekkei Genkai", n: "Wood Release",
+            g: "Senju blood plus a statistical miracle, or Hashirama cell implantation",
+            d: "Grows and commands living wood from your own chakra; the only nature that can suppress a tailed beast." },
+            { c: "Kekkei Genkai", n: "Ice Release", g: "Yuki blood only. Wind + Water",
+            d: "Freezes ambient moisture into weapons, walls and mirrors you can travel between." },
+            { c: "Kekkei Genkai", n: "Lava Release", g: "Inherited only. Fire + Earth",
+            d: "Produces molten rock, quicklime, corrosive rubber and searing ash." },
+            { c: "Kekkei Genkai", n: "Boil Release", g: "Inherited only. Fire + Water",
+            d: "Generates pressurised, skin-stripping corrosive steam." },
+            { c: "Kekkei Genkai", n: "Magnet Release", g: "Inherited only. Wind + Earth",
+            d: "Magnetises iron sand, gold dust or ore and shapes it into armour and blades." },
+            { c: "Kekkei Genkai", n: "Storm Release", g: "Inherited only. Lightning + Water",
+            d: "Fires guided beams of charged energy that bend in flight." },
+            { c: "Kekkei Genkai", n: "Scorch Release", g: "Inherited only. Fire + Wind",
+            d: "Boils the moisture out of a living target until nothing is left but a husk." },
+            { c: "Kekkei Genkai", n: "Explosion Release", g: "Inherited only. Earth + Lightning",
+            d: "Renders touched matter explosive." },
+            { c: "Kekkei Genkai", n: "Steel Release", g: "Inherited only",
+            d: "Hardens the body into steel that turns blades and blunts impact." },
+            { c: "Kekkei Genkai", n: "Dark Release", g: "Inherited only",
+            d: "Absorbs chakra through the palm and fires it back amplified." },
+            { c: "Kekkei Genkai", n: "Crystal Release", g: "Inherited only",
+            d: "Crystallises moisture and even chakra itself into shaped, shattering structures." },
+            { c: "Kekkei Genkai", n: "Swift Release", g: "Inherited only",
+            d: "Movement so fast the body appears to teleport. Untrainable without the blood." },
+
+            { c: "Blood traits", n: "Shikotsumyaku", g: "Kaguya blood only",
+            d: "Absolute control of your own skeleton: bone blades, bone bullets, bone armour, regrown spine." },
+            { c: "Blood traits", n: "Natural energy absorption", g: "Jūgo's line only",
+            d: "Your body drinks natural energy from the air whether you want it to or not." },
+            { c: "Blood traits", n: "Calorie conversion", g: "Akimichi blood",
+            d: "Turns stored body mass into raw chakra at a punishing physical cost." },
+            { c: "Blood traits", n: "Body expansion", g: "Akimichi blood + Control 20",
+            d: "Enlarges a limb or your whole body to enormous scale." },
+            { c: "Blood traits", n: "Kikaichū symbiosis", g: "Aburame blood, offered at infancy",
+            d: "A chakra-eating hive lives inside your body and obeys you." },
+            { c: "Blood traits", n: "Mind Transfer", g: "Yamanaka blood + Control 35 + Intelligence 40",
+            d: "Projects your consciousness into a target's body. Miss, and you drift helplessly." },
+            { c: "Blood traits", n: "Mind reading", g: "Yamanaka blood + Intelligence 45",
+            d: "Reads memory and intent directly out of a subject's skull." },
+            { c: "Blood traits", n: "Shadow Imitation", g: "Nara blood + Control 30. Costs chakra by distance, useless in darkness",
+            d: "Extends your shadow to seize and puppet a target's movement." },
+            { c: "Blood traits", n: "Beast Human Clone", g: "Inuzuka blood + a bonded ninken + Agility 40",
+            d: "You and your dog fuse into a twin-headed feral form." },
+            { c: "Blood traits", n: "Enhanced smell", g: "Inuzuka blood",
+            d: "Tracks a scent across days and hears a lie in someone's sweat." },
+            { c: "Blood traits", n: "Hydrification", g: "Hōzuki blood only",
+            d: "Liquefies your body so attacks pass through. Lightning is lethal to you, drought worse." },
+            { c: "Blood traits", n: "Adamantine Sealing Chains", g: "Uzumaki blood + Fūinjutsu 55 + Chakra 65",
+            d: "Chakra chains erupt from your body, strong enough to pin a tailed beast." },
+            { c: "Blood traits", n: "Uzumaki vitality", g: "Uzumaki blood",
+            d: "A life force that shrugs off wounds and stretches your lifespan past a century." },
+            { c: "Blood traits", n: "Jashin immortality", g: "Jashin ritual conversion. Requires abandoning your village and your soul",
+            d: "You cannot die, and you feel every wound you deal yourself." },
+            { c: "Blood traits", n: "Puppet body conversion", g: "Kugutsu mastery 70 + willingness to discard your flesh",
+            d: "Replaces your body with a puppet frame. You stop aging and stop being human." },
+            { c: "Blood traits", n: "Multiple hearts", g: "The forbidden Earth Grudge Fear technique",
+            d: "Steals and stores hearts, each granting an extra nature and an extra life." },
+
+            { c: "Dōjutsu", n: "Sharingan",
+            g: "Uchiha blood ONLY, awakened by severe emotional trauma. No amount of training substitutes",
+            d: "Reads movement before it lands, copies any technique it sees, casts illusion through eye contact. Tomoe deepen with further loss." },
+            { c: "Dōjutsu", n: "Mangekyō Sharingan",
+            g: "Sharingan + the death of someone you love, by your hand or your failure. Steadily blinds you",
+            d: "Unlocks a unique technique per eye — Amaterasu, Tsukuyomi, Kamui, Susanoo." },
+            { c: "Dōjutsu", n: "Eternal Mangekyō", g: "Transplant of a sibling's Mangekyō",
+            d: "Removes the blindness and stabilises the power permanently." },
+            { c: "Dōjutsu", n: "Byakugan", g: "Hyūga or Ōtsutsuki blood ONLY, present from birth",
+            d: "Near-total field of vision, sight through matter, and direct sight of the chakra network." },
+            { c: "Dōjutsu", n: "Tenseigan", g: "Ōtsutsuki Byakugan fused with Hyūga chakra",
+            d: "Grants gravity control and a chakra mode of enormous output." },
+            { c: "Dōjutsu", n: "Rinnegan", g: "Senju and Uchiha chakra combined in one body, or Ōtsutsuki descent. Astronomically rare",
+            d: "The Six Paths: gravity, summoning, soul removal, mechanisation, absorption, and revival of the dead." },
+            { c: "Dōjutsu", n: "Ketsuryūgan", g: "Chinoike blood only",
+            d: "Controls the iron in blood, including blood still inside a living body." },
+
+            { c: "Senjutsu", n: "Natural energy sensing", g: "Senjutsu 15",
+            d: "Feels life and chakra moving through the terrain around you." },
+            { c: "Senjutsu", n: "Frog Kata", g: "Toad contract + Sage Mode + Taijutsu 55",
+            d: "Natural energy extends past your fists, so strikes land before contact." },
+            { c: "Senjutsu", n: "Toad Sage arts", g: "Myōboku training + Control 60",
+            d: "Sage-scale oil, wind and sound techniques." },
+            { c: "Senjutsu", n: "Snake Sage arts", g: "Ryūchi Cave training. Survival is not guaranteed",
+            d: "White-snake senjutsu and the shedding of your own body." },
+
+            { c: "Chakra arts", n: "Yin Release", g: "Intelligence 55 + Control 50",
+            d: "Shapes imagination into form: genjutsu, illusion, creation from nothing." },
+            { c: "Chakra arts", n: "Yang Release", g: "Stamina 55 + Willpower 50",
+            d: "Breathes vitality into form: healing, life, animation." },
+            { c: "Chakra arts", n: "Yin–Yang Release", g: "Both of the above at 70 + Six Paths chakra",
+            d: "Creates true life from nothing and undoes what other chakra has done." },
+            { c: "Chakra arts", n: "Chakra absorption", g: "Control 45",
+            d: "Draws chakra out of a technique or a person on contact." },
+            { c: "Chakra arts", n: "Chakra suppression", g: "Control 40",
+            d: "Flattens your signature until sensors slide past you." },
+            { c: "Chakra arts", n: "Chakra sensing", g: "Control 35 + Intelligence 35",
+            d: "Tracks chakra signatures at range and reads the emotion in them." },
+            { c: "Chakra arts", n: "Chakra threads", g: "Control 50",
+            d: "Spins near-invisible threads to puppeteer objects, corpses or people." },
+            { c: "Chakra arts", n: "Nature transformation", g: "Control 30 + a discovered affinity",
+            d: "Converts raw chakra into your element. The gate to every elemental technique." },
+            { c: "Chakra arts", n: "Shape transformation", g: "Control 45",
+            d: "Forces chakra into a held form — the hard half of the Rasengan." },
+            { c: "Chakra arts", n: "Five-nature mastery", g: "All five natures at mastery 60. Decades of work",
+            d: "Every element answers to you." },
+
+            { c: "Space–time", n: "Summoning Technique", g: "A signed blood contract + Chakra 40",
+            d: "Calls a bound creature to your side across any distance." },
+            { c: "Space–time", n: "Reverse Summoning", g: "Summoning + the summon's consent",
+            d: "Sends you to them instead." },
+            { c: "Space–time", n: "Flying Thunder God", g: "Fūinjutsu 75 + Control 70. Kills the careless instantly",
+            d: "Marks a place or person and moves you there with no travel in between." },
+            { c: "Space–time", n: "Kamui", g: "Mangekyō Sharingan only",
+            d: "Pulls matter into a pocket dimension, including yourself." },
+
+            { c: "Sealing", n: "Five Elements Seal", g: "Fūinjutsu 40",
+            d: "Slams a target's chakra flow shut with a five-fingered strike." },
+            { c: "Sealing", n: "Eight Trigrams Sealing", g: "Fūinjutsu 70 + Uzumaki-grade reserves",
+            d: "Seals a tailed beast into a living vessel." },
+            { c: "Sealing", n: "Dead Demon Consuming Seal", g: "Fūinjutsu 65. Costs your life, without exception",
+            d: "Summons the Reaper to tear out a soul and hold it forever." },
+            { c: "Sealing", n: "Cursed Seal of Heaven", g: "Applied by Orochimaru. Roughly one in ten survive the bite",
+            d: "Jūgo's blood forced into you: enormous power, and a will trying to replace your own." },
+            { c: "Sealing", n: "Strength of a Hundred Seal", g: "Medical 70 + three years of stored chakra",
+            d: "A forehead reservoir that funds instant regeneration when broken open." },
+
+            { c: "Regeneration", n: "Creation Rebirth", g: "Strength of a Hundred Seal + Medical 75",
+            d: "Rebuilds every cell in your body at the price of your remaining lifespan." },
+            { c: "Regeneration", n: "Mitotic regeneration", g: "Hashirama cell implantation",
+            d: "Wounds close as fast as they open." },
+            { c: "Regeneration", n: "Medical healing palm", g: "Medical 20 + Control 35",
+            d: "Knits flesh with chakra. The floor every field medic stands on." },
+            { c: "Regeneration", n: "Living body replacement", g: "Orochimaru-line technique. Requires taking another person's body",
+            d: "Discards your failing body for a stolen one and continues." },
+
+            { c: "Tailed beast", n: "Tailed Beast Ball", g: "Jinchūriki with the beast's cooperation",
+            d: "Compresses positive and negative chakra into a sphere that erases terrain." },
+            { c: "Tailed beast", n: "Chakra arms", g: "Jinchūriki, at least a partial cloak",
+            d: "Extends limbs of pure beast chakra for reach, lifting and shielding." },
+            { c: "Tailed beast", n: "Negative emotion sensing", g: "Kurama jinchūriki",
+            d: "Feels malice approaching before the person carrying it arrives." },
+            { c: "Tailed beast", n: "Sand manipulation", g: "Shukaku jinchūriki, or Sabaku blood",
+            d: "Commands sand as armour, prison and weapon, moving on its own to save you." }
+        ];
+
+        const TREE = [
+            { k: "taijutsu", n: "Taijutsu", jp: "体術", nodes: [
+                    { lv: 10, n: "Leaf Whirlwind", g: "+2 Agility" }, { lv: 25, n: "Dynamic Entry",
+                    g: "+3 Strength" },
+                    { lv: 40, n: "Shadow of the Dancing Leaf", g: "+3 Agility" }, { lv: 60, n: "Strong Fist",
+                    g: "+5 Strength · opens Gate training" },
+                    { lv: 80, n: "Eight Gates: first opening", g: "+8 Strength · permanent injury risk" }
+                ] },
+            { k: "ninjutsu", n: "Ninjutsu", jp: "忍術", nodes: [
+                    { lv: 10, n: "Nature transformation", g: "+2 Chakra" }, { lv: 25, n: "Seals at speed",
+                    g: "+3 Control" },
+                    { lv: 40, n: "Shadow Clone", g: "+4 Chakra" }, { lv: 60, n: "Shape transformation",
+                    g: "Rasengan line opens" },
+                    { lv: 80, n: "Second nature", g: "A secondary affinity becomes trainable" }
+                ] },
+            { k: "genjutsu", n: "Genjutsu", jp: "幻術", nodes: [
+                    { lv: 10, n: "Illusion release (Kai)", g: "+2 Intelligence" }, { lv: 25, n: "Hell Viewing",
+                    g: "+3 Willpower" },
+                    { lv: 40, n: "Layered casting", g: "+4 Intelligence" }, { lv: 60, n: "Sensory hijack",
+                    g: "Cast without hand seals" },
+                    { lv: 80, n: "Bringer of Darkness", g: "+6 Intelligence" }
+                ] },
+            { k: "fuinjutsu", n: "Fūinjutsu", jp: "封印術", nodes: [
+                    { lv: 10, n: "Storage scrolls", g: "+2 Control" }, { lv: 25, n: "Explosive tag scripting",
+                    g: "+3 Control" },
+                    { lv: 40, n: "Barrier seals", g: "+4 Control" }, { lv: 60, n: "Contract writing",
+                    g: "Summoning contracts open" },
+                    { lv: 80, n: "Living seals", g: "Beast-grade sealing opens" }
+                ] },
+            { k: "kenjutsu", n: "Kenjutsu", jp: "剣術", nodes: [
+                    { lv: 10, n: "Blade forms", g: "+2 Strength" }, { lv: 25, n: "Iaidō draw",
+                    g: "+3 Agility" },
+                    { lv: 40, n: "Chakra flow", g: "+3 Control" }, { lv: 60, n: "Two-blade style",
+                    g: "+5 Agility" },
+                    { lv: 80, n: "Chakra blade forging", g: "Forge a named weapon" }
+                ] },
+            { k: "bukijutsu", n: "Bukijutsu", jp: "武器術", nodes: [
+                    { lv: 10, n: "Shuriken accuracy", g: "+2 Agility" }, { lv: 25, n: "Wire trap rigging",
+                    g: "+3 Intelligence" },
+                    { lv: 40, n: "Curved throw", g: "+3 Luck" }, { lv: 60, n: "Shadow Shuriken",
+                    g: "+4 Agility" },
+                    { lv: 80, n: "Thousand-needle rain", g: "+6 Control" }
+                ] },
+            { k: "medical", n: "Medical", jp: "医療忍術", nodes: [
+                    { lv: 10, n: "Field triage", g: "+2 Intelligence" }, { lv: 25, n: "Healing palm",
+                    g: "+3 Control" },
+                    { lv: 40, n: "Poison extraction", g: "+4 Intelligence" }, { lv: 60, n: "Chakra scalpel",
+                    g: "+5 Control" },
+                    { lv: 80, n: "Strength of a Hundred", g: "Regeneration line opens" }
+                ] },
+            { k: "senjutsu", n: "Senjutsu", jp: "仙術", nodes: [
+                    { lv: 10, n: "Stillness training", g: "+2 Willpower" }, { lv: 25,
+                    n: "Natural energy sensing", g: "+3 Willpower" },
+                    { lv: 40, n: "Gathering without moving", g: "+4 Control" }, { lv: 60,
+                    n: "Imperfect Sage Mode", g: "Petrification risk" },
+                    { lv: 80, n: "Sage Mode", g: "+10 to physical stats while active" }
+                ] }
+        ];
+
+        const ELEMENTS = [
+            { k: "fire", n: "Fire", jp: "火", beats: "wind" },
+            { k: "wind", n: "Wind", jp: "風", beats: "lightning" },
+            { k: "lightning", n: "Lightning", jp: "雷", beats: "earth" },
+            { k: "earth", n: "Earth", jp: "土", beats: "water" },
+            { k: "water", n: "Water", jp: "水", beats: "fire" }
+        ];
+
+        // ---- ensure CONFIG is global ----
+        window.CONFIG = CONFIG;
+        console.log("Shinobi Registry loaded. Using WebLLM with infinite rate limits.");
+    </script>
+
+    <script type="text/plain" id="core-rules">
+        You are the Game Master of a brutally honest Naruto life-simulation RPG. The player is born at age 0 in the Hidden Leaf and lives forward from there. You narrate, you adjudicate, and you refuse.
+
+        ## VOICE
+        Second person, present tense, concrete and physical. Two to four short paragraphs, never a wall of text. Naruto terminology throughout. Show consequence rather than summary.
+
+        ## THE IRON RULE — capability gating
+        Before narrating ANY outcome, check the player's numbers against what the action actually requires. If they fall short, the action FAILS. Do not soften it, do not let it half-work, and never let determination substitute for a stat.
+
+        When an action fails a gate, do all three:
+        1. State plainly that it does not work.
+        2. Explain the failure in physical, sensory detail — what their body actually did and why it was not enough. Example: "Your fist lands clean and fast. It is the speed that fools you: the bones behind it are a child's, still soft at the joint, and the bison's hide gives less than a door would. Two knuckles split. The animal does not even shift its weight."
+        3. Name the gap in-fiction. A veteran watching would say what they actually need.
+
+        Bands, scaled to context: 1-15 small child, 16-30 academy student, 31-45 fresh genin, 46-60 chūnin, 61-75 jōnin, 76-90 elite, 91-100 kage. Attempting something two bands above your stat fails. Three bands above fails AND injures.
+
+        Age gates come first and override everything. A newborn cannot crawl. A toddler cannot form a hand seal. A six-year-old cannot mould chakra without instruction. Nobody graduates before their body can hold chakra. If the player types an impossible action for their age, narrate the honest attempt — an infant reaching for a kunai simply has no grip — and never pretend otherwise.
+
+        Never invent a stat, ability or item the player does not have in the state. If they claim a power, check the compendium gate. If they do not meet it, they do not have it, and you say so.
+
+        ## TRAINING IS HARD
+        Training gives +1 to a stat, and only for genuine effort with a fatigue cost. +2 is a breakthrough after repeated focused work or under a real teacher. Never more. Skills climb slower: 1 point per solid session, 2 under a master. There is no montage that skips this. Untouched stats decay by 1 every 30 in-game days and you announce the decay when it bites. Make progress expensive, and make the player feel it when it finally arrives.
+
+        ## ELEMENTAL AFFINITY
+        Affinity stays undiscovered until chakra paper or a teacher reveals it, which is impossible before roughly age 6 and some real chakra control. Once known: techniques of the primary nature cost 25% less chakra and train at normal speed. An unrelated nature costs 50% more and trains at a third of the pace. The nature that beats yours trains at a tenth of the pace, and a nature this character has no aptitude for may simply be impossible forever — say so honestly when it becomes clear. Fire beats wind, wind beats lightning, lightning beats earth, earth beats water, water beats fire.
+
+        ## AGE UP
+        When the player sends [AGE UP], move time to the next meaningful moment — a birthday, a milestone, an interruption. Summarise the stretch in one tight paragraph, apply the gains they earned, apply decay to what they ignored, raise their age, then land them in a scene. Never advance more than two years at once.
+
+        ## DEATH
+        At 0 HP the character dies and the run ends. Say so plainly. Injuries persist and carry stat penalties until treated.
+
+        ## OUTPUT FORMAT — mandatory
+        Narrate in prose. Do NOT write a numbered menu in the prose. End EVERY reply with a fenced json block holding the full state plus exactly THREE options. Always emit the complete object, never a diff.
+
+        ```json
+        {"player":{"name":"","gender":"","age":0,"ageLabel":"newborn","rank":"civilian","clan":"","orphan":false,
+        "stats":{"strength":0,"agility":0,"intelligence":0,"chakra":0,"stamina":0,"control":0,"willpower":0,"luck":0},
+        "skills":{"taijutsu":0,"ninjutsu":0,"genjutsu":0,"fuinjutsu":0,"kenjutsu":0,"bukijutsu":0,"medical":0,"senjutsu":0},
+        "affinity":{"discovered":false,"primary":"unknown","secondary":"none","mastery":{"fire":0,"wind":0,"lightning":0,"earth":0,"water":0}},
+        "abilities":[{"name":"","status":"awakened","note":""}],
+        "jutsu":[{"name":"","cost":0,"element":"none","mastery":0}],
+        "inventory":[{"name":"","qty":0}],
+        "equipment":{"headband":"none","outfit":"","weapon":"none"},
+        "status":{"hp":0,"hpMax":0,"cp":0,"cpMax":0,"fatigue":0,"hunger":0,"injuries":[]},
+        "money":0,"reputation":0,"karma":0,"day":1,"time":"morning","weather":"clear","location":"",
+        "relationships":{},"missions":[],"achievements":[]},
+        "options":[{"label":"","detail":"","risk":"low"}]}
