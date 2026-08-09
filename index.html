@@ -2,2228 +2,922 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
-<title>Shinobi Registry — Konoha Life Log</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>NEON ARENA — 4-Player Shooter</title>
 <style>
+/* ============================================================================
+   NEON ARENA — client stylesheet
+   Dark background, bright neon accents, mobile-safe layout.
+   ============================================================================ */
 :root{
-  --sumi:#0F131A; --sumi-2:#161C25; --sumi-3:#212936; --sumi-line:#2E3846;
-  --washi:#EBE0CB; --washi-2:#E0D3B8; --washi-edge:#CDBC9C;
-  --ink:#2B2519; --hanko:#B23A2B; --shu:#D4552F;
-  --leaf:#5E8C4E; --chakra:#4C7FB8; --gold:#C29B2B; --violet:#8E7BC0;
-  --display:"Shippori Mincho B1",serif; --body:"Newsreader",Georgia,serif; --data:"DM Mono",ui-monospace,monospace;
+  --bg:#05060a; --bg2:#0b0e16; --panel:#0f1420; --line:#1c2436;
+  --text:#dbe4ff; --dim:#7a88ad; --accent:#39ff88; --accent2:#ff3b7a; --warn:#ffd23b;
+  --p1:#39ff88; --p2:#ff3b7a; --p3:#3ba7ff; --p4:#ffd23b;
 }
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-html,body{height:100%}
-body{margin:0;background:var(--sumi);color:var(--washi);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
-button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
-input,textarea,select{font:inherit;color:inherit}
-::selection{background:var(--shu);color:#fff}
-:focus-visible{outline:2px solid var(--shu);outline-offset:2px}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{height:100%; margin:0; overscroll-behavior:none}
+body{
+  background:radial-gradient(120% 100% at 50% -10%, #0e1524 0%, var(--bg) 55%);
+  color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  overflow:hidden; user-select:none;
+}
+button{font:inherit; cursor:pointer}
+input{font:inherit}
 
-#app{display:grid;grid-template-rows:auto 1fr;height:100dvh}
-.masthead{display:flex;align-items:center;gap:16px;padding:8px 16px;border-bottom:1px solid var(--sumi-line);background:linear-gradient(180deg,var(--sumi-2),var(--sumi))}
-.crest{width:28px;height:28px;flex:none;border-radius:50%;border:1.5px solid var(--hanko);display:grid;place-items:center;font-family:var(--display);font-size:14px;font-weight:800;color:var(--hanko);transform:rotate(-6deg)}
-.age{display:flex;align-items:baseline;gap:6px;font-family:var(--display)}
-.age b{font-size:26px;font-weight:800;color:#F1E8D6;line-height:1}
-.age span{font-family:var(--data);font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:#6F7C8D}
-.mast-meta{margin-left:auto;display:flex;align-items:center;gap:7px;font-family:var(--data);font-size:11px;color:#8A97A8;flex-wrap:wrap;justify-content:flex-end}
-.mast-meta b{color:var(--gold);font-weight:500}
-.tbtn{font-family:var(--data);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:6px 9px;border:1px solid var(--sumi-line);color:#93A0B1;transition:.18s}
-.tbtn:hover{border-color:var(--shu);color:var(--washi)}
-main{display:grid;grid-template-columns:322px 1fr;min-height:0}
+.screen{position:fixed; inset:0; display:none}
+.screen.on{display:flex}
 
-#dossier{background:var(--sumi-2);border-right:1px solid var(--sumi-line);display:grid;grid-template-rows:auto 1fr;min-height:0}
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--sumi-line)}
-.tabs button{padding:9px 0 8px;font-family:var(--data);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#65717F;border-bottom:2px solid transparent;transition:.16s}
-.tabs button:hover{color:#A9B5C4}
-.tabs button[aria-selected="true"]{color:var(--washi);border-bottom-color:var(--shu)}
-#panes{overflow-y:auto;padding:16px 14px 40px}
-#panes::-webkit-scrollbar,#log::-webkit-scrollbar{width:8px}
-#panes::-webkit-scrollbar-thumb{background:var(--sumi-3)}
-#log::-webkit-scrollbar-thumb{background:var(--washi-edge)}
-.pane{display:none} .pane.on{display:block}
-.nameplate{border-bottom:1px solid var(--sumi-line);padding-bottom:12px;margin-bottom:14px}
-.nameplate .n{font-family:var(--display);font-size:22px;font-weight:600;color:#F1E8D6;line-height:1.2}
-.nameplate .r{font-family:var(--data);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--shu);margin-top:4px}
-.clanchip{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:4px 8px;border:1px solid var(--sumi-line);font-family:var(--data);font-size:11px;background:#131922;cursor:help}
-.clanchip i{font-style:normal;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
-.sec{margin-bottom:18px}
-.sec>h2{font-family:var(--data);font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:#65717F;margin:0 0 9px;display:flex;align-items:center;gap:8px;font-weight:500}
-.sec>h2::after{content:"";flex:1;height:1px;background:var(--sumi-line)}
-.bar{margin-bottom:8px}
-.bar .top{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--data);font-size:10.5px;color:#A9B5C4}
-.bar .top .v{color:#E8DECB}
-.bar .top .v .d{font-size:9px;margin-left:4px}
-.d.up{color:var(--leaf)} .d.dn{color:var(--shu)}
-.track{height:4px;background:var(--sumi-3);margin-top:3px;overflow:hidden}
-.fill{height:100%;width:0;transition:width .6s cubic-bezier(.2,.8,.3,1)}
-.low .fill{background:var(--hanko)!important}
-.kv{display:flex;justify-content:space-between;gap:10px;font-family:var(--data);font-size:11px;padding:3px 0;color:#A9B5C4}
-.kv b{color:#E8DECB;font-weight:500;text-align:right}
-.tags{display:flex;flex-wrap:wrap;gap:5px}
-.tag{font-family:var(--data);font-size:10px;padding:3px 7px;border:1px solid var(--sumi-line);color:#B9C4D2;background:#131922}
-.tag em{font-style:normal;color:#65717F;margin-left:4px}
-.empty{font-family:var(--data);font-size:10px;color:#56616F;letter-spacing:.05em}
-.filters{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
-.filters button{font-family:var(--data);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:4px 7px;border:1px solid var(--sumi-line);color:#65717F}
-.filters button[aria-pressed="true"]{border-color:var(--shu);color:var(--washi)}
-.ab{border-left:2px solid #2E3846;padding:6px 0 6px 10px;margin-bottom:7px}
-.ab .h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.ab .nm{font-family:var(--display);font-size:13.5px;color:#8894A3}
-.ab .st{font-family:var(--data);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:#4C5764;flex:none}
-.ab .g{font-family:var(--data);font-size:10px;color:#56616F;line-height:1.5;margin-top:3px}
-.ab.awakened{border-left-color:var(--gold)} .ab.awakened .nm{color:#F1E8D6} .ab.awakened .st{color:var(--gold)}
-.ab.dormant{border-left-color:var(--violet)} .ab.dormant .nm{color:#C3B8DE} .ab.dormant .st{color:var(--violet)}
-.el{display:flex;align-items:center;gap:9px;margin-bottom:8px}
-.el .sym{width:26px;height:26px;flex:none;display:grid;place-items:center;font-family:var(--data);font-size:9px;font-weight:600;letter-spacing:.02em;border:1px solid var(--sumi-line)}
-.el .wrap{flex:1}
-.el.prime .sym{border-color:var(--gold);color:var(--gold)}
-.affinity-hero{border:1px solid var(--sumi-line);padding:12px;margin-bottom:14px;text-align:center;background:#131922}
-.affinity-hero .k{font-family:var(--display);font-size:22px;font-weight:800;color:var(--gold);line-height:1.1;letter-spacing:.05em}
-.affinity-hero .l{font-family:var(--data);font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:#65717F;margin-top:4px}
-.affinity-hero.unknown .k{color:#3F4956}
+/* ---------- Lobby ---------- */
+#lobbyScreen{align-items:center; justify-content:center; flex-direction:column; padding:20px}
+.title{font-size:clamp(30px,7vw,56px); font-weight:900; letter-spacing:.06em; margin:0 0 4px;
+  background:linear-gradient(90deg,var(--p1),var(--p3),var(--p2)); -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 0 40px rgba(57,255,136,.25); text-align:center}
+.subtitle{color:var(--dim); font-size:13px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:28px; text-align:center}
+.card{background:linear-gradient(180deg,var(--panel),#0b0f18); border:1px solid var(--line); border-radius:16px;
+  padding:24px; width:min(420px,92vw); box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.field{margin-bottom:14px}
+.field label{display:block; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin-bottom:6px}
+.field input{width:100%; background:#080b12; border:1px solid var(--line); color:var(--text); border-radius:9px;
+  padding:12px 14px; font-size:16px; letter-spacing:.04em}
+.field input:focus{outline:none; border-color:var(--accent)}
+#roomCodeInput{text-transform:uppercase; letter-spacing:.3em; text-align:center; font-weight:700}
+.colorRow{display:flex; gap:10px; margin-bottom:16px}
+.colorSwatch{width:40px; height:40px; border-radius:50%; border:3px solid transparent; cursor:pointer; transition:.15s;
+  box-shadow:0 0 0 0 transparent}
+.colorSwatch.sel{border-color:#fff; transform:scale(1.1)}
+.btnRow{display:flex; gap:10px}
+.btn{flex:1; padding:14px; border-radius:10px; border:none; font-weight:700; letter-spacing:.06em; font-size:14px; transition:.15s}
+.btn.primary{background:var(--accent); color:#04140a}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.primary:disabled{background:#2a3346; color:#5d6785; cursor:not-allowed}
+.btn.ghost{background:transparent; border:1px solid var(--line); color:var(--text)}
+.btn.ghost:hover{border-color:var(--accent)}
+#lobbyError{color:var(--accent2); font-size:12.5px; margin-top:10px; min-height:16px; text-align:center}
 
-#scroll{position:relative;display:grid;grid-template-rows:1fr auto;min-height:0;background:var(--washi)}
-#scroll::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(120% 80% at 50% -10%,rgba(255,255,255,.5),transparent 60%),radial-gradient(100% 100% at 50% 120%,rgba(120,95,55,.16),transparent 55%)}
-#log{overflow-y:auto;padding:32px 7% 22px;color:var(--ink);position:relative;background-image:repeating-linear-gradient(94deg,rgba(120,100,66,.035) 0 2px,transparent 2px 5px)}
-.seal{position:absolute;top:20px;right:4.5%;width:70px;height:70px;opacity:.45;pointer-events:none;transform:rotate(7deg)}
-.entry{max-width:64ch;margin:0 auto 26px;animation:rise .45s ease both}
-@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.entry .eyebrow{font-family:var(--data);font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:#9A8A6C;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.entry .eyebrow::after{content:"";flex:1;height:1px;background:rgba(120,100,66,.28)}
-.entry p{margin:0 0 .9em;font-size:17px;line-height:1.7}
-.entry p:last-child{margin-bottom:0}
-.entry strong{font-weight:600;color:#1F1A11}
-.entry em{color:#5C4A2C}
-.entry.you .body{border-left:2px solid var(--hanko);padding:2px 0 2px 13px;font-family:var(--data);font-size:12.5px;color:#4A4132}
-.entry.note .body{border:1px solid rgba(178,58,43,.4);background:rgba(178,58,43,.07);padding:11px 13px;font-family:var(--data);font-size:12px;color:#7A2E22;line-height:1.6}
-.entry.delta .body{border:1px solid rgba(94,140,78,.4);background:rgba(94,140,78,.08);padding:9px 13px;font-family:var(--data);font-size:11px;color:#3F5C34;line-height:1.6}
-.caret{display:inline-block;width:8px;height:16px;background:var(--ink);vertical-align:-2px;animation:blink 1s steps(2) infinite}
-@keyframes blink{50%{opacity:0}}
+#roomPanel{width:min(420px,92vw); margin-top:16px}
+#roomPanel .code{font-size:13px; letter-spacing:.2em; color:var(--dim); text-align:center; margin-bottom:10px}
+#roomPanel .code b{color:var(--accent); font-size:20px; letter-spacing:.4em; margin-left:6px}
+#rosterList{display:flex; flex-direction:column; gap:8px; margin:14px 0}
+.rosterRow{display:flex; align-items:center; gap:10px; background:#080b12; border:1px solid var(--line); border-radius:9px; padding:9px 12px}
+.rosterDot{width:14px; height:14px; border-radius:50%; flex:none; box-shadow:0 0 10px currentColor}
+.rosterName{flex:1; font-size:14px}
+.rosterScore{font-size:12px; color:var(--dim); font-variant-numeric:tabular-nums}
+#waitingHint{font-size:12px; color:var(--dim); text-align:center; margin-top:8px; line-height:1.6}
 
-#actions{position:relative;z-index:2;border-top:1px solid var(--washi-edge);background:linear-gradient(180deg,var(--washi-2),#D6C8AC);padding:12px 7% 14px}
-#choices{display:grid;gap:7px;max-width:64ch;margin:0 auto 10px}
-#choices:empty{display:none}
-.choice{display:grid;grid-template-columns:38px 1fr;align-items:center;gap:11px;background:#F2E9D7;border:1px solid var(--washi-edge);border-left-width:3px;padding:9px 12px;text-align:left;transition:transform .14s,background .14s}
-.choice:hover{background:#FFF9EC;transform:translateX(3px)}
-.choice .num{font-family:var(--display);font-size:21px;font-weight:800;color:var(--hanko);text-align:center;line-height:1;opacity:.85}
-.choice .t{font-size:16px;color:#2B2519;line-height:1.25;display:block}
-.choice .s{font-family:var(--data);font-size:10.5px;color:#8A7B60;margin-top:2px;line-height:1.4;display:block}
-.choice[data-risk="low"]{border-left-color:var(--leaf)}
-.choice[data-risk="medium"]{border-left-color:var(--gold)}
-.choice[data-risk="high"]{border-left-color:var(--shu)}
-.choice[data-risk="lethal"]{border-left-color:#7A1D12}
-.choice[data-risk="lethal"] .num{color:#7A1D12}
-.choice:disabled{opacity:.45;cursor:not-allowed;transform:none}
-.composer{display:flex;gap:7px;align-items:flex-end;max-width:64ch;margin:0 auto}
-#say{flex:1;resize:none;background:#F3EBDA;border:1px solid var(--washi-edge);padding:9px 11px;color:#2B2519;font-size:15px;min-height:42px;max-height:140px}
-#say::placeholder{color:#9A8A6C}
-.act{height:42px;padding:0 14px;font-family:var(--data);font-size:10px;letter-spacing:.16em;text-transform:uppercase;transition:.16s;flex:none;border:1px solid transparent}
-#send{background:var(--hanko);color:#F6EEDD} #send:hover{background:#8F2C1F}
-#ageup{background:#F3EBDA;border-color:var(--washi-edge);color:#6E6047}
-#ageup:hover{border-color:var(--hanko);color:var(--hanko)}
-.act:disabled{opacity:.5;cursor:not-allowed}
-.hint-line{font-family:var(--data);font-size:9.5px;color:#8A7B60;text-align:center;margin:6px auto 0;max-width:64ch}
+/* ---------- Game ---------- */
+#gameScreen{align-items:center; justify-content:center; background:#000}
+#canvasWrap{position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center}
+canvas{display:block; background:#060810; touch-action:none}
 
-#gate{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:radial-gradient(90% 70% at 50% 0%,#1A212C,#080B0F);overflow-y:auto}
-.card{width:min(620px,100%);background:var(--washi);color:var(--ink);padding:30px 30px 24px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6);border-top:3px solid var(--hanko)}
-.card .seal{top:16px;right:20px;opacity:.5}
-.card .eyebrow{font-family:var(--data);font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:#9A8A6C}
-.card h2{font-family:var(--display);font-weight:800;font-size:31px;line-height:1.1;margin:6px 0 5px;color:#1F1A11}
-.card .lede{font-size:15.5px;color:#4A4132;margin:0 0 18px;max-width:46ch}
-.step{display:none} .step.on{display:block}
-.field{margin-bottom:12px}
-.field label{display:block;font-family:var(--data);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#7A6C51;margin-bottom:4px}
-.field input,.field select{width:100%;background:#F3EBDA;border:1px solid var(--washi-edge);padding:8px 10px;font-size:15px;color:#2B2519}
-.field .hint{font-family:var(--data);font-size:10px;color:#8A7B60;margin-top:4px;line-height:1.5}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.seg{display:flex;border:1px solid var(--washi-edge);flex-wrap:wrap}
-.seg button{flex:1;min-width:70px;padding:8px 4px;font-family:var(--data);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#7A6C51;background:#F3EBDA;transition:.16s}
-.seg button+button{border-left:1px solid var(--washi-edge)}
-.seg button[aria-pressed="true"]{background:var(--hanko);color:#F6EEDD}
-.row{display:flex;gap:9px;align-items:center;margin-top:18px;flex-wrap:wrap}
-.prim{background:var(--hanko);color:#F6EEDD;padding:11px 24px;font-family:var(--data);font-size:11px;letter-spacing:.22em;text-transform:uppercase;transition:.16s}
-.prim:hover{background:#8F2C1F}
-.prim:disabled{background:#A79779;cursor:not-allowed}
-.ghost{padding:11px 16px;border:1px solid var(--washi-edge);font-family:var(--data);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7A6C51;transition:.16s}
-.ghost:hover{border-color:var(--hanko);color:var(--hanko)}
-.ghost:disabled{opacity:.45;cursor:not-allowed}
-.gate-note{font-family:var(--data);font-size:10px;line-height:1.6;color:#8A7B60;margin-top:16px;border-top:1px solid var(--washi-edge);padding-top:11px}
-#rollStage{border:1px solid var(--washi-edge);background:#F3EBDA;padding:20px;text-align:center;margin-bottom:14px;min-height:150px;display:grid;place-content:center;gap:4px}
-#rollTier{font-family:var(--data);font-size:9.5px;letter-spacing:.3em;text-transform:uppercase}
-#rollName{font-family:var(--display);font-size:38px;font-weight:800;line-height:1.05;color:#1F1A11}
-#rollDesc{font-size:14.5px;color:#4A4132;max-width:44ch;margin:8px auto 0;line-height:1.55}
-#rollStage.spin #rollName{opacity:.4}
-.tier-civilian{color:#8A7B60}.tier-common{color:#6E7F5E}.tier-uncommon{color:#3F6E86}
-.tier-rare{color:#7A5BA6}.tier-legendary{color:#B8860B}.tier-mythic{color:var(--hanko)}
-.clangrid{display:flex;flex-wrap:wrap;gap:4px;max-height:132px;overflow-y:auto;padding:2px}
-.clangrid button{font-family:var(--data);font-size:10px;padding:3px 7px;border:1px solid var(--washi-edge);color:#6E6047;background:#F3EBDA;transition:.14s}
-.clangrid button:hover{border-color:var(--hanko);color:var(--hanko)}
-#tip{position:fixed;z-index:99;max-width:330px;background:#12171F;border:1px solid var(--sumi-line);border-top:2px solid var(--shu);padding:12px 14px;pointer-events:none;opacity:0;transition:opacity .13s;box-shadow:0 14px 40px rgba(0,0,0,.5)}
-#tip .tn{font-family:var(--display);font-size:16px;color:#F1E8D6}
-#tip .tt{font-family:var(--data);font-size:9px;letter-spacing:.2em;text-transform:uppercase;margin:2px 0 7px}
-#tip .td{font-size:13.5px;line-height:1.5;color:#B9C4D2}
-#tip .tg{font-family:var(--data);font-size:10px;color:#8894A3;margin-top:7px;border-top:1px solid var(--sumi-line);padding-top:6px;line-height:1.5}
-#drawerToggle{display:none}
+.hud{position:absolute; inset:0; pointer-events:none}
+.hudTop{position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:flex-start;
+  padding:14px 16px; gap:10px}
+#scoreBoard{display:flex; gap:8px; background:rgba(10,13,20,.7); backdrop-filter:blur(6px); border:1px solid var(--line);
+  border-radius:12px; padding:8px 12px}
+.scorePip{display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700}
+.scorePip .dot{width:10px; height:10px; border-radius:50%; box-shadow:0 0 8px currentColor}
+.scoreDots{display:flex; gap:3px}
+.scoreDots i{width:6px; height:6px; border-radius:50%; background:#2a3346; display:inline-block}
+.scoreDots i.filled{background:currentColor; box-shadow:0 0 6px currentColor}
 
-/* ═══ Delta ribbon — the visible receipt of applied mechanics ═══ */
-.entry.delta .body{border:none;background:none;padding:0}
-.dwrap{border-left:2px solid var(--leaf);background:rgba(94,140,78,.07);padding:9px 13px}
-.dl{display:flex;gap:8px;align-items:baseline;font-family:var(--data);font-size:11.5px;line-height:1.65;color:#4A4132}
-.dl .s{flex:none;width:10px;text-align:center;font-size:9px}
-.dl.up{color:#3F6B33} .dl.up .s{color:var(--leaf)}
-.dl.dn{color:#8A3123} .dl.dn .s{color:var(--hanko)}
-.dl.flat{color:#7A6C51}
-.dsrc{font-family:var(--data);font-size:9.5px;color:#9A8A6C;margin-top:6px;border-top:1px solid rgba(120,100,66,.2);padding-top:5px}
-.entry.interp .body{border:none;background:none;padding:0;font-family:var(--data);font-size:11px;color:#9A8A6C}
-.spin{display:inline-block;width:8px;height:8px;border:1.5px solid #C4B393;border-top-color:var(--hanko);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px}
-@keyframes sp{to{transform:rotate(360deg)}}
+#selfPanel{background:rgba(10,13,20,.7); backdrop-filter:blur(6px); border:1px solid var(--line); border-radius:12px; padding:8px 12px; min-width:150px}
+#selfHearts{display:flex; gap:4px; margin-bottom:6px}
+.heart{width:16px; height:16px; position:relative}
+.heart svg{width:100%; height:100%}
+#selfPowerups{display:flex; flex-wrap:wrap; gap:4px; max-width:200px}
+.puChip{font-size:9.5px; letter-spacing:.04em; background:#131a2a; border:1px solid var(--line); border-radius:6px;
+  padding:2px 6px; color:var(--dim)}
+.puChip b{color:var(--accent)}
 
-/* ═══ Death screen ═══ */
-#deathScreen{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px;
-  background:radial-gradient(90% 70% at 50% 20%,#2A1512,#07090C 70%);overflow-y:auto;animation:fadein .9s ease both}
-@keyframes fadein{from{opacity:0}to{opacity:1}}
-.dcard{width:min(640px,100%);text-align:center;color:var(--washi)}
-.dcard .kanji{font-family:var(--display);font-size:15px;font-weight:800;letter-spacing:.5em;color:var(--hanko);text-transform:uppercase;margin-bottom:20px}
-.dcard h1{font-family:var(--display);font-size:52px;font-weight:800;margin:0 0 6px;color:#F1E8D6;letter-spacing:.02em}
-.dcard .sub{font-family:var(--data);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#8A6B62;margin-bottom:26px}
-.dcard .cause{font-family:var(--body);font-size:18px;font-style:italic;color:#C9B9A4;margin:0 auto 28px;max-width:44ch;line-height:1.6}
-.dstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:1px;background:var(--sumi-line);border:1px solid var(--sumi-line);margin-bottom:24px}
-.dstat{background:#12171F;padding:12px 8px}
-.dstat .l{font-family:var(--data);font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:#65717F}
-.dstat .v{font-family:var(--display);font-size:24px;font-weight:800;color:#E8DECB;line-height:1.2;margin-top:3px}
-.dnote{font-family:var(--data);font-size:11px;color:#7A8797;line-height:1.7;margin-bottom:26px;text-align:left;
-  border-left:2px solid var(--sumi-line);padding-left:14px;max-width:46ch;margin-left:auto;margin-right:auto}
-.dnote b{color:#B9C4D2;font-weight:500}
-.drow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.dbtn{padding:13px 28px;font-family:var(--data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;transition:.16s;border:1px solid transparent}
-.dbtn.p{background:var(--hanko);color:#F6EEDD} .dbtn.p:hover{background:#8F2C1F}
-.dbtn.g{border-color:var(--sumi-line);color:#93A0B1} .dbtn.g:hover{border-color:var(--shu);color:var(--washi)}
+#centerBanner{position:absolute; top:44%; left:50%; transform:translate(-50%,-50%); text-align:center; pointer-events:none}
+#centerBanner .big{font-size:clamp(40px,9vw,90px); font-weight:900; color:#fff; text-shadow:0 0 30px rgba(255,255,255,.5)}
+#centerBanner .small{font-size:14px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim); margin-top:6px}
 
-/* ═══ Skill tree — compact, lives inside the Chakra pane ═══ */
-.sttree-mini{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin:0 -2px}
-.sttree-mini::-webkit-scrollbar{height:6px}
-.sttree-mini::-webkit-scrollbar-thumb{background:var(--sumi-3)}
-.stcol{flex:none;width:96px;display:flex;flex-direction:column;align-items:center}
-.sttree{width:96px;height:220px;overflow:visible}
-.stnode{cursor:help}
-.stnode-label{font-family:var(--data);font-size:8px;fill:#5B6673}
-.stcol-label{font-family:var(--display);font-size:11.5px;font-weight:600;text-align:center;margin-top:5px;line-height:1.25}
-.stcol-label span{display:block;font-family:var(--data);font-size:14px;font-weight:700;margin-top:1px}
+#killFeed{position:absolute; top:70px; right:16px; display:flex; flex-direction:column; gap:6px; align-items:flex-end}
+.killToast{background:rgba(10,13,20,.85); border:1px solid var(--line); border-left:3px solid var(--accent2);
+  border-radius:8px; padding:7px 12px; font-size:12.5px; animation:kfIn .25s ease, kfOut .4s ease 2.6s forwards}
+@keyframes kfIn{from{opacity:0; transform:translateX(20px)} to{opacity:1; transform:translateX(0)}}
+@keyframes kfOut{to{opacity:0}}
+
+#reconnectOverlay{position:absolute; inset:0; background:rgba(5,6,10,.85); display:none; align-items:center; justify-content:center;
+  flex-direction:column; gap:10px; pointer-events:all}
+#reconnectOverlay.on{display:flex}
+.spinner{width:34px; height:34px; border:3px solid #232c42; border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Mobile joysticks */
+.joyZone{position:absolute; bottom:0; width:46%; height:44%; pointer-events:all; touch-action:none}
+#joyLeftZone{left:0} #joyRightZone{right:0}
+.joyBase{position:absolute; width:110px; height:110px; border-radius:50%; border:2px solid rgba(255,255,255,.15);
+  background:radial-gradient(circle,rgba(255,255,255,.06),transparent 70%); display:none}
+.joyStick{position:absolute; width:50px; height:50px; border-radius:50%; background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.4); left:30px; top:30px; transition:background .1s}
+.joyStick.active{background:rgba(57,255,136,.35); border-color:var(--accent)}
+#joyRightZone .joyStick.active{background:rgba(255,59,122,.35); border-color:var(--accent2)}
+
+#leaveBtn{position:absolute; top:14px; left:50%; transform:translateX(-50%); pointer-events:all;
+  background:rgba(10,13,20,.7); border:1px solid var(--line); color:var(--dim); font-size:11px; letter-spacing:.1em;
+  padding:6px 12px; border-radius:8px}
+#leaveBtn:hover{color:var(--text); border-color:var(--accent2)}
+
+/* ---------- Match end ---------- */
+#matchEndScreen{align-items:center; justify-content:center; flex-direction:column; background:radial-gradient(120% 100% at 50% -10%,#161022,#05060a 60%)}
+#confettiCanvas{position:absolute; inset:0; pointer-events:none}
+.victoryWrap{position:relative; text-align:center; z-index:2}
+#victoryTitle{font-size:clamp(28px,6vw,46px); font-weight:900; letter-spacing:.08em; margin-bottom:6px}
+#victoryName{font-size:clamp(36px,9vw,64px); font-weight:900; text-shadow:0 0 40px currentColor}
+#finalScores{display:flex; gap:12px; justify-content:center; margin:26px 0; flex-wrap:wrap}
+.finalCard{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 18px; min-width:100px}
+.finalCard .n{font-size:13px; color:var(--dim); margin-bottom:6px}
+.finalCard .s{font-size:26px; font-weight:900}
 
 @media (max-width:900px){
-  main{grid-template-columns:1fr}
-  #dossier{position:fixed;inset:47px 0 0;z-index:20;transform:translateX(-101%);transition:transform .3s;border-right:none}
-  body.open #dossier{transform:none}
-  #drawerToggle{display:block}
-  #log{padding:22px 18px} #actions{padding:10px 14px 12px}
-  .seal{width:52px;height:52px;right:14px}
-  .two{grid-template-columns:1fr}
-  #rollName{font-size:30px}
-  .stcol{width:120px} .sttree{width:120px}
+  #selfPanel{min-width:120px}
+  .puChip{font-size:8.5px}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
-<div id="app" hidden>
-  <header class="masthead">
-    <div class="crest">K</div>
-    <div class="age"><b id="mAge">0</b><span>years<br>old</span></div>
-    <div class="mast-meta">
-      <span id="mDay">Day 1</span><span id="mLoc">—</span><span id="mRyo"><b>0</b> ryo</span>
-      <button class="tbtn" id="drawerToggle">Sheet</button>
-      <button class="tbtn" id="btnSave">Save</button>
-      <button class="tbtn" id="btnLoad">Load</button>
-      <button class="tbtn" id="btnNew">New life</button>
-    </div>
-  </header>
-  <main>
-    <aside id="dossier">
-      <div class="tabs" role="tablist">
-        <button role="tab" data-pane="status" aria-selected="true">Status</button>
-        <button role="tab" data-pane="chakra" aria-selected="false">Chakra</button>
-        <button role="tab" data-pane="abilities" aria-selected="false">Blood</button>
-        <button role="tab" data-pane="bonds" aria-selected="false">Bonds</button>
-      </div>
-      <div id="panes">
-        <div class="pane on" id="pane-status">
-          <div class="nameplate">
-            <div class="n" id="pName">Newborn</div>
-            <div class="r" id="pRank">Unranked</div>
-            <div><span class="clanchip" id="pClan"><i>Clan</i> —</span></div>
-          </div>
-          <div class="sec"><h2>Condition</h2><div id="vitals"></div><div id="injuries"></div></div>
-          <div class="sec"><h2>Attributes</h2><div id="stats"></div></div>
-          <div class="sec"><h2>Standing</h2><div id="standing"></div></div>
-          <div class="sec"><h2>Backpack</h2><div class="tags" id="inv"></div></div>
-          <div class="sec"><h2>Equipment</h2><div id="equip"></div></div>
-        </div>
-        <div class="pane" id="pane-chakra">
-          <div class="affinity-hero unknown" id="affHero"><div class="k" id="affK">UNKNOWN</div><div class="l" id="affL">Affinity undiscovered</div></div>
-          <div class="sec"><h2>Nature mastery</h2><div id="elements"></div></div>
-          <div class="sec"><h2>Skill tree</h2><div class="sttree-mini" id="skillTreeMini"></div></div>
-          <div class="sec"><h2>Jutsu</h2><div id="jutsu"></div></div>
-        </div>
-        <div class="pane" id="pane-abilities">
-          <div class="filters" id="abFilters"></div>
-          <div id="abList"></div>
-        </div>
-        <div class="pane" id="pane-bonds">
-          <div class="sec"><h2>Bonds</h2><div id="bonds"></div></div>
-          <div class="sec"><h2>Missions</h2><div id="missions"></div></div>
-          <div class="sec"><h2>Achievements</h2><div class="tags" id="achievements"></div></div>
-        </div>
-      </div>
-    </aside>
+<!-- ============================== LOBBY ============================== -->
+<div class="screen on" id="lobbyScreen">
+  <div class="title">NEON ARENA</div>
+  <div class="subtitle">4-Player Online Top-Down Shooter</div>
 
-    <section id="scroll">
-      <div id="log">
-        <svg class="seal" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="#B23A2B" stroke-width="4"/><circle cx="50" cy="50" r="38" fill="none" stroke="#B23A2B" stroke-width="1.5"/><text x="50" y="44" text-anchor="middle" fill="#B23A2B" style="font:800 14px 'Shippori Mincho B1',serif;letter-spacing:.04em">HIDDEN</text><text x="50" y="62" text-anchor="middle" fill="#B23A2B" style="font:800 14px 'Shippori Mincho B1',serif;letter-spacing:.04em">LEAF</text></svg>
-      </div>
-      <div id="actions">
-        <div id="choices"></div>
-        <div class="composer">
-          <textarea id="say" rows="1" placeholder="Describe exactly what you do, how, and for how long…"></textarea>
-          <button class="act" id="ageup" title="Let time carry you forward">Age up</button>
-          <button class="act" id="send">Act</button>
-        </div>
-        <div class="hint-line">The more specific your action, the more it actually trains — "train 20 minutes on the punching dummy" beats "train".</div>
-      </div>
-    </section>
-  </main>
+  <div class="card" id="joinCard">
+    <div class="field">
+      <label for="nameInput">Your Name</label>
+      <input id="nameInput" maxlength="16" placeholder="Shinobi" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Color</label>
+      <div class="colorRow" id="colorRow"></div>
+    </div>
+    <div class="field">
+      <label for="roomCodeInput">Room Code (leave blank to create one)</label>
+      <input id="roomCodeInput" maxlength="4" placeholder="ABCD" autocomplete="off">
+    </div>
+    <div class="btnRow">
+      <button class="btn primary" id="joinBtn">Join / Create Room</button>
+    </div>
+    <div id="lobbyError"></div>
+  </div>
+
+  <div class="card" id="roomPanel" style="display:none">
+    <div class="code">ROOM CODE <b id="roomCodeDisplay">----</b></div>
+    <div id="rosterList"></div>
+    <div class="btnRow">
+      <button class="btn primary" id="startMatchBtn" disabled>Start Match</button>
+      <button class="btn ghost" id="leaveLobbyBtn">Leave</button>
+    </div>
+    <div id="waitingHint">Share this code with up to 3 friends.<br>Need at least 2 players to start.</div>
+  </div>
 </div>
 
-<div id="gate">
-  <div class="card">
-    <svg class="seal" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="#B23A2B" stroke-width="4"/><circle cx="50" cy="50" r="38" fill="none" stroke="#B23A2B" stroke-width="1.5"/><text x="50" y="44" text-anchor="middle" fill="#B23A2B" style="font:800 14px 'Shippori Mincho B1',serif;letter-spacing:.04em">HIDDEN</text><text x="50" y="62" text-anchor="middle" fill="#B23A2B" style="font:800 14px 'Shippori Mincho B1',serif;letter-spacing:.04em">LEAF</text></svg>
-
-    <div class="step on" id="step1">
-      <div class="eyebrow">Konoha · Records office</div>
-      <h2>A child is about to be born.</h2>
-      <p class="lede">Pick who tells the story. The daily request ceiling (if any) is printed beside each model.</p>
-      <div class="field"><label>Storyteller</label>
-        <div class="seg" id="segProvider">
-          <button data-p="groq" aria-pressed="false">Groq</button>
-          <button data-p="openrouter" aria-pressed="false">OpenRouter</button>
-          <button data-p="deepseek" aria-pressed="false">DeepSeek</button>
-          <button data-p="mistral" aria-pressed="false">Mistral</button>
+<!-- ============================== GAME ============================== -->
+<div class="screen" id="gameScreen">
+  <div id="canvasWrap">
+    <canvas id="gameCanvas"></canvas>
+    <div class="hud">
+      <button id="leaveBtn">LEAVE MATCH</button>
+      <div class="hudTop">
+        <div id="scoreBoard"></div>
+        <div id="selfPanel">
+          <div id="selfHearts"></div>
+          <div id="selfPowerups"></div>
         </div>
-        <div class="hint" id="provHint"></div>
       </div>
-      <div class="field"><label for="modelSel">Model</label><select id="modelSel"></select><div class="hint" id="modelHint"></div></div>
-      <div class="field"><label for="keyIn">API key</label><input id="keyIn" type="password" spellcheck="false" autocomplete="off"><div class="hint">Pre-filled from the CONFIG block at the top of this file.</div></div>
-      <div class="row"><button class="prim" id="toStep2">Continue</button><button class="ghost" id="btnLoad2">Load a save</button></div>
+      <div id="centerBanner"></div>
+      <div id="killFeed"></div>
+      <div id="reconnectOverlay"><div class="spinner"></div><div>Reconnecting…</div></div>
     </div>
+    <!-- Mobile touch zones (shown automatically on touch devices) -->
+    <div class="joyZone" id="joyLeftZone"><div class="joyBase" id="joyLeftBase"><div class="joyStick" id="joyLeftStick"></div></div></div>
+    <div class="joyZone" id="joyRightZone"><div class="joyBase" id="joyRightBase"><div class="joyStick" id="joyRightStick"></div></div></div>
+  </div>
+</div>
 
-    <div class="step" id="step2">
-      <div class="eyebrow">Konoha · Records office</div>
-      <h2>Name the child.</h2>
-      <p class="lede">You begin at age zero. Everything after that is earned — you cannot walk before your legs will hold you.</p>
-      <div class="two">
-        <div class="field"><label for="nameIn">Name</label><input id="nameIn" placeholder="Given name" spellcheck="false"></div>
-        <div class="field"><label>Sex</label><div class="seg" id="segSex"><button data-v="male" aria-pressed="true">Boy</button><button data-v="female" aria-pressed="false">Girl</button></div></div>
-      </div>
-      <div class="field"><label>Household</label><div class="seg" id="segHome"><button data-v="family" aria-pressed="true">Family</button><button data-v="orphan" aria-pressed="false">Orphaned</button></div>
-        <div class="hint">Orphans start poorer and colder, and harder in the ways that matter.</div></div>
-      <div class="row"><button class="ghost" id="backStep1">Back</button><button class="prim" id="toStep3">To the blood roll</button></div>
-    </div>
-
-    <div class="step" id="step3">
-      <div class="eyebrow">Konoha · Blood registry</div>
-      <h2>Whose blood runs in you?</h2>
-      <p class="lede">Lineage is drawn, not chosen. Hover any name below to read what that blood carries.</p>
-      <div id="rollStage"><div id="rollTier" class="tier-civilian">Unrolled</div><div id="rollName">— — —</div><div id="rollDesc">Draw to see what you were born into.</div></div>
-      <div class="field"><label>Every recorded line <span id="rerollsLeft" style="float:right;text-transform:none;letter-spacing:0"></span></label><div class="clangrid" id="clanGrid"></div></div>
-      <div class="row"><button class="prim" id="btnRoll">Draw blood</button><button class="ghost" id="btnBirth" disabled>Be born</button><button class="ghost" id="backStep2">Back</button></div>
-      <p class="gate-note">Saves download as a .json file. Load one from the first screen to continue an old life.</p>
+<!-- ============================== MATCH END ============================== -->
+<div class="screen" id="matchEndScreen">
+  <canvas id="confettiCanvas"></canvas>
+  <div class="victoryWrap">
+    <div id="victoryTitle">VICTORY</div>
+    <div id="victoryName">—</div>
+    <div id="finalScores"></div>
+    <div class="btnRow">
+      <button class="btn primary" id="playAgainBtn">Play Again</button>
+      <button class="btn ghost" id="backToLobbyBtn">Back to Menu</button>
     </div>
   </div>
 </div>
 
-<div id="deathScreen" hidden>
-  <div class="dcard">
-    <div class="kanji">The Record Closes</div>
-    <h1 id="dName">—</h1>
-    <div class="sub" id="dSub">—</div>
-    <p class="cause" id="dCause">—</p>
-    <div class="dstats" id="dStats"></div>
-    <div class="dnote" id="dNote"></div>
-    <div class="drow">
-      <button class="dbtn p" id="dNew">Be born again</button>
-      <button class="dbtn g" id="dSave">Download this record</button>
-      <button class="dbtn g" id="dLoad">Load an earlier save</button>
-    </div>
-  </div>
-</div>
-
-<div id="tip"><div class="tn"></div><div class="tt"></div><div class="td"></div><div class="tg"></div></div>
-<input type="file" id="fileIn" accept="application/json" hidden>
-
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
-/* ═══════════════════════════════════════════════════════════
-   CONFIG — the only block you need to edit.
-   Everything here ships to the browser in plain text.
-   Since this repo is private and you're launching by other
-   means, the keys below are filled in directly. If this file
-   is ever made public or served from a public URL, pull these
-   out immediately — anyone with the URL can read them via
-   "view source" and spend your balance.
-   ═══════════════════════════════════════════════════════════ */
-const CONFIG = {
-  provider: "deepseek",
-  keys: {
-    groq:       "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",
-    openrouter: "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",
-    deepseek:   "sk-f51757c070ca44ee87905d99c57d9229",
-    mistral:    "znbyejUA2561yGjnQo0kiVdTOPcSuLLy"
-  },
-  temperature: 0.8,
-  maxTokens: 800,
-  historyTurns: 6,
+'use strict';
+/* ============================================================================
+   NEON ARENA — client game logic
+   ============================================================================
+   HOW THIS CONNECTS TO YOUR SERVER
+   ----------------------------------------------------------------------------
+   Replace DEFAULT_SERVER_URL below with your deployed Render/Railway URL,
+   e.g. "https://my-game-server.onrender.com". Locally (hostname === localhost)
+   it automatically points at http://localhost:3001 instead, so you don't have
+   to keep editing this file while developing. You can also override it at
+   any time with a query string, e.g. index.html?server=http://localhost:3055
+   — handy for testing without touching the code.
+   ============================================================================ */
 
-  /* How much of the ability compendium rides along every turn.
-     "gates" — all 75 abilities with full REQUIRES lines. ~1.4k tokens.
-     "full"  — everything including effect text for all 75. ~2.8k tokens.
-     "scoped"— only your clan's line plus what you've awakened. ~0.4k tokens. */
-  compendium: "scoped"
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> EDIT THIS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+const DEFAULT_SERVER_URL = 'https://your-server-name.onrender.com';
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+const SERVER_URL = new URLSearchParams(location.search).get('server')
+  || (['localhost', '127.0.0.1'].includes(location.hostname) ? 'http://localhost:3001' : DEFAULT_SERVER_URL);
+
+const PLAYER_COLORS = ['#39ff88', '#ff3b7a', '#3ba7ff', '#ffd23b'];
+const POWERUP_LABELS = {
+  biggerBullets: 'Bigger Bullets', fasterBullets: 'Faster Bullets', extraHp: 'Extra HP',
+  shield: 'Shield', doubleShot: 'Double Shot', speedBoost: 'Speed Boost', regen: 'Regeneration'
 };
 
-/* Verified Aug 2026. RPD = free-tier requests per day where one exists. */
-const PROVIDERS = {
-  groq: {
-    label:"Groq", url:"https://api.groq.com/openai/v1/chat/completions",
-    hint:"The largest free daily allowance available. Watch the tokens-per-minute cap, not the request count.",
-    models:[
-      {id:"llama-3.1-8b-instant", rpd:"14,400 RPD", note:"The ceiling champion, 14x anything else. Fast, but the weakest at holding a large state block and following the strict format — expect the occasional malformed turn (auto-retried once)."},
-      {id:"llama-3.3-70b-versatile", rpd:"1,000 RPD", note:"A far better Game Master. Keeps the schema clean and adjudicates stats honestly. Use this unless you play all day."},
-      {id:"openai/gpt-oss-120b", rpd:"1,000 RPD", note:"Strongest reasoning on Groq. Tight daily token budget, so long sessions run dry early."},
-      {id:"meta-llama/llama-4-scout-17b-16e-instruct", rpd:"1,000 RPD", note:"Middle ground between speed and coherence."},
-      {id:"qwen/qwen3-32b", rpd:"1,000 RPD", note:"Reliable structured output, occasionally stiff prose."}
-    ]
-  },
-  openrouter: {
-    label:"OpenRouter", url:"https://openrouter.ai/api/v1/chat/completions",
-    hint:"Free models are capped at 50 requests a day, or 1,000 once you have ever bought $10 of credits.",
-    models:[
-      {id:"meta-llama/llama-3.3-70b-instruct:free", rpd:"50 / 1,000 RPD", note:"Solid free GM. The daily cap is the real limit here, not quality."},
-      {id:"deepseek/deepseek-chat", rpd:"paid, no daily cap", note:"Cheap per token and no daily wall. Same model as DeepSeek direct, routed through OpenRouter."},
-      {id:"anthropic/claude-3.5-sonnet", rpd:"paid, no daily cap", note:"Most consistent adjudication and prose, and the most reliable at following the strict patch format. Costs the most."},
-      {id:"google/gemini-flash-1.5", rpd:"paid, no daily cap", note:"Fast, cheap, handles long state well."}
-    ]
-  },
-  deepseek: {
-    label:"DeepSeek", url:"https://api.deepseek.com/chat/completions",
-    hint:"Pay-as-you-go direct from DeepSeek, no daily request cap. Very cheap per token. If requests fail instantly with a network error rather than a 4xx, DeepSeek isn't allowing this browser origin and you'll need a small proxy.",
-    models:[
-      {id:"deepseek-chat", rpd:"no daily cap · paid", note:"DeepSeek-V3. Strong prose, reliable JSON, the cheapest good option here."},
-      {id:"deepseek-reasoner", rpd:"no daily cap · paid", note:"DeepSeek-R1. Slower and pricier per call, most consistent stat adjudication of any model listed."}
-    ]
-  },
-  mistral: {
-    label:"Mistral", url:"https://api.mistral.ai/v1/chat/completions",
-    hint:"Pay-as-you-go via La Plateforme. New accounts get some free credit. Same CORS caveat as DeepSeek applies if the first request fails instantly.",
-    models:[
-      {id:"mistral-small-latest", rpd:"no daily cap · paid", note:"Fast and cheap, good enough for most turns."},
-      {id:"mistral-large-latest", rpd:"no daily cap · paid", note:"Best Mistral GM quality, costs more per token."},
-      {id:"open-mixtral-8x22b", rpd:"no daily cap · paid", note:"Open-weight mixture-of-experts model, solid middle ground."}
-    ]
-  }
-};
-
-/* ═══ CLANS ═══ w = draw weight */
-const CLANS = [
-{k:"civilian",n:"No clan",t:"civilian",w:320,g:"Nothing but your own two hands",
- d:"Merchant stock, farmers, tea-house families. No inherited technique, no name that opens doors, no expectations either. Everything you become you will have built yourself, and the village will be slower to notice you for it."},
-{k:"sarutobi",n:"Sarutobi",t:"common",w:95,g:"Broad elemental talent, monkey summons, founding-family respect",
- d:"One of Konoha's founding families and the line of the Third Hokage. Sarutobi are known for unusually wide nature affinity rather than a single kekkei genkai, for the Adamantine Staff and the monkey contract, and for a stubborn willingness to teach anyone who asks."},
-{k:"hatake",n:"Hatake",t:"common",w:78,g:"Lightning aptitude, ninken contract, blade instinct",
- d:"A small line with an outsized reputation, carried by the White Fang. Hatake produce natural Lightning users, work with ninken tracking hounds, and tend toward chakra-flow blades. Their gift is speed of thought under pressure, not raw power."},
-{k:"shiranui",n:"Shiranui",t:"common",w:66,g:"Poison craft, senbon precision",
- d:"Field-medic stock turned specialist. Shiranui work in poisons, anaesthetics and senbon — the sort of shinobi who wins by knowing exactly which nerve to reach. No bloodline, just several generations of very precise knowledge."},
-{k:"kamizuki",n:"Kamizuki",t:"common",w:60,g:"Barrier sensing, gate-guard discipline",
- d:"Career gatekeepers and barrier technicians. The Kamizuki maintain Konoha's perimeter seals and identity checks, which makes them unglamorous, extremely well-informed, and quietly connected to everyone who enters the village."},
-{k:"wagarashi",n:"Wagarashi",t:"common",w:52,g:"Money, muscle, ugly politics",
- d:"A Land of Tea family closer to a syndicate than a shinobi clan: wealth, hired thugs and rigged races. Being born to them means resources and a reputation you will spend your life either using or escaping."},
-{k:"wasabi",n:"Wasabi",t:"common",w:52,g:"Rivalry-forged taijutsu, coastal networks",
- d:"The Wagarashi's ancestral rivals in the Land of Tea. Leaner, poorer, better fighters. Generations of feud have made them excellent close-quarters brawlers with a very long memory."},
-{k:"kohaku",n:"Kohaku",t:"common",w:44,g:"The Kohaku no Jōhei sealing pot",
- d:"Keepers of the Kohaku no Jōhei, a sealing vessel able to draw in a target and trap them permanently. A small line whose worth lies in a single inherited artefact and the sealing knowledge to operate it safely."},
-{k:"fuma",n:"Fūma",t:"common",w:44,g:"Giant shuriken, oversized weaponry",
- d:"The Land of Sound's great weapon clan, famous for the Fūma Shuriken and a whole armoury of oversized folding steel. Once powerful, now fractured by infighting and outside manipulation."},
-{k:"yotsuki",n:"Yotsuki",t:"common",w:44,g:"Raw physical power, Kumo lightning conditioning",
- d:"A Kumogakure line built on brute strength and lightning-natured body conditioning. Yotsuki fight like landslides: forward, loud, and very difficult to stop once they have started."},
-{k:"nara",n:"Nara",t:"uncommon",w:62,g:"Shadow Imitation, medical deer forest, ruinous intelligence",
- d:"Shadow manipulation: the Nara extend their own shadow to bind, mirror and eventually strangle a target's movement. The technique costs chakra in proportion to distance and fails in darkness, so it rewards planning over force. Nara are also Konoha's pharmacists, tending the deer forest, and are famously the smartest and laziest people in the village."},
-{k:"yamanaka",n:"Yamanaka",t:"uncommon",w:62,g:"Mind Transfer, mind reading, sensor network",
- d:"Mind-body techniques. A Yamanaka can throw their consciousness into another body and pilot it, read memories directly, or link an entire army's minds into one battlefield network. A miss leaves you drifting outside your own skull, so control matters far more than power."},
-{k:"akimichi",n:"Akimichi",t:"uncommon",w:62,g:"Body expansion, calorie conversion, the Three Coloured Pills",
- d:"Calorie conversion. Akimichi turn stored body mass directly into chakra, enlarging limbs or their entire body to enormous scale. The Three Coloured Pills push this to Butterfly Mode, which grants terrifying output and can cost the user their life. Never comment on their weight."},
-{k:"aburame",n:"Aburame",t:"uncommon",w:56,g:"Kikaichū symbiosis, chakra-draining insects",
- d:"At birth an Aburame's body is offered to a kikaichū colony, which lives inside them and feeds on their chakra. In exchange the insects scout, track, drain enemy chakra and can be left behind as living markers. The clan speaks little and is unsettling to be near, which they use deliberately."},
-{k:"inuzuka",n:"Inuzuka",t:"uncommon",w:56,g:"Ninken partner, feral transformation, scent tracking",
- d:"Raised alongside ninken from childhood. Inuzuka possess extraordinary smell and hearing, fight in fused human-dog forms like the Passing Fang, and are almost impossible to escape once they have your scent. Loud, loyal and territorial."},
-{k:"kurama",n:"Kurama",t:"rare",w:26,g:"Genjutsu strong enough to kill by belief",
- d:"Not the fox. The Kurama clan produce the most potent genjutsu users alive — illusions so absolute that a wound imagined inside them appears on the real body. The gift occasionally manifests as an uncontrollable second personality, which is why the clan has nearly wiped itself out policing its own children."},
-{k:"iburi",n:"Iburi",t:"rare",w:22,g:"Smoke body, involuntary dispersal",
- d:"An underground clan able to turn their bodies into smoke, passing through gaps and blows alike. Untrained, the transformation triggers on its own and a child can dissipate permanently, which is why the Iburi live sealed away from wind and sun."},
-{k:"chinoike",n:"Chinoike",t:"rare",w:18,g:"Ketsuryūgan, blood manipulation",
- d:"Blood-users, bearers of the Ketsuryūgan — a crimson dōjutsu granting control over the iron in blood, including the blood inside a living body. Hunted almost to extinction and exiled to a scorched valley for it. Bearing this name means someone, somewhere, still wants you dead."},
-{k:"hozuki",n:"Hōzuki",t:"rare",w:24,g:"Hydrification, liquid body, limb reshaping",
- d:"Hydrification: the body liquefies at will, so blades and fists pass straight through. A Hōzuki can reshape limbs, flow through cracks and drink water to rebuild mass — but a lightning technique through a liquid body is lethal, and drying out is a real death."},
-{k:"yuki",n:"Yuki",t:"rare",w:16,g:"Ice Release, crystal ice mirrors",
- d:"Ice Release, a wind-and-water kekkei genkai that shapes ice out of moisture in the air. The Demon Ice Mirrors let the user move between reflective surfaces faster than the eye can follow. The Yuki were massacred during the Land of Water's bloodline purges; survivors hide the ability their whole lives."},
-{k:"jugo",n:"Jūgo's kin",t:"rare",w:13,g:"Natural energy absorption, Sage Transformation, murderous fits",
- d:"A nameless line whose bodies absorb natural energy from the air without any training. It grants Sage Transformation — body parts warping into weapons, strength past human scale — and comes bundled with violent psychotic episodes the user cannot control. This blood is the origin of the cursed seals."},
-{k:"kaguya",n:"Kaguya",t:"rare",w:11,g:"Shikotsumyaku, living bone weaponry",
- d:"Shikotsumyaku, the dead bone pulse: total control over your own skeleton — blades grown from the arms, finger bones fired like bullets, a spine regrown mid-fight. The clan was a berserker warrior line that destroyed itself attacking Kirigakure unprovoked. Almost no one is left."},
-{k:"uzumaki",n:"Uzumaki",t:"legendary",w:20,g:"Vast chakra, brutal longevity, Adamantine Sealing Chains",
- d:"Whirlpool blood. Uzumaki carry enormous chakra reserves and a life force so strong they age slowly and survive wounds that should end them. The clan built the world's finest sealing tradition, and some members manifest Adamantine Sealing Chains straight from their chakra, strong enough to bind a tailed beast. Uzushiogakure was destroyed precisely because other nations feared this."},
-{k:"hyuga",n:"Hyūga",t:"legendary",w:13,g:"Byakugan, Gentle Fist, the caged bird",
- d:"Bearers of the Byakugan: near-360-degree vision, sight through solid matter, and direct sight of the chakra network and its 361 points. Paired with the Gentle Fist it lets a Hyūga shut an opponent's chakra down from the inside without breaking skin. The clan is split into a main house and a branch house sealed with a curse mark, and that division will shape your life whichever side you are born to."},
-{k:"uchiha",n:"Uchiha",t:"legendary",w:9,g:"Sharingan, Fire mastery, the Curse of Hatred",
- d:"The Sharingan does not come free. It awakens under severe emotional trauma, usually loss, and deepens the same way — copying techniques, reading movement before it happens, and at its extremes bending perception itself. Uchiha are born with a dominant Fire nature and unusual talent, and with a temperament the clan itself calls the Curse of Hatred: they love more intensely than others and break harder for it."},
-{k:"senju",n:"Senju",t:"legendary",w:5,g:"Colossal vitality, all-nature aptitude, the ghost of Wood Release",
- d:"The Clan of the Thousand Hands, founders of Konoha alongside the Uchiha. Senju carry no single kekkei genkai but an extraordinary breadth: strong life force, huge stamina, aptitude across every nature. Wood Release appeared exactly once, in Hashirama, and has never been reproduced naturally since — so this blood grants you an enormous ceiling and no guarantee at all."},
-{k:"otsutsuki",n:"Ōtsutsuki",t:"mythic",w:1,g:"Divine chakra, Byakugan birthright, an inheritance that will hunt you",
- d:"Not human. Ōtsutsuki descend from the ones who brought chakra to this world: born with the Byakugan, an absurd chakra pool, durability far past shinobi norms, and a lifespan measured in centuries. This blood is a target painted on your back — the clan harvests its own, and something will eventually come looking for what you carry."}
-];
-
-/* ═══ ABILITY COMPENDIUM ═══ */
-const ABILITIES = [
-{c:"Modes",n:"Sage Mode",g:"Signed sage contract + Senjutsu 40 + Control 60; requires perfect stillness while gathering — failure petrifies you",d:"Draws natural energy into your own chakra, multiplying strength, speed, durability and sensing range."},
-{c:"Modes",n:"Six Paths Sage Mode",g:"Sage Mode + Six Paths chakra granted by an Ōtsutsuki-tier being. Effectively unreachable by training",d:"Sage Mode at divine scale: truth-seeking orbs, flight, sensing across a whole battlefield."},
-{c:"Modes",n:"Tailed Beast Mode",g:"Be a jinchūriki and either win the beast's consent or dominate it",d:"Cloaks or fully manifests the sealed beast's chakra as a body of your own."},
-{c:"Modes",n:"Nine-Tails Chakra Mode",g:"Kurama jinchūriki only",d:"A golden chakra shroud granting reaction speed and sensing far past human limits."},
-{c:"Modes",n:"Baryon Mode",g:"Full partnership with Kurama. Burns the life force of user and beast alike",d:"Fuses your chakra with the beast's like nuclear fusion. It will kill one of you."},
-{c:"Modes",n:"Sage Transformation",g:"Jūgo's bloodline only. Uncontrollable below Willpower 60",d:"Absorbed natural energy warps the body into weapons and inhuman strength, with rage you may not survive."},
-{c:"Modes",n:"Butterfly Mode",g:"Akimichi blood + all three Coloured Pills. The red pill is frequently fatal",d:"Converts stored calories wholesale into chakra wings and monstrous striking power."},
-{c:"Modes",n:"Lightning Release Chakra Mode",g:"Lightning primary affinity + Control 55 + Stamina 55",d:"Overcharges the nervous system, collapsing reaction time and multiplying speed."},
-{c:"Modes",n:"Slithering Snake Mode",g:"Orochimaru-line body modification. Not naturally inherited",d:"Reshapes the body into a mass of serpents; shedding it replaces damaged flesh."},
-
-{c:"Kekkei Genkai",n:"Wood Release",g:"Senju blood plus a statistical miracle, or Hashirama cell implantation",d:"Grows and commands living wood from your own chakra; the only nature that can suppress a tailed beast."},
-{c:"Kekkei Genkai",n:"Ice Release",g:"Yuki blood only. Wind + Water",d:"Freezes ambient moisture into weapons, walls and mirrors you can travel between."},
-{c:"Kekkei Genkai",n:"Lava Release",g:"Inherited only. Fire + Earth",d:"Produces molten rock, quicklime, corrosive rubber and searing ash."},
-{c:"Kekkei Genkai",n:"Boil Release",g:"Inherited only. Fire + Water",d:"Generates pressurised, skin-stripping corrosive steam."},
-{c:"Kekkei Genkai",n:"Magnet Release",g:"Inherited only. Wind + Earth",d:"Magnetises iron sand, gold dust or ore and shapes it into armour and blades."},
-{c:"Kekkei Genkai",n:"Storm Release",g:"Inherited only. Lightning + Water",d:"Fires guided beams of charged energy that bend in flight."},
-{c:"Kekkei Genkai",n:"Scorch Release",g:"Inherited only. Fire + Wind",d:"Boils the moisture out of a living target until nothing is left but a husk."},
-{c:"Kekkei Genkai",n:"Explosion Release",g:"Inherited only. Earth + Lightning",d:"Renders touched matter explosive."},
-{c:"Kekkei Genkai",n:"Steel Release",g:"Inherited only",d:"Hardens the body into steel that turns blades and blunts impact."},
-{c:"Kekkei Genkai",n:"Dark Release",g:"Inherited only",d:"Absorbs chakra through the palm and fires it back amplified."},
-{c:"Kekkei Genkai",n:"Crystal Release",g:"Inherited only",d:"Crystallises moisture and even chakra itself into shaped, shattering structures."},
-{c:"Kekkei Genkai",n:"Swift Release",g:"Inherited only",d:"Movement so fast the body appears to teleport. Untrainable without the blood."},
-
-{c:"Blood traits",n:"Shikotsumyaku",g:"Kaguya blood only",d:"Absolute control of your own skeleton: bone blades, bone bullets, bone armour, regrown spine."},
-{c:"Blood traits",n:"Natural energy absorption",g:"Jūgo's line only",d:"Your body drinks natural energy from the air whether you want it to or not."},
-{c:"Blood traits",n:"Calorie conversion",g:"Akimichi blood",d:"Turns stored body mass into raw chakra at a punishing physical cost."},
-{c:"Blood traits",n:"Body expansion",g:"Akimichi blood + Control 20",d:"Enlarges a limb or your whole body to enormous scale."},
-{c:"Blood traits",n:"Kikaichū symbiosis",g:"Aburame blood, offered at infancy",d:"A chakra-eating hive lives inside your body and obeys you."},
-{c:"Blood traits",n:"Mind Transfer",g:"Yamanaka blood + Control 35 + Intelligence 40",d:"Projects your consciousness into a target's body. Miss, and you drift helplessly."},
-{c:"Blood traits",n:"Mind reading",g:"Yamanaka blood + Intelligence 45",d:"Reads memory and intent directly out of a subject's skull."},
-{c:"Blood traits",n:"Shadow Imitation",g:"Nara blood + Control 30. Costs chakra by distance, useless in darkness",d:"Extends your shadow to seize and puppet a target's movement."},
-{c:"Blood traits",n:"Beast Human Clone",g:"Inuzuka blood + a bonded ninken + Agility 40",d:"You and your dog fuse into a twin-headed feral form."},
-{c:"Blood traits",n:"Enhanced smell",g:"Inuzuka blood",d:"Tracks a scent across days and hears a lie in someone's sweat."},
-{c:"Blood traits",n:"Hydrification",g:"Hōzuki blood only",d:"Liquefies your body so attacks pass through. Lightning is lethal to you, drought worse."},
-{c:"Blood traits",n:"Adamantine Sealing Chains",g:"Uzumaki blood + Fūinjutsu 55 + Chakra 65",d:"Chakra chains erupt from your body, strong enough to pin a tailed beast."},
-{c:"Blood traits",n:"Uzumaki vitality",g:"Uzumaki blood",d:"A life force that shrugs off wounds and stretches your lifespan past a century."},
-{c:"Blood traits",n:"Jashin immortality",g:"Jashin ritual conversion. Requires abandoning your village and your soul",d:"You cannot die, and you feel every wound you deal yourself."},
-{c:"Blood traits",n:"Puppet body conversion",g:"Kugutsu mastery 70 + willingness to discard your flesh",d:"Replaces your body with a puppet frame. You stop aging and stop being human."},
-{c:"Blood traits",n:"Multiple hearts",g:"The forbidden Earth Grudge Fear technique",d:"Steals and stores hearts, each granting an extra nature and an extra life."},
-
-{c:"Dōjutsu",n:"Sharingan",g:"Uchiha blood ONLY, awakened by severe emotional trauma. No amount of training substitutes",d:"Reads movement before it lands, copies any technique it sees, casts illusion through eye contact. Tomoe deepen with further loss."},
-{c:"Dōjutsu",n:"Mangekyō Sharingan",g:"Sharingan + the death of someone you love, by your hand or your failure. Steadily blinds you",d:"Unlocks a unique technique per eye — Amaterasu, Tsukuyomi, Kamui, Susanoo."},
-{c:"Dōjutsu",n:"Eternal Mangekyō",g:"Transplant of a sibling's Mangekyō",d:"Removes the blindness and stabilises the power permanently."},
-{c:"Dōjutsu",n:"Byakugan",g:"Hyūga or Ōtsutsuki blood ONLY, present from birth",d:"Near-total field of vision, sight through matter, and direct sight of the chakra network."},
-{c:"Dōjutsu",n:"Tenseigan",g:"Ōtsutsuki Byakugan fused with Hyūga chakra",d:"Grants gravity control and a chakra mode of enormous output."},
-{c:"Dōjutsu",n:"Rinnegan",g:"Senju and Uchiha chakra combined in one body, or Ōtsutsuki descent. Astronomically rare",d:"The Six Paths: gravity, summoning, soul removal, mechanisation, absorption, and revival of the dead."},
-{c:"Dōjutsu",n:"Ketsuryūgan",g:"Chinoike blood only",d:"Controls the iron in blood, including blood still inside a living body."},
-
-{c:"Senjutsu",n:"Natural energy sensing",g:"Senjutsu 15",d:"Feels life and chakra moving through the terrain around you."},
-{c:"Senjutsu",n:"Frog Kata",g:"Toad contract + Sage Mode + Taijutsu 55",d:"Natural energy extends past your fists, so strikes land before contact."},
-{c:"Senjutsu",n:"Toad Sage arts",g:"Myōboku training + Control 60",d:"Sage-scale oil, wind and sound techniques."},
-{c:"Senjutsu",n:"Snake Sage arts",g:"Ryūchi Cave training. Survival is not guaranteed",d:"White-snake senjutsu and the shedding of your own body."},
-
-{c:"Chakra arts",n:"Yin Release",g:"Intelligence 55 + Control 50",d:"Shapes imagination into form: genjutsu, illusion, creation from nothing."},
-{c:"Chakra arts",n:"Yang Release",g:"Stamina 55 + Willpower 50",d:"Breathes vitality into form: healing, life, animation."},
-{c:"Chakra arts",n:"Yin–Yang Release",g:"Both of the above at 70 + Six Paths chakra",d:"Creates true life from nothing and undoes what other chakra has done."},
-{c:"Chakra arts",n:"Chakra absorption",g:"Control 45",d:"Draws chakra out of a technique or a person on contact."},
-{c:"Chakra arts",n:"Chakra suppression",g:"Control 40",d:"Flattens your signature until sensors slide past you."},
-{c:"Chakra arts",n:"Chakra sensing",g:"Control 35 + Intelligence 35",d:"Tracks chakra signatures at range and reads the emotion in them."},
-{c:"Chakra arts",n:"Chakra threads",g:"Control 50",d:"Spins near-invisible threads to puppeteer objects, corpses or people."},
-{c:"Chakra arts",n:"Nature transformation",g:"Control 30 + a discovered affinity",d:"Converts raw chakra into your element. The gate to every elemental technique."},
-{c:"Chakra arts",n:"Shape transformation",g:"Control 45",d:"Forces chakra into a held form — the hard half of the Rasengan."},
-{c:"Chakra arts",n:"Five-nature mastery",g:"All five natures at mastery 60. Decades of work",d:"Every element answers to you."},
-
-{c:"Space–time",n:"Summoning Technique",g:"A signed blood contract + Chakra 40",d:"Calls a bound creature to your side across any distance."},
-{c:"Space–time",n:"Reverse Summoning",g:"Summoning + the summon's consent",d:"Sends you to them instead."},
-{c:"Space–time",n:"Flying Thunder God",g:"Fūinjutsu 75 + Control 70. Kills the careless instantly",d:"Marks a place or person and moves you there with no travel in between."},
-{c:"Space–time",n:"Kamui",g:"Mangekyō Sharingan only",d:"Pulls matter into a pocket dimension, including yourself."},
-
-{c:"Sealing",n:"Five Elements Seal",g:"Fūinjutsu 40",d:"Slams a target's chakra flow shut with a five-fingered strike."},
-{c:"Sealing",n:"Eight Trigrams Sealing",g:"Fūinjutsu 70 + Uzumaki-grade reserves",d:"Seals a tailed beast into a living vessel."},
-{c:"Sealing",n:"Dead Demon Consuming Seal",g:"Fūinjutsu 65. Costs your life, without exception",d:"Summons the Reaper to tear out a soul and hold it forever."},
-{c:"Sealing",n:"Cursed Seal of Heaven",g:"Applied by Orochimaru. Roughly one in ten survive the bite",d:"Jūgo's blood forced into you: enormous power, and a will trying to replace your own."},
-{c:"Sealing",n:"Strength of a Hundred Seal",g:"Medical 70 + three years of stored chakra",d:"A forehead reservoir that funds instant regeneration when broken open."},
-
-{c:"Regeneration",n:"Creation Rebirth",g:"Strength of a Hundred Seal + Medical 75",d:"Rebuilds every cell in your body at the price of your remaining lifespan."},
-{c:"Regeneration",n:"Mitotic regeneration",g:"Hashirama cell implantation",d:"Wounds close as fast as they open."},
-{c:"Regeneration",n:"Medical healing palm",g:"Medical 20 + Control 35",d:"Knits flesh with chakra. The floor every field medic stands on."},
-{c:"Regeneration",n:"Living body replacement",g:"Orochimaru-line technique. Requires taking another person's body",d:"Discards your failing body for a stolen one and continues."},
-
-{c:"Tailed beast",n:"Tailed Beast Ball",g:"Jinchūriki with the beast's cooperation",d:"Compresses positive and negative chakra into a sphere that erases terrain."},
-{c:"Tailed beast",n:"Chakra arms",g:"Jinchūriki, at least a partial cloak",d:"Extends limbs of pure beast chakra for reach, lifting and shielding."},
-{c:"Tailed beast",n:"Negative emotion sensing",g:"Kurama jinchūriki",d:"Feels malice approaching before the person carrying it arrives."},
-{c:"Tailed beast",n:"Sand manipulation",g:"Shukaku jinchūriki, or Sabaku blood",d:"Commands sand as armour, prison and weapon, moving on its own to save you."}
-];
-
-/* ═══ SKILL TREE ═══
-   k   = the key inside player.skills that this branch reads from
-   n   = display name
-   col = branch colour in the tree UI
-   nodes = milestone unlocks, ascending by lv. `s` is the stat auto-granted when the
-           node is first crossed (applied by the engine, not the model, so milestone
-           bonuses can never be silently skipped). `j` optionally names a jutsu that
-           becomes learnable at that node. */
-const TREE = [
-{k:"taijutsu",n:"Taijutsu",col:"#B23A2B",desc:"Hand-to-hand combat: strikes, throws, footwork, and the raw conditioning behind them.",nodes:[
- {lv:5, n:"Basic stance",g:"+1 Strength",s:{strength:1}},
- {lv:10,n:"Leaf Whirlwind",g:"+2 Agility",s:{agility:2},j:"Leaf Whirlwind"},
- {lv:20,n:"Body conditioning",g:"+2 Stamina",s:{stamina:2}},
- {lv:25,n:"Dynamic Entry",g:"+3 Strength",s:{strength:3},j:"Dynamic Entry"},
- {lv:40,n:"Shadow of the Dancing Leaf",g:"+3 Agility",s:{agility:3},j:"Shadow of the Dancing Leaf"},
- {lv:55,n:"Leaf Great Whirlwind",g:"+3 Strength · +1 Agility",s:{strength:3,agility:1},j:"Leaf Great Whirlwind"},
- {lv:60,n:"Strong Fist",g:"+5 Strength · opens Gate training",s:{strength:5}},
- {lv:70,n:"Front Lotus",g:"+4 Strength · self-damaging",s:{strength:4},j:"Front Lotus"},
- {lv:80,n:"Eight Gates: first opening",g:"+8 Strength · permanent injury risk",s:{strength:8},j:"Eight Gates: Gate of Opening"},
- {lv:95,n:"Eight Gates: third opening",g:"+10 Strength · +5 Agility · lethal strain",s:{strength:10,agility:5}}]},
-
-{k:"ninjutsu",n:"Ninjutsu",col:"#4C7FB8",desc:"Chakra techniques: clones, transformations, elemental release, and shape manipulation.",nodes:[
- {lv:5, n:"Chakra awareness",g:"+1 Chakra",s:{chakra:1}},
- {lv:10,n:"Nature transformation",g:"+2 Chakra",s:{chakra:2}},
- {lv:15,n:"Clone Technique",g:"+1 Control",s:{control:1},j:"Clone Technique"},
- {lv:25,n:"Seals at speed",g:"+3 Control",s:{control:3},j:"Body Replacement Technique"},
- {lv:40,n:"Shadow Clone",g:"+4 Chakra",s:{chakra:4},j:"Shadow Clone Technique"},
- {lv:50,n:"Elemental mastery",g:"+3 Chakra · +2 Control",s:{chakra:3,control:2}},
- {lv:60,n:"Shape transformation",g:"Rasengan line opens · +3 Control",s:{control:3},j:"Rasengan"},
- {lv:75,n:"Multi Shadow Clone",g:"+5 Chakra · +3 Stamina",s:{chakra:5,stamina:3},j:"Multi Shadow Clone Technique"},
- {lv:80,n:"Second nature",g:"A secondary affinity becomes trainable",s:{chakra:3}},
- {lv:95,n:"Grand technique",g:"+6 Chakra · +4 Control",s:{chakra:6,control:4}}]},
-
-{k:"genjutsu",n:"Genjutsu",col:"#8E7BC0",desc:"Illusion: hijacking the senses, the memory, and eventually the will of a target.",nodes:[
- {lv:5, n:"Focus discipline",g:"+1 Intelligence",s:{intelligence:1}},
- {lv:10,n:"Illusion release (Kai)",g:"+2 Intelligence",s:{intelligence:2},j:"Genjutsu Release"},
- {lv:20,n:"False Surroundings",g:"+2 Control",s:{control:2},j:"Demonic Illusion: False Surroundings"},
- {lv:25,n:"Hell Viewing",g:"+3 Willpower",s:{willpower:3},j:"Demonic Illusion: Hell Viewing"},
- {lv:40,n:"Layered casting",g:"+4 Intelligence",s:{intelligence:4}},
- {lv:55,n:"Mist Servant",g:"+3 Control",s:{control:3},j:"Demonic Illusion: Mist Servant"},
- {lv:60,n:"Sensory hijack",g:"Cast without hand seals · +3 Willpower",s:{willpower:3}},
- {lv:75,n:"Sly Mind Affect",g:"+4 Intelligence",s:{intelligence:4},j:"Sly Mind Affect Technique"},
- {lv:80,n:"Bringer of Darkness",g:"+6 Intelligence",s:{intelligence:6},j:"Bringer of Darkness"},
- {lv:95,n:"Absolute illusion",g:"+6 Intelligence · +4 Willpower",s:{intelligence:6,willpower:4}}]},
-
-{k:"fuinjutsu",n:"Sealing",col:"#C29B2B",desc:"Written chakra: storage, barriers, explosive tags, contracts, and beast-grade containment.",nodes:[
- {lv:5, n:"Brushwork",g:"+1 Control",s:{control:1}},
- {lv:10,n:"Storage scrolls",g:"+2 Control",s:{control:2},j:"Generic Sealing Technique"},
- {lv:20,n:"Tag reading",g:"+2 Intelligence",s:{intelligence:2}},
- {lv:25,n:"Explosive tag scripting",g:"+3 Control",s:{control:3},j:"Explosive Tag Detonation"},
- {lv:40,n:"Barrier seals",g:"+4 Control",s:{control:4},j:"Four Corner Sealing Barrier"},
- {lv:50,n:"Five Elements Seal",g:"+3 Control · +2 Chakra",s:{control:3,chakra:2},j:"Five Elements Seal"},
- {lv:60,n:"Contract writing",g:"Summoning contracts open · +3 Chakra",s:{chakra:3},j:"Summoning Technique"},
- {lv:75,n:"Flying Thunder God groundwork",g:"+4 Control · +3 Intelligence",s:{control:4,intelligence:3}},
- {lv:80,n:"Living seals",g:"Beast-grade sealing opens · +5 Control",s:{control:5}},
- {lv:95,n:"Eight Trigrams Sealing",g:"+6 Control · +5 Chakra",s:{control:6,chakra:5},j:"Eight Trigrams Sealing Style"}]},
-
-{k:"kenjutsu",n:"Swordsmanship",col:"#D4552F",desc:"The blade: draw speed, forms, chakra flow through steel, and eventually forging your own.",nodes:[
- {lv:5, n:"Grip and guard",g:"+1 Strength",s:{strength:1}},
- {lv:10,n:"Blade forms",g:"+2 Strength",s:{strength:2}},
- {lv:20,n:"Parry timing",g:"+2 Agility",s:{agility:2}},
- {lv:25,n:"Iaidō draw",g:"+3 Agility",s:{agility:3},j:"Iaidō Draw"},
- {lv:40,n:"Chakra flow",g:"+3 Control",s:{control:3},j:"Chakra Flow: Blade"},
- {lv:55,n:"Crescent Moon Dance",g:"+3 Agility · +2 Strength",s:{agility:3,strength:2},j:"Crescent Moon Dance"},
- {lv:60,n:"Two-blade style",g:"+5 Agility",s:{agility:5}},
- {lv:75,n:"Blade of wind",g:"+4 Control · +2 Chakra",s:{control:4,chakra:2}},
- {lv:80,n:"Chakra blade forging",g:"Forge a named weapon · +4 Strength",s:{strength:4}},
- {lv:95,n:"Sword saint",g:"+6 Agility · +5 Strength",s:{agility:6,strength:5}}]},
-
-{k:"bukijutsu",n:"Weapons",col:"#5E8C4E",desc:"Thrown steel and rigged ground: shuriken, senbon, wire traps, and oversized ordnance.",nodes:[
- {lv:5, n:"Throwing stance",g:"+1 Agility",s:{agility:1}},
- {lv:10,n:"Shuriken accuracy",g:"+2 Agility",s:{agility:2},j:"Shuriken Throw"},
- {lv:20,n:"Senbon precision",g:"+2 Control",s:{control:2},j:"Senbon Volley"},
- {lv:25,n:"Wire trap rigging",g:"+3 Intelligence",s:{intelligence:3},j:"Wire Trap"},
- {lv:40,n:"Curved throw",g:"+3 Luck",s:{luck:3}},
- {lv:55,n:"Multi-target release",g:"+3 Agility",s:{agility:3}},
- {lv:60,n:"Shadow Shuriken",g:"+4 Agility",s:{agility:4},j:"Shadow Shuriken Technique"},
- {lv:75,n:"Explosive rigging",g:"+4 Intelligence",s:{intelligence:4}},
- {lv:80,n:"Thousand-needle rain",g:"+6 Control",s:{control:6},j:"Thousand Needles of Death"},
- {lv:95,n:"Weapon master",g:"+5 Agility · +5 Luck",s:{agility:5,luck:5}}]},
-
-{k:"medical",n:"Medical",col:"#4CA394",desc:"Medical ninjutsu: triage, the healing palm, poison work, and the regeneration seals.",nodes:[
- {lv:5, n:"Anatomy basics",g:"+1 Intelligence",s:{intelligence:1}},
- {lv:10,n:"Field triage",g:"+2 Intelligence",s:{intelligence:2}},
- {lv:20,n:"Chakra sensitivity",g:"+2 Control",s:{control:2}},
- {lv:25,n:"Healing palm",g:"+3 Control",s:{control:3},j:"Mystical Palm Technique"},
- {lv:40,n:"Poison extraction",g:"+4 Intelligence",s:{intelligence:4},j:"Poison Extraction Technique"},
- {lv:55,n:"Cell activation",g:"+3 Stamina",s:{stamina:3}},
- {lv:60,n:"Chakra scalpel",g:"+5 Control",s:{control:5},j:"Chakra Scalpel"},
- {lv:75,n:"Delicate Illness Extraction",g:"+4 Control · +3 Intelligence",s:{control:4,intelligence:3}},
- {lv:80,n:"Strength of a Hundred",g:"Regeneration line opens · +5 Stamina",s:{stamina:5},j:"Strength of a Hundred Seal"},
- {lv:95,n:"Creation Rebirth",g:"+6 Stamina · +5 Control",s:{stamina:6,control:5},j:"Creation Rebirth"}]},
-
-{k:"senjutsu",n:"Sage Arts",col:"#B58DB6",desc:"Natural energy: stillness, sensing, and the long dangerous road to Sage Mode.",nodes:[
- {lv:5, n:"Breathing discipline",g:"+1 Willpower",s:{willpower:1}},
- {lv:10,n:"Stillness training",g:"+2 Willpower",s:{willpower:2}},
- {lv:20,n:"Ambient awareness",g:"+2 Intelligence",s:{intelligence:2}},
- {lv:25,n:"Natural energy sensing",g:"+3 Willpower",s:{willpower:3},j:"Natural Energy Sensing"},
- {lv:40,n:"Gathering without moving",g:"+4 Control",s:{control:4}},
- {lv:55,n:"Balanced intake",g:"+3 Control · +2 Chakra",s:{control:3,chakra:2}},
- {lv:60,n:"Imperfect Sage Mode",g:"Petrification risk · +4 Chakra",s:{chakra:4}},
- {lv:75,n:"Sustained gathering",g:"+4 Willpower · +3 Stamina",s:{willpower:4,stamina:3}},
- {lv:80,n:"Sage Mode",g:"+10 to physical stats while active",s:{strength:4,agility:4,chakra:4},j:"Sage Mode"},
- {lv:95,n:"Perfect Sage Mode",g:"+6 across the board",s:{strength:6,agility:6,chakra:6,control:6}}]}
-];
-
-/* ═══ JUTSU LIBRARY ═══ grounding data so the interpreter can validate a technique
-   the narrator invents, rather than inventing stats for it. rank is academy/D/C/B/A/S. */
-const JUTSU_LIBRARY = [
-{n:"Clone Technique",rank:"academy",cost:3,el:"none",req:{ninjutsu:15},d:"Produces intangible copies of yourself to confuse an opponent."},
-{n:"Body Replacement Technique",rank:"academy",cost:4,el:"none",req:{ninjutsu:25},d:"Swaps your body with a nearby object at the moment of impact."},
-{n:"Transformation Technique",rank:"academy",cost:3,el:"none",req:{ninjutsu:20},d:"Changes your appearance into another person or object."},
-{n:"Rope Escape Technique",rank:"academy",cost:2,el:"none",req:{ninjutsu:10},d:"Loosens bindings through fine chakra control."},
-{n:"Shadow Clone Technique",rank:"B",cost:25,el:"none",req:{ninjutsu:40,chakra:25},d:"Creates solid, independent copies that share your chakra and return their memories."},
-{n:"Multi Shadow Clone Technique",rank:"A",cost:60,el:"none",req:{ninjutsu:75,chakra:60},d:"Creates shadow clones by the hundred. Ruinous without enormous reserves."},
-{n:"Rasengan",rank:"A",cost:35,el:"none",req:{ninjutsu:60,control:50},d:"A sphere of pure rotating chakra held in the palm, requiring no hand seals."},
-{n:"Leaf Whirlwind",rank:"academy",cost:0,el:"none",req:{taijutsu:10},d:"A low-high spinning kick combination taught at the Academy."},
-{n:"Dynamic Entry",rank:"D",cost:0,el:"none",req:{taijutsu:25},d:"A flying kick delivered from an unexpected angle."},
-{n:"Shadow of the Dancing Leaf",rank:"C",cost:0,el:"none",req:{taijutsu:40},d:"Shadows an airborne opponent's movements exactly, staying beneath them."},
-{n:"Leaf Great Whirlwind",rank:"C",cost:0,el:"none",req:{taijutsu:55},d:"A three-stage kick chain of escalating force."},
-{n:"Front Lotus",rank:"B",cost:0,el:"none",req:{taijutsu:70},d:"Suplexes an airborne target headfirst. Tears the user's own muscle."},
-{n:"Eight Gates: Gate of Opening",rank:"A",cost:0,el:"none",req:{taijutsu:80},d:"Releases the brain's restraint on muscle output. Immense strain."},
-{n:"Genjutsu Release",rank:"academy",cost:5,el:"none",req:{genjutsu:10},d:"Disrupts your own chakra flow to break an illusion."},
-{n:"Demonic Illusion: False Surroundings",rank:"C",cost:12,el:"none",req:{genjutsu:20},d:"Alters what the target sees of the terrain around them."},
-{n:"Demonic Illusion: Hell Viewing",rank:"C",cost:15,el:"none",req:{genjutsu:25},d:"Shows the target their deepest fear as though it stood before them."},
-{n:"Demonic Illusion: Mist Servant",rank:"C",cost:18,el:"none",req:{genjutsu:55},d:"Surrounds the target with illusory copies that attack from the mist."},
-{n:"Sly Mind Affect Technique",rank:"B",cost:25,el:"none",req:{genjutsu:75},d:"Traps the target in a looping corridor of their own memory."},
-{n:"Bringer of Darkness",rank:"A",cost:35,el:"none",req:{genjutsu:80},d:"Blinds the target absolutely while leaving their other senses intact."},
-{n:"Generic Sealing Technique",rank:"D",cost:8,el:"none",req:{fuinjutsu:10},d:"Draws an object into a scroll for storage and transport."},
-{n:"Explosive Tag Detonation",rank:"D",cost:5,el:"none",req:{fuinjutsu:25},d:"Triggers written explosive tags remotely through a chakra thread."},
-{n:"Four Corner Sealing Barrier",rank:"B",cost:30,el:"none",req:{fuinjutsu:40},d:"Raises a four-point barrier that nothing crosses without breaking a corner."},
-{n:"Five Elements Seal",rank:"B",cost:28,el:"none",req:{fuinjutsu:50},d:"A five-fingered strike that slams a target's chakra flow shut."},
-{n:"Summoning Technique",rank:"B",cost:30,el:"none",req:{fuinjutsu:60,chakra:40},d:"Calls a bound creature to your side across any distance."},
-{n:"Eight Trigrams Sealing Style",rank:"S",cost:90,el:"none",req:{fuinjutsu:95},d:"Seals a tailed beast into a living vessel. Usually costs the sealer's life."},
-{n:"Iaidō Draw",rank:"C",cost:0,el:"none",req:{kenjutsu:25},d:"Draws, cuts and sheathes in a single motion too fast to read."},
-{n:"Chakra Flow: Blade",rank:"B",cost:15,el:"none",req:{kenjutsu:40,control:35},d:"Channels chakra along the edge, extending reach and cutting power."},
-{n:"Crescent Moon Dance",rank:"A",cost:20,el:"none",req:{kenjutsu:55},d:"A three-way assault using clones and a single blade."},
-{n:"Shuriken Throw",rank:"academy",cost:0,el:"none",req:{bukijutsu:10},d:"Accurate throwing of shuriken at a fixed target."},
-{n:"Senbon Volley",rank:"D",cost:0,el:"none",req:{bukijutsu:20},d:"Needle throwing aimed at nerve clusters and pressure points."},
-{n:"Wire Trap",rank:"D",cost:2,el:"none",req:{bukijutsu:25},d:"Rigs near-invisible wire into a killing geometry."},
-{n:"Shadow Shuriken Technique",rank:"C",cost:6,el:"none",req:{bukijutsu:60},d:"Hides a second shuriken in the shadow of the first."},
-{n:"Thousand Needles of Death",rank:"B",cost:22,el:"water",req:{bukijutsu:80},d:"Turns falling water into a rain of piercing needles."},
-{n:"Mystical Palm Technique",rank:"A",cost:20,el:"none",req:{medical:25,control:35},d:"Knits torn flesh and mends bone with concentrated chakra."},
-{n:"Poison Extraction Technique",rank:"A",cost:25,el:"none",req:{medical:40},d:"Draws venom out of a body and into a basin of water."},
-{n:"Chakra Scalpel",rank:"A",cost:18,el:"none",req:{medical:60},d:"A blade of chakra that cuts muscle and vessel without breaking skin."},
-{n:"Strength of a Hundred Seal",rank:"S",cost:0,el:"none",req:{medical:80},d:"A forehead reservoir of stored chakra funding instant regeneration."},
-{n:"Creation Rebirth",rank:"S",cost:80,el:"none",req:{medical:95},d:"Rebuilds every cell in your body at the cost of your remaining lifespan."},
-{n:"Natural Energy Sensing",rank:"B",cost:10,el:"none",req:{senjutsu:25},d:"Feels life and chakra moving through the terrain around you."},
-{n:"Sage Mode",rank:"S",cost:50,el:"none",req:{senjutsu:80,control:60},d:"Blends natural energy into your own chakra, multiplying everything."},
-{n:"Fireball Technique",rank:"C",cost:18,el:"fire",req:{ninjutsu:30},d:"Exhales a wide sphere of flame. The Uchiha coming-of-age technique."},
-{n:"Phoenix Sage Fire",rank:"C",cost:16,el:"fire",req:{ninjutsu:35},d:"Multiple small fireballs that can be guided around obstacles."},
-{n:"Great Fireball",rank:"B",cost:30,el:"fire",req:{ninjutsu:50},d:"A fireball large enough to scorch a treeline."},
-{n:"Wind Scythe",rank:"C",cost:18,el:"wind",req:{ninjutsu:30},d:"Blades of compressed air that cut at a distance."},
-{n:"Great Breakthrough",rank:"C",cost:20,el:"wind",req:{ninjutsu:35},d:"A gale strong enough to flatten a treeline and feed a fire."},
-{n:"Wind Rasengan",rank:"S",cost:55,el:"wind",req:{ninjutsu:85,control:70},d:"Rasengan laced with wind nature. Shreds on contact."},
-{n:"Chidori",rank:"A",cost:35,el:"lightning",req:{ninjutsu:65,control:55},d:"Lightning concentrated in the hand, thrust straight through a target."},
-{n:"Lightning Bolt",rank:"C",cost:16,el:"lightning",req:{ninjutsu:30},d:"A short discharge that numbs and burns on contact."},
-{n:"Earth Wall",rank:"C",cost:15,el:"earth",req:{ninjutsu:28},d:"Raises a wall of packed earth as a shield."},
-{n:"Earth Dragon Bullet",rank:"B",cost:28,el:"earth",req:{ninjutsu:50},d:"Launches a dragon-headed mass of earth at a target."},
-{n:"Hiding Like a Mole",rank:"D",cost:10,el:"earth",req:{ninjutsu:25},d:"Sinks you through soil to travel or escape unseen."},
-{n:"Water Bullet",rank:"C",cost:16,el:"water",req:{ninjutsu:28},d:"Fires a compressed sphere of water with crushing force."},
-{n:"Water Dragon Bullet",rank:"B",cost:32,el:"water",req:{ninjutsu:55},d:"A serpent of water that strikes and drowns."},
-{n:"Hidden Mist Technique",rank:"D",cost:12,el:"water",req:{ninjutsu:25},d:"Blankets the field in mist thick enough to hide in."}
-];
-
-/* ═══ STATUS EFFECTS ═══ conditions the interpreter can apply by name. Each carries a
-   per-turn stat modifier the engine applies automatically while active. */
-const STATUS_EFFECTS = [
-{n:"Exhausted",sev:"minor",mod:{agility:-2,strength:-1},d:"Fatigue past the point of clean movement. Everything is a half-second slow."},
-{n:"Starving",sev:"major",mod:{strength:-3,agility:-2,intelligence:-2},d:"The body has begun eating itself. Thought comes slowly and hands shake."},
-{n:"Concussed",sev:"major",mod:{intelligence:-4,control:-3},d:"The world tilts and will not sit still. Chakra control is badly degraded."},
-{n:"Broken arm",sev:"major",mod:{strength:-5,taijutsu:-3},d:"The bone is out of line. Any weight on it whites out your vision."},
-{n:"Broken leg",sev:"major",mod:{agility:-6},d:"You cannot run and can barely stand. Every step is a negotiation."},
-{n:"Chakra exhaustion",sev:"major",mod:{chakra:-5,control:-4},d:"The coils are empty and raw. Even a basic technique feels like lifting a house."},
-{n:"Poisoned",sev:"major",mod:{stamina:-4,strength:-2},d:"Something is working through your blood. Time is not on your side."},
-{n:"Bleeding",sev:"minor",mod:{stamina:-2},d:"A wound that has not closed. It will get worse before it gets better."},
-{n:"Sprained ankle",sev:"minor",mod:{agility:-3},d:"Weight-bearing is possible but ugly. Sprinting is out."},
-{n:"Burned",sev:"minor",mod:{agility:-1,willpower:-1},d:"Scorched skin that pulls and stings with every movement."},
-{n:"Blinded",sev:"major",mod:{agility:-5,intelligence:-3},d:"You cannot see. Everything must be done by sound and memory."},
-{n:"Malnourished",sev:"minor",mod:{stamina:-2,strength:-1},d:"Never quite enough food for long enough. Growth is stunted."},
-{n:"Inspired",sev:"boon",mod:{willpower:3,intelligence:2},d:"Something lit a fire. The work feels possible in a way it did not yesterday."},
-{n:"Well-fed",sev:"boon",mod:{stamina:2,strength:1},d:"A real meal, recently. The body has fuel to spend."},
-{n:"Well-rested",sev:"boon",mod:{agility:2,control:2},d:"Real sleep, uninterrupted. Reactions are crisp."}
-];
-
-/* ═══ RANK LADDER ═══ what the village formally calls you, and roughly when. */
-const RANKS = [
-{k:"civilian",n:"Civilian",minAge:0,d:"No standing in the shinobi system at all."},
-{k:"academy student",n:"Academy Student",minAge:6,d:"Enrolled at the Academy. Not yet a shinobi in any legal sense."},
-{k:"genin",n:"Genin",minAge:11,d:"Graduated. Assigned to a three-person cell under a jōnin sensei."},
-{k:"chunin",n:"Chūnin",minAge:13,d:"Passed the Exams. Trusted to lead a squad and make calls in the field."},
-{k:"jonin",n:"Jōnin",minAge:17,d:"Elite. Takes A-rank work and trains genin cells of their own."},
-{k:"anbu",n:"ANBU",minAge:17,d:"Masked operations answering directly to the Hokage."},
-{k:"special jonin",n:"Special Jōnin",minAge:16,d:"Jōnin-grade in one narrow speciality, ordinary elsewhere."},
-{k:"sannin",n:"Sannin",minAge:25,d:"A title given, not earned through examination. Legendary standing."},
-{k:"kage",n:"Kage",minAge:25,d:"The village's leader. There is exactly one."},
-{k:"missing-nin",n:"Missing-nin",minAge:0,d:"Defected. Hunted. Your name is in the Bingo Book."}
-];
-
-/* ═══ LIFE STAGES ═══ drives what the narrator is allowed to let you attempt at all. */
-const LIFE_STAGES = [
-{max:1, label:"infant", can:"Nurse, cry, grip a finger, track movement with your eyes. Nothing else."},
-{max:3, label:"toddler", can:"Crawl, walk unsteadily, grab and carry small objects, speak in fragments. No chakra, no seals."},
-{max:5, label:"young child", can:"Run, climb low things, speak fully, mimic movements. Chakra is still inaccessible without a teacher."},
-{max:9, label:"child", can:"Academy-age. Basic conditioning, first chakra exercises, throwing practice, reading."},
-{max:12, label:"academy student", can:"Full Academy curriculum: the three basic techniques, sparring, weapon drills, chakra paper."},
-{max:15, label:"adolescent", can:"Genin-grade work. Real missions, elemental training, team tactics."},
-{max:17, label:"young adult", can:"Chūnin-grade. Leading squads, advanced elemental and shape transformation."},
-{max:29, label:"adult", can:"Full physical prime. Anything your stats support."},
-{max:44, label:"veteran", can:"Peak experience, slowly declining raw physicals."},
-{max:200,label:"elder", can:"Wisdom and technique over speed and strength."}
-];
-
-const ELEMENTS = [
- {k:"fire",n:"Fire",abbr:"FIR",beats:"wind"},
- {k:"wind",n:"Wind",abbr:"WND",beats:"lightning"},
- {k:"lightning",n:"Lightning",abbr:"LTN",beats:"earth"},
- {k:"earth",n:"Earth",abbr:"ERT",beats:"water"},
- {k:"water",n:"Water",abbr:"WTR",beats:"fire"}
-];
-
-/* Words that make an option generic. If the narrator returns options matching these,
-   the engine rejects them and asks the interpreter to write scene-specific ones. */
-const GENERIC_OPTION_PATTERNS = [
-  /^look around$/i, /^wait( and (listen|see))?$/i, /^try to move$/i, /^do nothing$/i,
-  /^observe$/i, /^think$/i, /^continue$/i, /^keep going$/i, /^rest$/i, /^explore$/i,
-  /^listen$/i, /^watch$/i, /^stay put$/i, /^move$/i, /^act$/i, /^proceed$/i
-];
-</script>
-
-<script type="text/plain" id="core-rules">
-You are the NARRATOR of a Naruto life-simulation RPG. The player is born at age 0 in the Hidden Leaf and lives forward from there. Your only job is to write what happens next, in prose, and to offer three concrete choices. A separate system reads your prose afterward and converts it into mechanics — so what you WRITE is what becomes real. Write clearly about outcomes and you will never be misread.
-
-## VOICE
-Second person, present tense, concrete and physical. Two to four short paragraphs. Show consequence rather than summary. Write entirely in English — no non-English script anywhere in your output. Name people, places and objects specifically; a scene with a named character and a named object in it is worth three scenes of atmosphere.
-
-## THE PRIME DIRECTIVE — say the numbers out loud
-Whenever something mechanical happens, state it plainly in the prose using an explicit signed number, because that sentence is what the mechanics system reads:
-- Training or practice: "Your strength rises by +1." / "Taijutsu improves by +2."
-- Damage: "You take -4 health." Healing: "You recover +6 health."
-- Chakra spent: "-8 chakra." Chakra restored: "+10 chakra."
-- Getting an item: "You pick up a smooth grey rock." Losing one: "The rice ball is gone."
-- Meeting someone: name them. "Old Mani, the neighbour woman, watches you."
-- Learning a technique: "You have learned the Clone Technique."
-- Injury: "Your left wrist is sprained." Recovery: "The sprain has healed."
-Never write an absolute like "your strength is now 4" unless you genuinely mean to overwrite it; prefer the signed form "+1 strength". Signed numbers are unambiguous and always land correctly.
-
-## TRAINING ALWAYS PAYS — this is not negotiable
-If the player describes practice, drilling, studying, conditioning or any deliberate effort with ANY specificity at all, it MUST produce a stated gain. Being weak is the reason to train, never a reason to refuse the gain. A child with strength 0 who punches a dummy for twenty minutes gets "+1 strength" — the low number is exactly why the training matters. You may narrate that it hurts, that it is clumsy, that a veteran would laugh, that progress is slow. You may NOT narrate that it produced nothing.
-Scale: a described session is +1. A long, focused, well-taught, or narratively significant session is +2. Never more than +2 per stat in one turn. Only a bare, contextless word like "train" with no detail whatsoever earns nothing — and then you must say in the prose exactly what detail would have made it count.
-The Iron Rule below governs ATTEMPTING FEATS, not training. Do not confuse the two. Practising a kick is training. Kicking down a door is a feat.
-
-## THE IRON RULE — gating feats, not practice
-When the player attempts a feat right now (fighting, using an unlearned technique, a physical stunt, intimidating an adult), check their numbers. If they fall short, the attempt FAILS: state plainly it does not work, explain the failure physically, and name in-fiction what they would actually need. No partial credit, no determination substituting for a stat.
-Bands: 1-15 small child, 16-30 academy student, 31-45 fresh genin, 46-60 chunin, 61-75 jonin, 76-90 elite, 91-100 kage. Two bands above your stat fails. Three bands above fails AND injures.
-A failed feat can still produce a small training gain if they genuinely exerted themselves — say so if it applies.
-
-## AGE AND TIME — the engine owns the clock, you obey it
-Every turn you are told the character's exact current age and day in the CAPABILITY ENVELOPE. That number is the truth. NEVER narrate a birthday, an age, a school year, or a life event that contradicts it. If the envelope says age 1, this is a one-year-old: no Academy, no teams, no missions, no headband, no kunai, no speech beyond fragments. If you want the story to skip ahead, do not do it yourself — instead end your prose by noting that time could pass, and let the player press Age Up.
-Consult the LIFE STAGE line in the envelope for exactly what this body can physically do right now, and never let the character exceed it regardless of stats.
-
-## HUNGER, FATIGUE AND DEATH
-Hunger climbs about 6-10 per day without food; fatigue 4-8 per day without rest. At hunger 70+ state a health loss in the prose ("-2 health, weak with hunger"). At 95+ make it severe ("-8 health"). At 0 health the character DIES — when that happens, say so plainly and finally, describe the death in two or three sentences, and do not offer options.
-
-## INVENTORY, BONDS, TECHNIQUES
-Any object that ends up in the character's hands: say so explicitly. Anything lost, eaten, broken or given away: say so explicitly. Every named person the character meaningfully interacts with: name them in the prose. Any technique learned: state that it was learned, by name. The mechanics system can only record what you actually wrote.
-
-## ELEMENTAL AFFINITY
-Undiscovered until chakra paper or a teacher reveals it — impossible before roughly age 6 with real chakra control. Once discovered, say which nature it is. Primary nature costs 25% less and trains normally; an unrelated nature costs 50% more and trains at a third pace; the nature that beats yours trains at a tenth pace. Fire beats wind, wind beats lightning, lightning beats earth, earth beats water, water beats fire.
-
-## THE THREE OPTIONS — the most important formatting rule you have
-End every reply (unless the character just died) with exactly three options in this exact format, each on its own line, nothing else on the line:
-
-[[OPTION]] Short imperative label | one clipped line naming the real cost or risk | risk
-[[OPTION]] Short imperative label | one clipped line naming the real cost or risk | risk
-[[OPTION]] Short imperative label | one clipped line naming the real cost or risk | risk
-
-risk is exactly one of: low, medium, high, lethal.
-
-Every option must be SPECIFIC TO THIS SCENE and reference something concrete you just wrote — a named person, a named object, a named place, a stated threat. If an option would still make sense pasted into a different scene, it is wrong and you must rewrite it.
-BANNED labels, never use these or anything like them: "Look around", "Wait and listen", "Wait", "Try to move", "Observe", "Do nothing", "Continue", "Explore", "Think about it", "Rest".
-GOOD examples: "Ask Old Mani what the drums mean", "Grab the fallen kunai before Rina does", "Copy the sensei's hand seal", "Bite the hand holding you".
-Vary the three: one cautious, one bolder, and one tied to a specific object or person just introduced. Never reuse an option you offered last turn. Never offer an option the character is too young or too weak to attempt.
-</script>
-
-<script type="text/plain" id="interpreter-rules">
-You are the MECHANICS INTERPRETER for a Naruto life-simulation RPG. You do not write story. You read one turn of narration that has already been written, compare it against the character's current sheet, and output ONLY a JSON object describing exactly what changed. You are the component that makes the game's numbers real, so you must be precise, literal, and complete.
-
-## YOUR ONE OUTPUT
-Output a single raw JSON object and nothing else. No prose, no explanation, no apology, no markdown fence. If nothing changed, output {}. Never output any key whose value is zero, empty, or unchanged.
-
-## WHAT TO EXTRACT
-Read the narration literally and capture every mechanical consequence it states or unambiguously implies.
-
-statDeltas — signed changes to: strength, agility, intelligence, chakra, stamina, control, willpower, luck.
-  "your strength rises by +1" -> {"strength": 1}
-  "you are slower now, -2 agility" -> {"agility": -2}
-statSet — ONLY when the narration states a new absolute value ("your strength is now 4", "control rises to 2"). Use the final number. Prefer statDeltas whenever the text is a change rather than a total.
-skillDeltas / skillSet — same rules, for: taijutsu, ninjutsu, genjutsu, fuinjutsu, kenjutsu, bukijutsu, medical, senjutsu.
-statusDeltas — signed hp, cp, fatigue, hunger. Damage taken is negative hp. Eating reduces hunger (negative). Sleeping reduces fatigue (negative). Spending chakra is negative cp.
-ageSet — ONLY if the narration explicitly states the character's age or celebrates a specific birthday ("your seventh birthday"). Output the integer age. Otherwise omit entirely.
-inventoryAdd / inventoryRemove — arrays of {"name": "...", "qty": n}. Anything picked up, given, found, crafted, bought. Anything eaten, lost, broken, sold, stolen, given away. Be literal: if the text says a rock was picked up, the rock goes in.
-equipmentSet — {"headband": "...", "outfit": "...", "weapon": "..."} when something is worn or wielded.
-relationshipsUpdate — {"Name": {"affection": 0-100, "note": "who they are"}}. Every named person interacted with. Estimate affection from the tone of the interaction; a warm moment with a parent is high, a hostile stranger is low. Existing bonds keep their value unless the scene changed it.
-relationshipsRemove — array of names, ONLY on death or permanent severance stated in the text.
-jutsuAdd — [{"name": "...", "cost": n, "element": "...", "mastery": 0-100}] when a technique is explicitly learned. jutsuRemove for one permanently lost.
-abilitiesAdd — [{"name": "...", "status": "awakened"|"dormant", "note": "..."}] for bloodline abilities that manifest.
-injuriesAdd / injuriesHeal — arrays of condition names. Prefer names from the STATUS EFFECTS list you were given; invent one only if nothing fits.
-moneyDelta, reputationDelta, karmaDelta — signed integers.
-affinityDiscover — {"primary": "fire|wind|lightning|earth|water", "secondary": "..."} only when the narration reveals it.
-affinityMasteryDeltas — signed per-element progress.
-achievementsAdd — array of short strings for genuine milestones.
-missionsUpdate — [{"name": "...", "rank": "D", "status": "active|complete|failed"}].
-location, time, weather, rank — strings, only if the narration changed them.
-died — true ONLY if the narration states the character has died.
-
-## HARD RULES
-1. Extract only what the narration supports. Never invent a gain the text did not describe.
-2. But never DROP a gain the text did describe. If the narration says strength rose, it must appear. This is the single most important thing you do — a missed stat change is a broken game.
-3. Absolute vs delta: "rises by 2" is a delta. "rises to 2" is a set. Read carefully.
-4. Cap any single stat or skill delta at +2 / -6. Damage and hunger are uncapped.
-5. Do not touch day. The engine owns it. Only set age if a birthday or explicit age was narrated.
-6. Names must match the character sheet's existing spelling exactly when updating something that already exists.
-7. Output valid JSON. Double quotes. No trailing commas. No comments.
-
-## OPTIONS
-If you are explicitly asked to also produce options, add an "options" key: an array of exactly three {"label": "...", "detail": "...", "risk": "low|medium|high|lethal"}. Each must reference something concrete and specific from the narration you just read — a named person, object, place or threat. Never generic ("look around", "wait", "continue"). Otherwise omit the key entirely.
-</script>
-
-<script>
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
-const CORE = document.getElementById("core-rules").textContent.trim();
-const INTERP_RULES = document.getElementById("interpreter-rules").textContent.trim();
+// ---------------------------------------------------------------------------
+// Small utilities
+// ---------------------------------------------------------------------------
+const $ = sel => document.querySelector(sel);
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const esc = s => String(s ?? "").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-
-let provider = CONFIG.provider, apiKey = "", model = "";
-let messages = [], state = null, prevStats = null, prevSkills = null, busy = false, dead = false;
-let draft = { name:"", gender:"male", orphan:false, clan:null };
-let rerolls = 3, abFilter = "All", lastOptions = [];
-let turnLog = [];   /* per-turn record of what the interpreter actually applied, for the delta ribbon */
-
-/* ---------- default player & age labeling ---------- */
-const DEFAULT_PLAYER = () => ({
-  name:"", gender:"", age:0, ageLabel:"infant", rank:"civilian", clan:"", orphan:false,
-  stats:{strength:0,agility:0,intelligence:0,chakra:0,stamina:0,control:0,willpower:0,luck:0},
-  skills:{taijutsu:0,ninjutsu:0,genjutsu:0,fuinjutsu:0,kenjutsu:0,bukijutsu:0,medical:0,senjutsu:0},
-  affinity:{discovered:false,primary:"unknown",secondary:"none",mastery:{fire:0,wind:0,lightning:0,earth:0,water:0}},
-  abilities:[], jutsu:[], inventory:[],
-  equipment:{headband:"none",outfit:"none",weapon:"none"},
-  status:{hp:20,hpMax:20,cp:0,cpMax:10,fatigue:10,hunger:15,injuries:[]},
-  money:0, reputation:0, karma:0, day:1, time:"morning", weather:"clear", location:"Hidden Leaf Village",
-  relationships:{}, missions:[], achievements:[],
-  unlockedNodes:[],  /* "branchKey:lv" strings, so a milestone bonus is granted exactly once */
-  causeOfDeath:"",
-  actionTicks:0      /* internal only — counts toward the next in-game day, never sent to any model */
-});
-
-/* Age -> life stage, used both for the label and to tell the narrator what this body can do. */
-function lifeStageFor(age){
-  for(const s of LIFE_STAGES) if(age <= s.max) return s;
-  return LIFE_STAGES[LIFE_STAGES.length - 1];
+const lerp = (a, b, t) => a + (b - a) * t;
+function lerpAngle(a, b, t) {
+  let diff = ((b - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+  return a + diff * t;
 }
-const deriveAgeLabel = age => lifeStageFor(age).label;
+const showScreen = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('on')); $(id).classList.add('on'); };
 
-/* ---------- deterministic time engine — the client owns day and age entirely ----------
-   day is absolute days since birth, so age is always exactly floor(day / 365) and the two
-   can never disagree. Regular actions tick 1 day per 2 actions. Age Up advances a full year
-   so pressing it visibly moves the character's life forward. The interpreter may also set an
-   age directly (via ageSet) if the narration explicitly stated a birthday, and the day count
-   is snapped to match so they stay consistent. */
-let pendingDaysPassed = 0;
-const DAYS_PER_YEAR = 365;
-const ACTIONS_PER_DAY = 2;
+// ---------------------------------------------------------------------------
+// Global mutable game state
+// ---------------------------------------------------------------------------
+let socket = null;
+let myId = null, myColor = PLAYER_COLORS[0], myName = '';
+let arenaCfg = { w: 1600, h: 900, playerRadius: 20, bulletRadius: 6 };
+let winScore = 5;
 
-function ageFromDay(day){ return Math.max(0, Math.floor((Number(day) || 0) / DAYS_PER_YEAR)); }
+let snapPrev = null, snapCur = null; // last two 'state' broadcasts, for interpolation
+let predictedSelf = { x: 0, y: 0, inited: false };
+let roomState = 'lobby'; // mirrors server room.state
+let inRoom = false, wasInMatch = false;
+let lastRoomCode = '', lastPlayerName = '', lastPlayerColor = '';
 
-function syncAgeFields(p){
-  p.age = ageFromDay(p.day);
-  p.ageLabel = deriveAgeLabel(p.age);
-  return p;
+const particles = []; // {x,y,vx,vy,life,maxLife,color,size,kind}
+const killFeedEl = $('#killFeed');
+let prevPlayersById = new Map(); // for diffing hp/alive/powerups between snapshots
+
+// ---------------------------------------------------------------------------
+// Canvas setup / responsive sizing
+// ---------------------------------------------------------------------------
+const canvas = $('#gameCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const wrap = $('#canvasWrap');
+  const availW = wrap.clientWidth, availH = wrap.clientHeight;
+  const arenaAspect = arenaCfg.w / arenaCfg.h;
+  let cssW = availW, cssH = availW / arenaAspect;
+  if (cssH > availH) { cssH = availH; cssW = availH * arenaAspect; }
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.style.width = cssW + 'px';
+  canvas.style.height = cssH + 'px';
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  ctx.setTransform(dpr * (cssW / arenaCfg.w), 0, 0, dpr * (cssH / arenaCfg.h), 0, 0);
 }
+window.addEventListener('resize', resizeCanvas);
 
-function advanceTime(isAgeUp){
-  const p = state.player;
-  const before = Number(p.day) || 0;
-  if(isAgeUp){
-    // Advance to the same point in the following year, so age always ticks exactly +1.
-    p.day = before + DAYS_PER_YEAR;
-    p.actionTicks = 0;
-  } else {
-    p.actionTicks = (Number(p.actionTicks) || 0) + 1;
-    if(p.actionTicks >= ACTIONS_PER_DAY){
-      p.actionTicks = 0;
-      p.day = before + 1;
-    }
-  }
-  syncAgeFields(p);
-  pendingDaysPassed = (Number(p.day) || 0) - before;
+// Convert a page-space pointer/touch coordinate into arena logical coordinates.
+function pageToArena(px, py) {
+  const rect = canvas.getBoundingClientRect();
+  const nx = (px - rect.left) / rect.width;
+  const ny = (py - rect.top) / rect.height;
+  return { x: nx * arenaCfg.w, y: ny * arenaCfg.h };
 }
 
-/* Interpreter told us the narration stated an explicit age. Trust it, and move `day` to match
-   so the two never drift apart again. Keeps the day-of-year offset intact. */
-function forceAge(p, newAge){
-  const target = clamp(Math.floor(Number(newAge) || 0), 0, 120);
-  const dayOfYear = (Number(p.day) || 0) % DAYS_PER_YEAR;
-  p.day = target * DAYS_PER_YEAR + dayOfYear;
-  syncAgeFields(p);
-  return p;
-}
-
-/* ---------- patch engine ----------------------------------------------------------
-   The interpreter reports what changed; this function is the ONLY thing that mutates
-   the sheet. It also writes a human-readable record of every change into `log`, which
-   the UI shows under the narration so the player can see their points actually land.
-   Day and age are engine-owned (see advanceTime), with one exception: ageSet, used when
-   the narration explicitly stated a birthday. */
-const STAT_KEYS = ["strength","agility","intelligence","chakra","stamina","control","willpower","luck"];
-const SKILL_KEYS = ["taijutsu","ninjutsu","genjutsu","fuinjutsu","kenjutsu","bukijutsu","medical","senjutsu"];
-const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
-
-function applyPatch(prevPlayerIn, patch, daysPassed){
-  const p = JSON.parse(JSON.stringify(prevPlayerIn || DEFAULT_PLAYER()));
-  patch = patch || {};
-  daysPassed = Number(daysPassed) || 0;
-  const log = [];   /* {text, dir} where dir is "up" | "dn" | "flat" */
-  const note = (text, dir) => log.push({ text, dir: dir || "flat" });
-
-  /* --- simple scene strings --- */
-  ["time","weather","location","rank","name","gender","clan"].forEach(k => {
-    if(typeof patch[k] === "string" && patch[k].trim() !== "" && patch[k] !== p[k]){
-      p[k] = patch[k].trim();
-      if(k === "location") note("Moved to " + p.location, "flat");
-      if(k === "rank") note("Rank is now " + p.rank, "up");
-    }
-  });
-  if(typeof patch.orphan === "boolean") p.orphan = patch.orphan;
-
-  /* --- explicit age from the narration (a stated birthday) --- */
-  if(typeof patch.ageSet === "number" && Number.isFinite(patch.ageSet)){
-    const before = p.age;
-    forceAge(p, patch.ageSet);
-    if(p.age !== before) note("Age is now " + p.age, p.age > before ? "up" : "dn");
-  }
-
-  /* --- stats: deltas then absolute sets --- */
-  p.stats = p.stats || {};
-  STAT_KEYS.forEach(k => { if(typeof p.stats[k] !== "number") p.stats[k] = 0; });
-  Object.entries(patch.statDeltas || {}).forEach(([k, v]) => {
-    if(!STAT_KEYS.includes(k)) return;
-    const d = clamp(Math.round(Number(v) || 0), -6, 2);
-    if(!d) return;
-    const before = p.stats[k];
-    p.stats[k] = clamp(before + d, 0, 100);
-    const real = p.stats[k] - before;
-    if(real) note(`${cap(k)} ${real > 0 ? "+" : ""}${real} (${before} → ${p.stats[k]})`, real > 0 ? "up" : "dn");
-  });
-  Object.entries(patch.statSet || {}).forEach(([k, v]) => {
-    if(!STAT_KEYS.includes(k) || !Number.isFinite(Number(v))) return;
-    const before = p.stats[k];
-    p.stats[k] = clamp(Math.round(Number(v)), 0, 100);
-    if(p.stats[k] !== before) note(`${cap(k)} set to ${p.stats[k]} (was ${before})`, p.stats[k] > before ? "up" : "dn");
-  });
-
-  /* --- skills, and the milestone bonuses their thresholds grant --- */
-  p.skills = p.skills || {};
-  SKILL_KEYS.forEach(k => { if(typeof p.skills[k] !== "number") p.skills[k] = 0; });
-  const skillsBefore = { ...p.skills };
-  Object.entries(patch.skillDeltas || {}).forEach(([k, v]) => {
-    if(!SKILL_KEYS.includes(k)) return;
-    const d = clamp(Math.round(Number(v) || 0), -6, 2);
-    if(!d) return;
-    const before = p.skills[k];
-    p.skills[k] = clamp(before + d, 0, 100);
-    const real = p.skills[k] - before;
-    if(real){
-      const branch = TREE.find(b => b.k === k);
-      note(`${branch ? branch.n : cap(k)} ${real > 0 ? "+" : ""}${real} (${before} → ${p.skills[k]})`, real > 0 ? "up" : "dn");
-    }
-  });
-  Object.entries(patch.skillSet || {}).forEach(([k, v]) => {
-    if(!SKILL_KEYS.includes(k) || !Number.isFinite(Number(v))) return;
-    const before = p.skills[k];
-    p.skills[k] = clamp(Math.round(Number(v)), 0, 100);
-    if(p.skills[k] !== before){
-      const branch = TREE.find(b => b.k === k);
-      note(`${branch ? branch.n : cap(k)} set to ${p.skills[k]} (was ${before})`, p.skills[k] > before ? "up" : "dn");
-    }
-  });
-
-  /* Milestone crossings are granted by the ENGINE, never by a model, so the tree's
-     printed bonuses are always honoured exactly once each. */
-  p.unlockedNodes = p.unlockedNodes || [];
-  TREE.forEach(branch => {
-    const lv = Number(p.skills[branch.k]) || 0;
-    branch.nodes.forEach(nd => {
-      const id = branch.k + ":" + nd.lv;
-      if(lv >= nd.lv && !p.unlockedNodes.includes(id)){
-        p.unlockedNodes.push(id);
-        note(`UNLOCKED — ${branch.n} ${nd.lv}: ${nd.n}`, "up");
-        Object.entries(nd.s || {}).forEach(([sk, sv]) => {
-          if(!STAT_KEYS.includes(sk)) return;
-          const before = p.stats[sk];
-          p.stats[sk] = clamp(before + Number(sv), 0, 100);
-          if(p.stats[sk] !== before) note(`  ${cap(sk)} +${p.stats[sk] - before} (milestone)`, "up");
-        });
-        if(nd.j){
-          p.jutsu = p.jutsu || [];
-          if(!p.jutsu.some(x => String(x.name).toLowerCase() === nd.j.toLowerCase())){
-            const lib = JUTSU_LIBRARY.find(x => x.n.toLowerCase() === nd.j.toLowerCase());
-            p.jutsu.push({ name: nd.j, cost: lib ? lib.cost : 0, element: lib ? lib.el : "none", mastery: 5 });
-            note(`  Technique available: ${nd.j}`, "up");
-          }
-        }
-      }
-    });
-  });
-
-  /* --- vitals --- */
-  p.status = p.status || {};
-  const sd = patch.statusDeltas || {};
-  let hunD = Number(sd.hunger) || 0, fatD = Number(sd.fatigue) || 0;
-  if(daysPassed > 0){
-    hunD = Math.max(hunD, daysPassed * 5);
-    fatD = Math.max(fatD, daysPassed * 3);
-  }
-  const hunBefore = Number(p.status.hunger) || 0, fatBefore = Number(p.status.fatigue) || 0;
-  p.status.hunger = clamp(hunBefore + hunD, 0, 100);
-  p.status.fatigue = clamp(fatBefore + fatD, 0, 100);
-  if(p.status.hunger !== hunBefore) note(`Hunger ${p.status.hunger > hunBefore ? "+" : ""}${p.status.hunger - hunBefore} (${p.status.hunger}/100)`, p.status.hunger > hunBefore ? "dn" : "up");
-  if(p.status.fatigue !== fatBefore) note(`Fatigue ${p.status.fatigue > fatBefore ? "+" : ""}${p.status.fatigue - fatBefore} (${p.status.fatigue}/100)`, p.status.fatigue > fatBefore ? "dn" : "up");
-
-  if(typeof patch.hpMaxDelta === "number") p.status.hpMax = Math.max(1, (Number(p.status.hpMax) || 1) + patch.hpMaxDelta);
-  if(typeof patch.cpMaxDelta === "number") p.status.cpMax = Math.max(0, (Number(p.status.cpMax) || 0) + patch.cpMaxDelta);
-
-  /* Growth: a child's body gets tougher and holds more chakra as it ages. */
-  const wantHpMax = 20 + Math.min(80, p.age * 6) + Math.floor((Number(p.stats.stamina) || 0) * 0.8);
-  const wantCpMax = 10 + Math.min(90, p.age * 4) + Math.floor((Number(p.stats.chakra) || 0) * 1.2);
-  if(wantHpMax > (p.status.hpMax || 0)) p.status.hpMax = wantHpMax;
-  if(wantCpMax > (p.status.cpMax || 0)) p.status.cpMax = wantCpMax;
-
-  let starveLoss = 0;
-  if(p.status.hunger >= 95) starveLoss = 8;
-  else if(p.status.hunger >= 80) starveLoss = 4;
-  else if(p.status.hunger >= 70) starveLoss = 2;
-  const hpBefore = Number(p.status.hp) || 0, cpBefore = Number(p.status.cp) || 0;
-  p.status.hp = clamp(hpBefore + (Number(sd.hp) || 0) - starveLoss, 0, p.status.hpMax || 100);
-  p.status.cp = clamp(cpBefore + (Number(sd.cp) || 0), 0, p.status.cpMax || 100);
-  if(p.status.hp !== hpBefore) note(`Health ${p.status.hp > hpBefore ? "+" : ""}${p.status.hp - hpBefore} (${p.status.hp}/${p.status.hpMax})`, p.status.hp > hpBefore ? "up" : "dn");
-  if(p.status.cp !== cpBefore) note(`Chakra ${p.status.cp > cpBefore ? "+" : ""}${p.status.cp - cpBefore} (${p.status.cp}/${p.status.cpMax})`, p.status.cp > cpBefore ? "up" : "dn");
-  if(starveLoss) note(`Starvation is doing damage (hunger ${p.status.hunger})`, "dn");
-
-  /* --- injuries / conditions --- */
-  p.status.injuries = p.status.injuries || [];
-  (patch.injuriesAdd || []).forEach(i => {
-    const nm = typeof i === "string" ? i : (i && i.name);
-    if(nm && !p.status.injuries.includes(nm)){ p.status.injuries.push(nm); note("Condition: " + nm, "dn"); }
-  });
-  (patch.injuriesHeal || []).forEach(i => {
-    const nm = typeof i === "string" ? i : (i && i.name);
-    if(nm && p.status.injuries.includes(nm)){
-      p.status.injuries = p.status.injuries.filter(x => x !== nm);
-      note("Recovered from " + nm, "up");
-    }
-  });
-
-  /* --- standing --- */
-  const mBefore = Number(p.money) || 0;
-  p.money = Math.max(0, mBefore + (Number(patch.moneyDelta) || 0));
-  if(p.money !== mBefore) note(`${p.money > mBefore ? "+" : ""}${p.money - mBefore} ryo (${p.money} total)`, p.money > mBefore ? "up" : "dn");
-  const rBefore = Number(p.reputation) || 0;
-  p.reputation = clamp(rBefore + (Number(patch.reputationDelta) || 0), -100, 100);
-  if(p.reputation !== rBefore) note(`Reputation ${p.reputation > rBefore ? "+" : ""}${p.reputation - rBefore}`, p.reputation > rBefore ? "up" : "dn");
-  const kBefore = Number(p.karma) || 0;
-  p.karma = clamp(kBefore + (Number(patch.karmaDelta) || 0), -100, 100);
-  if(p.karma !== kBefore) note(`Karma ${p.karma > kBefore ? "+" : ""}${p.karma - kBefore}`, p.karma > kBefore ? "up" : "dn");
-
-  /* --- affinity --- */
-  p.affinity = p.affinity || { discovered:false, primary:"unknown", secondary:"none", mastery:{} };
-  p.affinity.mastery = p.affinity.mastery || {};
-  const ad = patch.affinityDiscover;
-  if(ad && ad.primary && ad.primary !== "none" && ad.primary !== "unknown"){
-    const known = ELEMENTS.find(e => e.k === String(ad.primary).toLowerCase());
-    if(known && !p.affinity.discovered){
-      p.affinity.discovered = true;
-      p.affinity.primary = known.k;
-      if(ad.secondary && ELEMENTS.some(e => e.k === String(ad.secondary).toLowerCase())) p.affinity.secondary = String(ad.secondary).toLowerCase();
-      note(`Affinity discovered: ${known.n}`, "up");
-    }
-  }
-  Object.entries(patch.affinityMasteryDeltas || {}).forEach(([k, v]) => {
-    if(!ELEMENTS.some(e => e.k === k)) return;
-    const before = Number(p.affinity.mastery[k]) || 0;
-    p.affinity.mastery[k] = clamp(before + (Number(v) || 0), 0, 100);
-    if(p.affinity.mastery[k] !== before){
-      const el = ELEMENTS.find(e => e.k === k);
-      note(`${el.n} mastery ${p.affinity.mastery[k] > before ? "+" : ""}${p.affinity.mastery[k] - before}`, p.affinity.mastery[k] > before ? "up" : "dn");
-    }
-  });
-
-  /* --- inventory --- */
-  p.inventory = p.inventory || [];
-  (patch.inventoryAdd || []).forEach(item => {
-    const nm = typeof item === "string" ? item : (item && item.name);
-    if(!nm) return;
-    const qty = Math.max(1, Number((item && item.qty) || 1));
-    const ex = p.inventory.find(i => i.name.toLowerCase() === String(nm).toLowerCase());
-    if(ex) ex.qty = (Number(ex.qty) || 1) + qty;
-    else p.inventory.push({ name:String(nm), qty });
-    note(`Picked up ${nm}${qty > 1 ? " ×" + qty : ""}`, "up");
-  });
-  (patch.inventoryRemove || []).forEach(item => {
-    const nm = typeof item === "string" ? item : (item && item.name);
-    if(!nm) return;
-    const idx = p.inventory.findIndex(i => i.name.toLowerCase() === String(nm).toLowerCase());
-    if(idx > -1){
-      const rem = Number((item && item.qty)) || p.inventory[idx].qty;
-      p.inventory[idx].qty = (Number(p.inventory[idx].qty) || 0) - rem;
-      if(p.inventory[idx].qty <= 0) p.inventory.splice(idx, 1);
-      note(`Lost ${nm}`, "dn");
-    }
-  });
-
-  /* --- equipment --- */
-  if(patch.equipmentSet && typeof patch.equipmentSet === "object"){
-    Object.entries(patch.equipmentSet).forEach(([slot, val]) => {
-      if(typeof val !== "string" || !val.trim()) return;
-      const before = (p.equipment || {})[slot];
-      p.equipment = p.equipment || {};
-      p.equipment[slot] = val.trim();
-      if(p.equipment[slot] !== before && val !== "none") note(`Equipped ${slot}: ${val}`, "up");
-    });
-  }
-
-  /* --- bonds --- */
-  p.relationships = p.relationships || {};
-  Object.entries(patch.relationshipsUpdate || {}).forEach(([name, val]) => {
-    if(!name) return;
-    const existed = !!p.relationships[name];
-    const beforeAff = existed ? (Number(p.relationships[name].affection) || 0) : 0;
-    const incoming = (val && typeof val === "object") ? val : { affection: Number(val) || 0 };
-    p.relationships[name] = { ...(p.relationships[name] || {}), ...incoming };
-    const afterAff = Number(p.relationships[name].affection) || 0;
-    if(!existed) note(`New bond: ${name}`, "up");
-    else if(afterAff !== beforeAff) note(`${name} ${afterAff > beforeAff ? "+" : ""}${afterAff - beforeAff} affection`, afterAff > beforeAff ? "up" : "dn");
-  });
-  (patch.relationshipsRemove || []).forEach(name => {
-    if(p.relationships[name]){ delete p.relationships[name]; note(`Bond lost: ${name}`, "dn"); }
-  });
-
-  /* --- techniques --- */
-  p.jutsu = p.jutsu || [];
-  (patch.jutsuAdd || []).forEach(j => {
-    const nm = typeof j === "string" ? j : (j && j.name);
-    if(!nm) return;
-    const lib = JUTSU_LIBRARY.find(x => x.n.toLowerCase() === String(nm).toLowerCase());
-    const idx = p.jutsu.findIndex(x => String(x.name).toLowerCase() === String(nm).toLowerCase());
-    const rec = {
-      name: lib ? lib.n : String(nm),
-      cost: Number((j && j.cost)) || (lib ? lib.cost : 0),
-      element: (j && j.element) || (lib ? lib.el : "none"),
-      mastery: clamp(Number((j && j.mastery)) || 5, 0, 100)
+// ---------------------------------------------------------------------------
+// Lobby screen wiring
+// ---------------------------------------------------------------------------
+(function buildColorPicker() {
+  const row = $('#colorRow');
+  PLAYER_COLORS.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'colorSwatch' + (i === 0 ? ' sel' : '');
+    el.style.background = c;
+    el.style.boxShadow = `0 0 14px ${c}66`;
+    el.onclick = () => {
+      row.querySelectorAll('.colorSwatch').forEach(s => s.classList.remove('sel'));
+      el.classList.add('sel');
+      myColor = c;
     };
-    if(idx > -1){ p.jutsu[idx] = { ...p.jutsu[idx], ...rec }; note(`${rec.name} refined`, "up"); }
-    else { p.jutsu.push(rec); note(`Learned technique: ${rec.name}`, "up"); }
+    row.appendChild(el);
   });
-  (patch.jutsuRemove || []).forEach(name => {
-    const nm = typeof name === "string" ? name : (name && name.name);
-    if(!nm) return;
-    if(p.jutsu.some(x => String(x.name).toLowerCase() === String(nm).toLowerCase())) note(`Lost technique: ${nm}`, "dn");
-    p.jutsu = p.jutsu.filter(x => String(x.name).toLowerCase() !== String(nm).toLowerCase());
-  });
+})();
 
-  /* --- bloodline abilities --- */
-  p.abilities = p.abilities || [];
-  (patch.abilitiesAdd || []).forEach(a => {
-    const nm = typeof a === "string" ? a : (a && a.name);
-    if(!nm) return;
-    const idx = p.abilities.findIndex(x => String(x.name).toLowerCase() === String(nm).toLowerCase());
-    const rec = { name:String(nm), status:(a && a.status) || "dormant", note:(a && a.note) || "" };
-    if(idx > -1){
-      const was = p.abilities[idx].status;
-      p.abilities[idx] = { ...p.abilities[idx], ...rec };
-      if(was !== rec.status) note(`${rec.name} is now ${rec.status}`, "up");
-    } else {
-      p.abilities.push(rec);
-      note(`Bloodline ability ${rec.status}: ${rec.name}`, "up");
-    }
-  });
-  (patch.abilitiesRemove || []).forEach(name => {
-    const nm = typeof name === "string" ? name : (name && name.name);
-    p.abilities = p.abilities.filter(x => String(x.name).toLowerCase() !== String(nm).toLowerCase());
-  });
+$('#roomCodeInput').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
 
-  /* --- missions & achievements --- */
-  p.missions = p.missions || [];
-  (patch.missionsUpdate || []).forEach(m => {
-    if(!m || !m.name) return;
-    const idx = p.missions.findIndex(x => x.name === m.name);
-    if(idx > -1){
-      const was = p.missions[idx].status;
-      p.missions[idx] = { ...p.missions[idx], ...m };
-      if(m.status && m.status !== was) note(`Mission ${m.name}: ${m.status}`, m.status === "complete" ? "up" : "flat");
-    } else {
-      p.missions.push(m);
-      note(`New mission: ${m.name}`, "flat");
-    }
-  });
-
-  p.achievements = p.achievements || [];
-  (patch.achievementsAdd || []).forEach(a => {
-    const nm = typeof a === "string" ? a : (a && a.name);
-    if(nm && !p.achievements.includes(nm)){ p.achievements.push(nm); note("Achievement: " + nm, "up"); }
-  });
-
-  /* --- death --- */
-  if(patch.died === true && p.status.hp > 0) p.status.hp = 0;
-  if(p.status.hp <= 0 && !p.causeOfDeath){
-    p.causeOfDeath = String(patch.causeOfDeath || "").trim() ||
-      (p.status.hunger >= 95 ? "Starvation" : (p.status.injuries[0] ? p.status.injuries[0] : "Wounds sustained in the field"));
-  }
-
-  syncAgeFields(p);
-  return { player: p, log };
-}
-
-/* Sum of every active status-effect modifier, shown in the UI as the effective value. */
-function effectiveStats(p){
-  const out = { ...(p.stats || {}) };
-  (p.status && p.status.injuries || []).forEach(nm => {
-    const eff = STATUS_EFFECTS.find(e => e.n.toLowerCase() === String(nm).toLowerCase());
-    if(!eff) return;
-    Object.entries(eff.mod || {}).forEach(([k, v]) => {
-      if(k in out) out[k] = clamp((Number(out[k]) || 0) + Number(v), 0, 100);
-    });
-  });
-  return out;
-}
-
-
-/* Strip zero/empty/default values before a snapshot rides along as read-only context. */
-function compactState(st){
-  if(!st || !st.player) return st;
-  const HIDE_KEYS = new Set(["actionTicks"]); // internal engine bookkeeping, never shown to the model
-  const keep = v => !(v === 0 || v === "" || v == null || v === "none"
-    || (Array.isArray(v) && v.length === 0)
-    || (typeof v === "object" && !Array.isArray(v) && Object.keys(v).length === 0));
-  const compactObj = obj => {
-    const out = {};
-    Object.entries(obj || {}).forEach(([k, v]) => {
-      if(HIDE_KEYS.has(k)) return;
-      if(v && typeof v === "object" && !Array.isArray(v)){
-        const inner = compactObj(v);
-        if(Object.keys(inner).length) out[k] = inner;
-      } else if(keep(v)){
-        out[k] = v;
-      }
-    });
-    return out;
-  };
-  return { player: compactObj(st.player) };
-}
-
-/* ---------- prompt assembly ---------- */
-function clanBlock(){
-  const c = draft.clan || CLANS[0];
-  return `## THIS CHARACTER'S BLOOD\n${c.n} — ${c.t} lineage.\n${c.d}\nCarries: ${c.g}\nAnything outside this lineage's reach stays outside it. Never grant another clan's kekkei genkai.`;
-}
-function abilityBlock(){
-  const cname = (draft.clan?.n || state?.player?.clan || "").split(" ")[0].toLowerCase();
-  const owned = new Set((state?.player?.abilities || []).map(a => String(a.name||"").toLowerCase()));
-  const mode = CONFIG.compendium || "scoped";
-  const relevant = a => owned.has(a.n.toLowerCase())
-    || (cname && cname !== "no" && a.g.toLowerCase().includes(cname))
-    || ["Chakra arts","Senjutsu"].includes(a.c);
-
-  const list = mode === "scoped" ? ABILITIES.filter(relevant) : ABILITIES;
-  const withEffect = a => mode === "full" || relevant(a);
-
-  const byCat = {};
-  list.forEach(a => (byCat[a.c] = byCat[a.c] || []).push(a));
-  const body = Object.entries(byCat).map(([cat, arr]) =>
-    `### ${cat}\n` + arr.map(a =>
-      `- ${a.n} — REQUIRES: ${a.g}` + (withEffect(a) ? `. Effect: ${a.d}` : "")
-    ).join("\n")).join("\n");
-  return `## ABILITY COMPENDIUM — assess every claim against this\nIf the player asks for, attempts, or claims one of these, check the REQUIRES line against their blood, age, stats and skills. If they do not meet it, refuse in-fiction and name what is actually missing. Dōjutsu are inherited, never trained.\n${body}`;
-}
-function treeBlock(){
-  return "## SKILL TREE — unlocks at these levels only\n" + TREE.map(b =>
-    `${b.n}: ` + b.nodes.map(n => `${n.lv} ${n.n} [${n.g}]`).join(" · ")).join("\n") +
-    "\nWhen a skill crosses a threshold, announce the unlock in the narrative.";
-}
-function envelope(){
-  if(!state || !state.player) return "";
-  const p = state.player, s = p.stats || {}, st = p.status || {};
-  const eff = effectiveStats(p);
-  const band = v => v<16?"small child":v<31?"academy student":v<46?"fresh genin":v<61?"chunin":v<76?"jonin":v<91?"elite":"kage";
-  const stage = lifeStageFor(p.age);
-  const skillLine = SKILL_KEYS.map(k => {
-    const branch = TREE.find(b => b.k === k);
-    return `${branch ? branch.n : k} ${Number(p.skills[k]) || 0}`;
-  }).join(", ");
-  const bonds = Object.keys(p.relationships || {});
-  const inv = (p.inventory || []).map(i => `${i.name}${i.qty > 1 ? " x" + i.qty : ""}`);
-  const ju = (p.jutsu || []).map(j => j.name);
-
-  return `## CURRENT CAPABILITY ENVELOPE — this is the authoritative truth about the character
-AGE: ${p.age} years old. DAY: ${p.day || 0}. LIFE STAGE: ${stage.label}.
-WHAT THIS BODY CAN PHYSICALLY DO RIGHT NOW: ${stage.can}
-!! The character is ${p.age}. Do NOT narrate any birthday, age, school year, rank or life event that contradicts age ${p.age}. If age is under 6 there is no Academy, no team, no sensei, no headband, no missions and no weapons. !!
-RANK: ${p.rank || "civilian"}. LOCATION: ${p.location || "Hidden Leaf Village"}. TIME: ${p.time || "morning"}, ${p.weather || "clear"}.
-STATS: ${STAT_KEYS.map(k => `${k} ${Number(s[k]) || 0}${eff[k] !== s[k] ? ` (effective ${eff[k]})` : ""} [${band(Number(s[k]) || 0)}]`).join(", ")}
-SKILLS: ${skillLine}
-VITALS: health ${st.hp ?? 0}/${st.hpMax ?? 20}, chakra ${st.cp ?? 0}/${st.cpMax ?? 10}, hunger ${st.hunger ?? 0}/100, fatigue ${st.fatigue ?? 0}/100.
-CONDITIONS: ${(st.injuries || []).length ? st.injuries.join(", ") : "none"}
-AFFINITY: ${p.affinity && p.affinity.discovered ? p.affinity.primary : "undiscovered"}
-KNOWN TECHNIQUES: ${ju.length ? ju.join(", ") : "none"}
-CARRIED: ${inv.length ? inv.join(", ") : "nothing"}
-KNOWN PEOPLE: ${bonds.length ? bonds.join(", ") : "no one yet"}
-MONEY: ${p.money || 0} ryo.`;
-}
-const systemPrompt = () => [CORE, clanBlock(), abilityBlock(), treeBlock(), envelope()].filter(Boolean).join("\n\n");
-
-/* ---------- interpreter prompt ----------
-   Deliberately narrow: the interpreter sees the sheet, the reference lists it is allowed to
-   draw names from, and the narration it must convert. Nothing else. */
-function interpreterSystemPrompt(){
-  const p = (state && state.player) || DEFAULT_PLAYER();
-  const sheet = {
-    age: p.age, day: p.day, rank: p.rank, location: p.location,
-    stats: p.stats, skills: p.skills,
-    status: { hp: p.status.hp, hpMax: p.status.hpMax, cp: p.status.cp, cpMax: p.status.cpMax,
-              hunger: p.status.hunger, fatigue: p.status.fatigue, injuries: p.status.injuries },
-    affinity: p.affinity,
-    inventory: p.inventory, equipment: p.equipment,
-    relationships: Object.fromEntries(Object.entries(p.relationships || {}).map(([k, v]) => [k, v.affection ?? 0])),
-    jutsu: (p.jutsu || []).map(j => j.name),
-    abilities: (p.abilities || []).map(a => `${a.name} (${a.status})`),
-    money: p.money, reputation: p.reputation, karma: p.karma
-  };
-  return [
-    INTERP_RULES,
-    "## CHARACTER SHEET BEFORE THIS TURN\n" + JSON.stringify(sheet),
-    "## VALID STAT KEYS\n" + STAT_KEYS.join(", "),
-    "## VALID SKILL KEYS\n" + SKILL_KEYS.join(", "),
-    "## STATUS EFFECT NAMES you should prefer for injuriesAdd\n" + STATUS_EFFECTS.map(e => e.n).join(", "),
-    "## KNOWN TECHNIQUE NAMES you should prefer for jutsuAdd\n" + JUTSU_LIBRARY.map(j => `${j.n} (${j.rank}, ${j.cost}cp, ${j.el})`).join("; ")
-  ].join("\n\n");
-}
-
-/* ---------- setup ---------- */
-function paintProvider(){
-  const p = PROVIDERS[provider];
-  $("#provHint").textContent = p.hint;
-  $("#modelSel").innerHTML = p.models.map(m => `<option value="${m.id}">${m.id} — ${m.rpd}</option>`).join("");
-  $("#keyIn").value = CONFIG.keys[provider] || "";
-  $$("#segProvider button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.p === provider)));
-  paintModelHint();
-}
-function paintModelHint(){
-  const m = PROVIDERS[provider].models.find(x => x.id === $("#modelSel").value);
-  $("#modelHint").textContent = m ? m.note : "";
-}
-$$("#segProvider button").forEach(b => b.onclick = () => { provider = b.dataset.p; paintProvider(); });
-$("#modelSel").onchange = paintModelHint;
-paintProvider();
-
-function seg(sel, cb){
-  $$(sel + " button").forEach(b => b.onclick = () => {
-    $$(sel + " button").forEach(x => x.setAttribute("aria-pressed","false"));
-    b.setAttribute("aria-pressed","true"); cb(b.dataset.v);
-  });
-}
-seg("#segSex", v => draft.gender = v);
-seg("#segHome", v => draft.orphan = v === "orphan");
-
-const showStep = n => $$(".step").forEach((s,i) => s.classList.toggle("on", i === n-1));
-$("#toStep2").onclick = () => {
-  apiKey = $("#keyIn").value.trim(); model = $("#modelSel").value;
-  if(!apiKey){ $("#keyIn").focus(); return; }
-  showStep(2);
-};
-$("#backStep1").onclick = () => showStep(1);
-$("#backStep2").onclick = () => showStep(2);
-$("#toStep3").onclick = () => { draft.name = $("#nameIn").value.trim() || "Unnamed"; showStep(3); buildClanGrid(); };
-
-/* ---------- clan roll ---------- */
-const totalW = CLANS.reduce((a,c) => a + c.w, 0);
-function drawClan(){
-  let r = Math.random() * totalW;
-  for(const c of CLANS){ if((r -= c.w) <= 0) return c; }
-  return CLANS[0];
-}
-function paintRoll(c){
-  $("#rollTier").className = "tier-" + c.t;
-  $("#rollTier").textContent = c.t + " lineage";
-  $("#rollName").textContent = c.n;
-  $("#rollDesc").textContent = c.d;
-}
-$("#btnRoll").onclick = () => {
-  if(rerolls <= 0) return;
-  const stage = $("#rollStage");
-  stage.classList.add("spin");
-  $("#btnRoll").disabled = true;
-  let ticks = 0;
-  const iv = setInterval(() => {
-    paintRoll(CLANS[Math.floor(Math.random() * CLANS.length)]);
-    if(++ticks > 14){
-      clearInterval(iv);
-      stage.classList.remove("spin");
-      draft.clan = drawClan();
-      paintRoll(draft.clan);
-      rerolls--;
-      $("#btnBirth").disabled = false;
-      $("#btnRoll").disabled = rerolls <= 0;
-      $("#btnRoll").textContent = rerolls > 0 ? "Draw again" : "No draws left";
-      $("#rerollsLeft").textContent = rerolls + " draw" + (rerolls === 1 ? "" : "s") + " left";
-    }
-  }, 55);
-};
-function buildClanGrid(){
-  $("#rerollsLeft").textContent = rerolls + " draws left";
-  $("#clanGrid").innerHTML = "";
-  CLANS.forEach(c => {
-    const b = document.createElement("button");
-    b.textContent = c.n;
-    const show = e => showTip(e, c.n, c.t + " lineage", c.d, "Carries: " + c.g, "tier-" + c.t);
-    b.onmouseenter = show; b.onfocus = show;
-    b.onmouseleave = hideTip; b.onblur = hideTip;
-    $("#clanGrid").appendChild(b);
-  });
-}
-function showTip(e, name, tier, desc, gifts, cls){
-  const t = $("#tip");
-  t.querySelector(".tn").textContent = name;
-  t.querySelector(".tt").textContent = tier;
-  t.querySelector(".tt").className = "tt " + (cls || "");
-  t.querySelector(".td").textContent = desc;
-  t.querySelector(".tg").textContent = gifts || "";
-  t.style.opacity = 1;
-  const r = e.currentTarget.getBoundingClientRect(), w = t.offsetWidth, h = t.offsetHeight;
-  t.style.left = Math.min(window.innerWidth - w - 10, Math.max(10, r.left)) + "px";
-  t.style.top = (r.top - h - 8 < 10 ? r.bottom + 8 : r.top - h - 8) + "px";
-}
-const hideTip = () => { $("#tip").style.opacity = 0; };
-
-$("#btnBirth").onclick = () => {
-  if(!draft.clan) return;
-  hideDeathScreen();
-  $("#gate").style.display = "none";
-  $("#app").hidden = false;
-  dead = false; turnLog = []; pendingDaysPassed = 0;
-  const seed = DEFAULT_PLAYER();
-  seed.name = draft.name; seed.gender = draft.gender; seed.clan = draft.clan.n; seed.orphan = draft.orphan;
-  seed.day = 0;
-  syncAgeFields(seed);
-  state = { player: seed };
-  prevStats = prevSkills = null;
-  paintDossier();
-  messages = [{ role:"user", content:
-`Begin the life. Name: ${draft.name}. Sex: ${draft.gender}. Household: ${draft.orphan ? "orphaned at birth" : "born to living parents"}. Blood: ${draft.clan.n} (${draft.clan.t} lineage).
-Open at the moment of birth — age 0, day 0, a literal newborn infant. Name the parents (or the person who found this child, if orphaned) and the room. Do not narrate any skill, technique, weapon or age beyond a newborn's. End with exactly three [[OPTION]] lines describing things a NEWBORN could actually do in this specific room, referencing what you just described.` }];
-  turn();
+$('#joinBtn').onclick = () => {
+  myName = $('#nameInput').value.trim() || 'Player';
+  const roomCode = $('#roomCodeInput').value.trim().toUpperCase();
+  setLobbyError('');
+  connectAndJoin(roomCode, myName, myColor);
 };
 
-/* ---------- rendering ---------- */
-function md(t){
-  return esc(t).split(/\n{2,}/).map(p => "<p>" + p.trim()
-    .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
-    .replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>")
-    .replace(/^#{1,6}\s*/gm,"").replace(/\n/g,"<br>") + "</p>").join("");
-}
-function addEntry(kind, eyebrow, html){
-  const el = document.createElement("div");
-  el.className = "entry " + kind;
-  el.innerHTML = (eyebrow ? `<div class="eyebrow">${esc(eyebrow)}</div>` : "") + `<div class="body">${html}</div>`;
-  $("#log").appendChild(el);
-  el.scrollIntoView({block:"end", behavior:"smooth"});
-  return el;
-}
-const scrollDown = () => { const l = $("#log"); l.scrollTop = l.scrollHeight; };
+$('#leaveLobbyBtn').onclick = () => { leaveEverything(); };
+$('#startMatchBtn').onclick = () => { if (socket) socket.emit('startMatch'); };
+$('#leaveBtn').onclick = () => { leaveEverything(); };
+$('#backToLobbyBtn').onclick = () => { leaveEverything(); };
+$('#playAgainBtn').onclick = () => { if (socket) socket.emit('playAgain'); };
 
-function extractJSON(raw){
-  const fences = [...raw.matchAll(/```(?:json)?\s*([\s\S]*?)```/gi)];
-  for(let i = fences.length - 1; i >= 0; i--){
-    try{ const o = JSON.parse(fences[i][1].trim()); if(o) return o; }catch(e){}
-  }
-  // Fallback: scan for the last balanced {...} blob in the raw text, in case the
-  // model forgot the fence entirely but still emitted valid-ish JSON.
-  for(let start = raw.lastIndexOf("{"); start >= 0; start = raw.lastIndexOf("{", start - 1)){
-    let depth = 0, end = -1;
-    for(let i = start; i < raw.length; i++){
-      if(raw[i] === "{") depth++;
-      else if(raw[i] === "}"){ depth--; if(depth === 0){ end = i + 1; break; } }
-    }
-    if(end > start){
-      try{ const o = JSON.parse(raw.slice(start, end)); if(o && (o.options || o.statDeltas || o.inventoryAdd)) return o; }catch(e){}
-    }
-    if(start === 0) break;
-  }
-  return null;
-}
-const stripJSON = raw => raw.replace(/```(?:json)?[\s\S]*?```/gi,"").trim();
+function setLobbyError(msg) { $('#lobbyError').textContent = msg || ''; }
 
-const RISKS = ["low","medium","high","lethal"];
+function connectAndJoin(roomCode, name, color) {
+  $('#joinBtn').disabled = true;
+  if (socket) { socket.removeAllListeners(); socket.disconnect(); }
+  socket = io(SERVER_URL, { transports: ['websocket', 'polling'], reconnectionAttempts: 6 });
+  wireSocketEvents();
 
-/* Options now arrive as plain marker lines in the prose:
-     [[OPTION]] label | detail | risk
-   which is far more robust than asking a small model to nest them in JSON.
-   Returns {options, prose} with the marker lines stripped out of the prose. */
-function parseOptionMarkers(text){
-  const options = [];
-  const kept = [];
-  String(text || "").split("\n").forEach(line => {
-    const m = line.match(/^\s*(?:\[\[OPTION\]\]|\[OPTION\]|OPTION:)\s*(.+)$/i);
-    if(!m){ kept.push(line); return; }
-    const parts = m[1].split("|").map(s => s.trim());
-    const label = (parts[0] || "").replace(/^[-*\d.)\s]+/, "").trim();
-    if(!label) return;
-    options.push({
-      label,
-      detail: parts[1] || "",
-      risk: RISKS.includes(String(parts[2] || "").toLowerCase()) ? String(parts[2]).toLowerCase() : "medium"
+  socket.on('connect_error', () => {
+    setLobbyError(`Could not reach the server at ${SERVER_URL}. Check the URL at the top of this file / your connection.`);
+    $('#joinBtn').disabled = false;
+  });
+
+  socket.on('connect', () => {
+    socket.emit('joinRoom', { roomCode, name, color }, ack => {
+      $('#joinBtn').disabled = false;
+      if (!ack || !ack.ok) { setLobbyError((ack && ack.error) || 'Could not join room.'); return; }
+      myId = ack.playerId;
+      arenaCfg = ack.arena;
+      winScore = ack.winScore;
+      lastRoomCode = ack.roomCode; lastPlayerName = name; lastPlayerColor = color;
+      inRoom = true;
+      $('#joinCard').style.display = 'none';
+      $('#roomPanel').style.display = 'block';
+      $('#roomCodeDisplay').textContent = ack.roomCode;
+      resizeCanvas();
     });
   });
-  return { options, prose: kept.join("\n").trim() };
 }
 
-const isGenericOption = label => GENERIC_OPTION_PATTERNS.some(rx => rx.test(String(label || "").trim()));
-
-/* An option set is usable only if we have three of them and they aren't boilerplate. */
-function optionsAreUsable(opts){
-  if(!Array.isArray(opts) || opts.length < 3) return false;
-  const good = opts.filter(o => o && String(o.label || "").trim() && !isGenericOption(o.label));
-  return good.length >= 3;
+function leaveEverything() {
+  if (socket) { socket.emit('leaveRoom'); socket.disconnect(); socket = null; }
+  inRoom = false; wasInMatch = false; myId = null;
+  snapPrev = snapCur = null; predictedSelf.inited = false;
+  particles.length = 0; killFeedEl.innerHTML = '';
+  $('#joinCard').style.display = 'block';
+  $('#roomPanel').style.display = 'none';
+  $('#startMatchBtn').disabled = true;
+  showScreen('#lobbyScreen');
 }
 
-function sanitizeOptions(opts){
-  const cleaned = (Array.isArray(opts) ? opts : []).map(o => ({
-    label: String((o && o.label) || "").trim(),
-    detail: String((o && o.detail) || "").trim(),
-    risk: RISKS.includes(String(o && o.risk).toLowerCase()) ? String(o.risk).toLowerCase() : "medium"
-  })).filter(o => o.label.length > 0);
-  const fallback = [
-    {label:"Press on", detail:"Uncertain outcome", risk:"medium"},
-    {label:"Hold back and reassess", detail:"Costs a moment", risk:"low"},
-    {label:"Take the risk", detail:"This could go badly", risk:"high"}
-  ];
-  let i = 0;
-  while(cleaned.length < 3) cleaned.push(fallback[i++]);
-  return cleaned.slice(0, 3);
-}
-const CHOICE_NUM = ["1","2","3"];
-function paintChoices(opts){
-  const box = $("#choices"); box.innerHTML = "";
-  if(dead) return;
-  sanitizeOptions(opts).forEach((o,i) => {
-    const b = document.createElement("button");
-    b.className = "choice";
-    b.dataset.risk = o.risk;
-    b.innerHTML = `<span class="num">${CHOICE_NUM[i]}</span><span><span class="t">${esc(o.label)}</span>${o.detail ? `<span class="s">${esc(o.detail)}</span>` : ""}</span>`;
-    b.onclick = () => send(o.label + (o.detail ? ` (${o.detail})` : ""));
-    box.appendChild(b);
+// ---------------------------------------------------------------------------
+// Socket event wiring (shared by initial connect and auto-reconnect)
+// ---------------------------------------------------------------------------
+function wireSocketEvents() {
+  socket.on('lobbyUpdate', data => {
+    roomState = data.state;
+    renderRoster(data.players);
+    $('#startMatchBtn').disabled = data.players.length < data.minPlayers;
+    if (data.state === 'lobby' && wasInMatch) {
+      // Dropped back to lobby (someone left mid-match) — show the lobby card again.
+      wasInMatch = false;
+      showScreen('#lobbyScreen');
+      $('#joinCard').style.display = 'none';
+      $('#roomPanel').style.display = 'block';
+    }
+  });
+
+  socket.on('state', data => {
+    if (!wasInMatch) { wasInMatch = true; showScreen('#gameScreen'); resizeCanvas(); }
+    roomState = data.state;
+    diffForEffects(data);
+    snapPrev = snapCur;
+    snapCur = data;
+    if (!snapPrev) snapPrev = data;
+  });
+
+  socket.on('death', d => {
+    const p = findPlayerInSnap(d.id);
+    if (p) spawnDeathBurst(p.x, p.y, p.color);
+    pushKillFeed(d);
+  });
+
+  socket.on('matchEnd', data => showVictory(data));
+
+  socket.on('playerLeft', () => { /* roster already updated via lobbyUpdate */ });
+
+  socket.on('disconnect', () => {
+    if (inRoom) $('#reconnectOverlay').classList.add('on');
+  });
+  socket.on('connect', () => {
+    $('#reconnectOverlay').classList.remove('on');
+    // Auto-reconnection: socket.io gave us a *new* connection; rejoin the same room.
+    if (inRoom && lastRoomCode) {
+      socket.emit('joinRoom', { roomCode: lastRoomCode, name: lastPlayerName, color: lastPlayerColor }, ack => {
+        if (ack && ack.ok) { myId = ack.playerId; arenaCfg = ack.arena; }
+      });
+    }
   });
 }
 
-const STAT_COLOR = {strength:"#B23A2B",agility:"#5E8C4E",intelligence:"#8E7BC0",chakra:"#4C7FB8",
-  stamina:"#C29B2B",control:"#4CA394",willpower:"#D4552F",luck:"#B58DB6"};
-function bar(label, val, max, color, delta){
-  const v = Number(val) || 0;
-  const pct = Math.max(0, Math.min(100, (v / (max || 100)) * 100));
-  const d = delta ? `<span class="d ${delta>0?"up":"dn"}">${delta>0?"▲":"▼"}${Math.abs(delta)}</span>` : "";
-  return `<div class="bar${v<10?" low":""}"><div class="top"><span>${esc(label)}</span>
-    <span class="v">${v}${max && max !== 100 ? "/"+max : ""}${d}</span></div>
-    <div class="track"><div class="fill" style="width:${pct}%;background:${color}"></div></div></div>`;
+function renderRoster(players) {
+  const list = $('#rosterList');
+  list.innerHTML = '';
+  players.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'rosterRow';
+    row.innerHTML = `<div class="rosterDot" style="background:${p.color};color:${p.color}"></div>
+      <div class="rosterName">${escapeHtml(p.name)}${p.id === myId ? ' (you)' : ''}</div>
+      <div class="rosterScore">${p.score} pt</div>`;
+    list.appendChild(row);
+  });
+}
+function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+function findPlayerInSnap(id) {
+  return snapCur && snapCur.players.find(p => p.id === id);
 }
 
-function paintDossier(){
-  if(!state || !state.player) return;
-  const p = state.player;
-  $("#mAge").textContent = p.age ?? 0;
-  $("#mDay").textContent = "Day " + (p.day ?? 1);
-  $("#mLoc").textContent = [p.location, p.weather].filter(Boolean).join(" · ") || "—";
-  $("#mRyo").innerHTML = `<b>${(Number(p.money)||0).toLocaleString()}</b> ryo`;
-  $("#pName").textContent = p.name || draft.name;
-  $("#pRank").textContent = [p.rank, p.ageLabel, p.orphan ? "orphan" : null].filter(Boolean).join(" · ");
+function pushKillFeed(d) {
+  const victim = (snapCur && snapCur.players.find(p => p.id === d.id)) || {};
+  const killer = (snapCur && snapCur.players.find(p => p.id === d.killerId)) || {};
+  const toast = document.createElement('div');
+  toast.className = 'killToast';
+  const puLabel = POWERUP_LABELS[d.powerup] || d.powerup;
+  toast.innerHTML = `<b style="color:${killer.color || '#fff'}">${escapeHtml(killer.name || '???')}</b> eliminated
+    <b style="color:${victim.color || '#fff'}">${escapeHtml(victim.name || '???')}</b>
+    <div style="color:var(--dim);font-size:10.5px;margin-top:2px">+ ${escapeHtml(puLabel)} for ${escapeHtml(victim.name || 'them')}</div>`;
+  killFeedEl.appendChild(toast);
+  setTimeout(() => toast.remove(), 3100);
+}
 
-  const c = CLANS.find(x => x.n === p.clan) || draft.clan;
-  if(c){
-    const chip = $("#pClan");
-    chip.innerHTML = `<i class="tier-${c.t}">${c.t}</i> ${esc(c.n)}`;
-    chip.onmouseenter = e => showTip(e, c.n, c.t + " lineage", c.d, "Carries: " + c.g, "tier-"+c.t);
-    chip.onmouseleave = hideTip;
+// ---------------------------------------------------------------------------
+// Diff-based particle triggers — the server never sends particle events
+// directly; the client infers "something happened" from state deltas, which
+// keeps the network protocol small.
+// ---------------------------------------------------------------------------
+function diffForEffects(data) {
+  data.players.forEach(p => {
+    const prev = prevPlayersById.get(p.id);
+    if (prev) {
+      if (p.hp < prev.hp && p.alive) spawnHitSpark(p.x, p.y, p.color);
+      Object.keys(p.powerups || {}).forEach(k => {
+        if ((p.powerups[k] || 0) > (prev.powerups[k] || 0)) spawnPowerupSparkle(p.x, p.y - 30, p.color, POWERUP_LABELS[k]);
+      });
+      if (p.shieldFlash && !prev.shieldFlash) spawnShieldFlash(p.x, p.y, p.color);
+    }
+    prevPlayersById.set(p.id, p);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Particle system
+// ---------------------------------------------------------------------------
+function spawnHitSpark(x, y, color) {
+  for (let i = 0; i < 10; i++) {
+    const a = Math.random() * Math.PI * 2, sp = 60 + Math.random() * 140;
+    particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, maxLife: 0.35 + Math.random() * 0.15, color, size: 2 + Math.random() * 2, kind: 'spark' });
   }
-
-  const s = p.status || {};
-  $("#vitals").innerHTML =
-    bar("Health", s.hp ?? 0, s.hpMax || 100, "#B23A2B") +
-    bar("Chakra", s.cp ?? 0, s.cpMax || 100, "#4C7FB8") +
-    bar("Fatigue", s.fatigue ?? 0, 100, "#8A7B60") +
-    bar("Hunger", s.hunger ?? 0, 100, "#C29B2B");
-  const inj = s.injuries || [];
-  $("#injuries").innerHTML = inj.length
-    ? `<div class="tags" style="margin-top:8px">${inj.map(i => `<span class="tag" style="border-color:#5A2A22;color:#D08A7C">${esc(typeof i === "string" ? i : i.name)}</span>`).join("")}</div>` : "";
-
-  const st = p.stats || {};
-  const eff = effectiveStats(p);
-  $("#stats").innerHTML = Object.keys(STAT_COLOR).map(k => {
-    const v = Number(st[k]) || 0;
-    const e = Number(eff[k]) || 0;
-    const d = prevStats && typeof prevStats[k] === "number" ? v - prevStats[k] : 0;
-    // When a condition is dragging a stat down, show the effective value in the label.
-    const label = cap(k) + (e !== v ? ` → ${e}` : "");
-    return bar(label, v, 100, STAT_COLOR[k], d);
-  }).join("");
-  prevStats = {}; Object.keys(STAT_COLOR).forEach(k => prevStats[k] = Number(st[k]) || 0);
-
-  $("#standing").innerHTML = bar("Reputation", p.reputation ?? 0, 100, "#C29B2B") +
-    `<div class="kv"><span>Karma</span><b>${(p.karma||0) > 10 ? "Light" : (p.karma||0) < -10 ? "Dark" : "Neutral"} (${p.karma ?? 0})</b></div>`;
-
-  const inv = (p.inventory||[]).map(i => typeof i === "string" ? {name:i,qty:1} : i).filter(i => i && i.name);
-  $("#inv").innerHTML = inv.length ? inv.map(i => `<span class="tag">${esc(i.name)}${i.qty>1?`<em>×${i.qty}</em>`:""}</span>`).join("") : `<span class="empty">Empty</span>`;
-  const eq = Object.entries(p.equipment||{}).filter(([,v]) => v && v !== "none");
-  $("#equip").innerHTML = eq.length ? eq.map(([k,v]) => `<div class="kv"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join("") : `<span class="empty">Nothing equipped</span>`;
-
-  const sk = p.skills || {};
-  prevSkills = prevSkills || {};
-  TREE.forEach(b => { prevSkills[b.k] = prevSkills[b.k] === undefined ? Number(sk[b.k]) || 0 : prevSkills[b.k]; });
-
-  const af = p.affinity || {};
-  const prim = ELEMENTS.find(e => e.k === String(af.primary||"").toLowerCase());
-  const known = af.discovered && prim;
-  $("#affHero").className = "affinity-hero" + (known ? "" : " unknown");
-  $("#affK").textContent = known ? prim.n.toUpperCase() : "UNKNOWN";
-  $("#affL").textContent = known
-    ? prim.n + " primary" + (af.secondary && af.secondary !== "none" ? " · " + af.secondary + " secondary" : "")
-    : "Affinity undiscovered — you need chakra paper";
-  const mas = af.mastery || {};
-  $("#elements").innerHTML = ELEMENTS.map(e => {
-    const isP = known && prim.k === e.k;
-    const uphill = known && e.beats === prim.k;
-    return `<div class="el ${isP?"prime":""}"><div class="sym">${e.abbr}</div><div class="wrap">
-      ${bar(e.n + (isP ? " (primary)" : uphill ? " (uphill)" : ""), mas[e.k] ?? 0, 100, isP ? "#C29B2B" : "#4C7FB8")}</div></div>`;
-  }).join("");
-
-  const ju = (p.jutsu||[]).map(j => typeof j === "string" ? {name:j} : j).filter(j => j && j.name);
-  $("#jutsu").innerHTML = ju.length ? ju.map(j =>
-    `<div class="kv"><span>${esc(j.name)}${j.element && j.element !== "none" ? ` <em style="color:#65717F;font-style:normal">${esc(j.element)}</em>` : ""}</span>
-     <b>${j.cost ? j.cost + "cp" : ""}${j.mastery ? " · " + j.mastery + "%" : ""}</b></div>`).join("")
-    : `<span class="empty">No techniques learned</span>`;
-
-  const rel = Object.entries(p.relationships||{});
-  $("#bonds").innerHTML = rel.length ? rel.map(([k,v]) => {
-    const n = typeof v === "object" && v !== null ? (v.affection ?? v.respect ?? 0) : v;
-    return bar(k, Number(n)||0, 100, "#5E8C4E");
-  }).join("") : `<span class="empty">No one knows you yet</span>`;
-  const ms = (p.missions||[]).filter(m => m && m.name);
-  $("#missions").innerHTML = ms.length ? ms.map(m =>
-    `<div class="kv"><span>${esc(m.rank||"?")}-rank · ${esc(m.name)}</span><b>${esc(m.status||"")}</b></div>`).join("")
-    : `<span class="empty">No assignment</span>`;
-  const ach = (p.achievements||[]).filter(Boolean);
-  $("#achievements").innerHTML = ach.length ? ach.map(a => `<span class="tag">${esc(typeof a === "string" ? a : a.name)}</span>`).join("") : `<span class="empty">Nothing yet</span>`;
-
-  paintAbilities();
-  renderSkillTree();
-
-  // remember skill levels for next delta comparison, after tree render used the old ones
-  TREE.forEach(b => { prevSkills[b.k] = Number(sk[b.k]) || 0; });
 }
-
-function paintAbilities(){
-  const owned = {};
-  ((state && state.player && state.player.abilities) || []).forEach(a => {
-    if(a && a.name) owned[String(a.name).toLowerCase()] = a;
+function spawnDeathBurst(x, y, color) {
+  for (let i = 0; i < 36; i++) {
+    const a = Math.random() * Math.PI * 2, sp = 40 + Math.random() * 260;
+    particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, maxLife: 0.5 + Math.random() * 0.5, color, size: 2 + Math.random() * 4, kind: 'spark' });
+  }
+  particles.push({ x, y, vx: 0, vy: 0, life: 0, maxLife: 0.6, color, size: 4, kind: 'ring' });
+}
+function spawnPowerupSparkle(x, y, color, label) {
+  particles.push({ x, y, vx: 0, vy: -40, life: 0, maxLife: 1.3, color, size: 0, kind: 'text', text: '+' + label });
+  for (let i = 0; i < 14; i++) {
+    const a = Math.random() * Math.PI * 2, sp = 20 + Math.random() * 90;
+    particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 30, life: 0, maxLife: 0.6, color, size: 2 + Math.random() * 2, kind: 'spark' });
+  }
+}
+function spawnShieldFlash(x, y, color) {
+  particles.push({ x, y, vx: 0, vy: 0, life: 0, maxLife: 0.35, color, size: 26, kind: 'ring' });
+}
+function updateParticles(dt) {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.life += dt;
+    if (p.life >= p.maxLife) { particles.splice(i, 1); continue; }
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    if (p.kind === 'spark') { p.vx *= 0.92; p.vy *= 0.92; }
+  }
+}
+function drawParticles() {
+  particles.forEach(p => {
+    const t = p.life / p.maxLife;
+    ctx.globalAlpha = 1 - t;
+    if (p.kind === 'spark') {
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (1 - t * 0.4), 0, Math.PI * 2); ctx.fill();
+    } else if (p.kind === 'ring') {
+      ctx.strokeStyle = p.color; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size + t * 50, 0, Math.PI * 2); ctx.stroke();
+    } else if (p.kind === 'text') {
+      ctx.fillStyle = p.color; ctx.font = '700 15px system-ui'; ctx.textAlign = 'center';
+      ctx.fillText(p.text, p.x, p.y);
+    }
   });
-  const cats = ["All", ...new Set(ABILITIES.map(a => a.c))];
-  $("#abFilters").innerHTML = cats.map(c => `<button data-c="${c}" aria-pressed="${c === abFilter}">${c}</button>`).join("");
-  $$("#abFilters button").forEach(b => b.onclick = () => { abFilter = b.dataset.c; paintAbilities(); });
-
-  const rank = a => { const o = owned[a.n.toLowerCase()]; return !o ? 2 : (o.status === "awakened" ? 0 : 1); };
-  const list = ABILITIES.filter(a => abFilter === "All" || a.c === abFilter).sort((a,b) => rank(a) - rank(b));
-  $("#abList").innerHTML = list.map(a => {
-    const o = owned[a.n.toLowerCase()];
-    const st = o ? (o.status || "dormant") : "locked";
-    return `<div class="ab ${esc(st)}"><div class="h"><span class="nm">${esc(a.n)}</span><span class="st">${esc(st)}</span></div>
-      <div class="g">${esc(o && o.note ? o.note : a.d)}</div>
-      <div class="g" style="color:#4C5764">${esc(a.g)}</div></div>`;
-  }).join("");
+  ctx.globalAlpha = 1;
 }
 
-/* ---------- skill tree (compact, embedded in Chakra pane) ---------- */
-function renderSkillTree(){
-  const sk = (state && state.player && state.player.skills) || {};
-  const W = 96, H = 220, baseY = H - 18, topY = 22;
-  const xAt = y => 48 + Math.sin((baseY - y) / 40) * 11;
-  const body = $("#skillTreeMini");
-  if(!body) return;
-  body.innerHTML = TREE.map(b => {
-    const lv = clamp(Number(sk[b.k]) || 0, 0, 100);
-    const col = b.col;
-    const trunkTopY = topY;
-    const fillTopY = baseY - (Math.min(lv, 80) / 80) * (baseY - topY);
-    let dimPath = `M ${xAt(baseY).toFixed(1)} ${baseY}`;
-    for(let y = baseY - 8; y >= trunkTopY; y -= 8) dimPath += ` L ${xAt(y).toFixed(1)} ${y}`;
-    let litPath = `M ${xAt(baseY).toFixed(1)} ${baseY}`;
-    for(let y = baseY - 8; y >= fillTopY; y -= 8) litPath += ` L ${xAt(y).toFixed(1)} ${y}`;
-    const nodes = b.nodes.map(n => {
-      const y = baseY - (n.lv / 80) * (baseY - topY);
-      const x = xAt(y);
-      const unlocked = lv >= n.lv;
-      const tip = `${esc(n.n)}|${esc(n.g)}|Requires level ${n.lv}`;
-      return `<g class="stnode" data-tip="${tip}">
-        <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${unlocked ? 10 : 7}" fill="${unlocked ? col : '#161C25'}" stroke="${col}" stroke-width="2"/>
-        <text x="${(x+14).toFixed(1)}" y="${(y+3).toFixed(1)}" class="stnode-label">${n.lv}</text>
-      </g>`;
-    }).join("");
-    return `<div class="stcol">
-      <svg viewBox="0 0 ${W} ${H}" class="sttree">
-        <path d="${dimPath}" stroke="#212936" stroke-width="6" fill="none" stroke-linecap="round"/>
-        <path d="${litPath}" stroke="${col}" stroke-width="6" fill="none" stroke-linecap="round"/>
-        ${nodes}
-      </svg>
-      <div class="stcol-label" style="color:${col}">${esc(b.n)}<span>${lv}</span></div>
-    </div>`;
-  }).join("");
-  $$("#skillTreeMini .stnode").forEach(g => {
-    g.addEventListener("mouseenter", e => {
-      const [n, d, req] = g.dataset.tip.split("|");
-      showTip(e, n, req, d, "", "");
-    });
-    g.addEventListener("mouseleave", hideTip);
-  });
-}
-
-$$(".tabs button").forEach(b => b.onclick = () => {
-  $$(".tabs button").forEach(x => x.setAttribute("aria-selected","false"));
-  b.setAttribute("aria-selected","true");
-  $$(".pane").forEach(p => p.classList.toggle("on", p.id === "pane-" + b.dataset.pane));
+// ---------------------------------------------------------------------------
+// Input — keyboard/mouse (desktop) and dual joysticks (touch)
+// ---------------------------------------------------------------------------
+const keys = new Set();
+let mousePage = { x: innerWidth / 2, y: innerHeight / 2 };
+let mouseFireHeld = false;
+window.addEventListener('keydown', e => {
+  keys.add(e.key.toLowerCase());
+  if (e.key === ' ') e.preventDefault();
 });
+window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
+canvas.addEventListener('mousemove', e => { mousePage.x = e.clientX; mousePage.y = e.clientY; });
+canvas.addEventListener('mousedown', () => { mouseFireHeld = true; });
+window.addEventListener('mouseup', () => { mouseFireHeld = false; });
 
-/* ================================================================================
-   TURN PIPELINE
-   Pass 1 (NARRATOR): writes prose + three [[OPTION]] marker lines.
-   Pass 2 (INTERPRETER): reads that prose against the sheet and returns strict JSON
-           describing every mechanical change. This is what makes stat points real.
-   The interpreter is authoritative for mechanics; the narrator is authoritative for
-   story. Neither can silently break the other.
-   ================================================================================ */
+function keyboardMoveVector() {
+  let mx = 0, my = 0;
+  if (keys.has('w') || keys.has('arrowup')) my -= 1;
+  if (keys.has('s') || keys.has('arrowdown')) my += 1;
+  if (keys.has('a') || keys.has('arrowleft')) mx -= 1;
+  if (keys.has('d') || keys.has('arrowright')) mx += 1;
+  return { mx, my };
+}
 
-function narratorPayload(retryCount, hintShorten){
-  const head = messages.slice(0,1), tail = messages.slice(-CONFIG.historyTurns);
-  const body = messages.length > CONFIG.historyTurns ? [...head, ...tail] : messages;
-  const out = [{ role:"system", content: systemPrompt() }, ...body];
-  if(retryCount > 0){
-    let nudge = "Your previous reply was unusable: it did not contain three [[OPTION]] lines, or the options were generic filler. Rewrite it now. Continue the SAME scene — do not restart it. End with exactly three lines in the form: [[OPTION]] label | detail | risk. Each option must name something concrete from the scene you just wrote.";
-    if(hintShorten) nudge += " Your reply also ran out of room. Keep the prose to two short paragraphs this time.";
-    out.push({ role:"system", content: nudge });
+// ---- touch joysticks ----
+const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+const JOY_RADIUS = 55;
+const joyState = {
+  left: { active: false, id: null, dx: 0, dy: 0, baseX: 0, baseY: 0 },
+  right: { active: false, id: null, dx: 0, dy: 0, baseX: 0, baseY: 0 }
+};
+
+function setupJoystick(zoneEl, baseEl, stickEl, state) {
+  if (!isTouchDevice) { zoneEl.style.display = 'none'; return; }
+  const start = e => {
+    const t = e.changedTouches[0];
+    state.active = true; state.id = t.identifier;
+    state.baseX = t.clientX; state.baseY = t.clientY;
+    baseEl.style.display = 'block';
+    baseEl.style.left = (t.clientX - 55) + 'px';
+    baseEl.style.top = (t.clientY - 55) + 'px';
+    stickEl.style.left = '30px'; stickEl.style.top = '30px';
+    stickEl.classList.add('active');
+    e.preventDefault();
+  };
+  const move = e => {
+    if (!state.active) return;
+    const t = [...e.changedTouches].find(t => t.identifier === state.id);
+    if (!t) return;
+    let dx = t.clientX - state.baseX, dy = t.clientY - state.baseY;
+    const dist = Math.hypot(dx, dy);
+    if (dist > JOY_RADIUS) { dx = dx / dist * JOY_RADIUS; dy = dy / dist * JOY_RADIUS; }
+    state.dx = dx / JOY_RADIUS; state.dy = dy / JOY_RADIUS;
+    stickEl.style.left = (30 + dx) + 'px'; stickEl.style.top = (30 + dy) + 'px';
+    e.preventDefault();
+  };
+  const end = e => {
+    const t = [...e.changedTouches].find(t => t.identifier === state.id);
+    if (!t && e.type !== 'touchcancel') return;
+    state.active = false; state.dx = 0; state.dy = 0;
+    baseEl.style.display = 'none';
+    stickEl.classList.remove('active');
+    e.preventDefault();
+  };
+  zoneEl.addEventListener('touchstart', start, { passive: false });
+  window.addEventListener('touchmove', move, { passive: false });
+  window.addEventListener('touchend', end, { passive: false });
+  window.addEventListener('touchcancel', end, { passive: false });
+}
+setupJoystick($('#joyLeftZone'), $('#joyLeftBase'), $('#joyLeftStick'), joyState.left);
+setupJoystick($('#joyRightZone'), $('#joyRightBase'), $('#joyRightStick'), joyState.right);
+
+// Combine every input source into one payload sent to the server. Touch takes
+// priority when active (mobile), otherwise keyboard+mouse (desktop).
+function computeInput() {
+  let mx = 0, my = 0, aim = predictedSelf.aim || 0, fire = false;
+
+  if (joyState.left.active) { mx = joyState.left.dx; my = joyState.left.dy; }
+  else { const kb = keyboardMoveVector(); mx = kb.mx; my = kb.my; }
+
+  if (joyState.right.active) {
+    const dist = Math.hypot(joyState.right.dx, joyState.right.dy);
+    if (dist > 0.18) { aim = Math.atan2(joyState.right.dy, joyState.right.dx); fire = true; }
+  } else {
+    const selfScreen = arenaToPage(predictedSelf.x, predictedSelf.y);
+    aim = Math.atan2(mousePage.y - selfScreen.y, mousePage.x - selfScreen.x);
+    fire = mouseFireHeld || keys.has(' ');
   }
-  return out;
+  predictedSelf.aim = aim;
+  return { mx, my, aim, fire };
 }
 
-/* Non-streaming helper used by the interpreter pass. */
-async function callModelOnce(msgs, opts){
-  opts = opts || {};
-  const res = await fetch(PROVIDERS[provider].url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + apiKey,
-      ...(provider === "openrouter" ? {"X-Title":"Shinobi Registry"} : {})
-    },
-    body: JSON.stringify({
-      model: opts.model || model,
-      stream: false,
-      temperature: opts.temperature ?? 0.1,
-      max_tokens: opts.maxTokens || 700,
-      messages: msgs
-    })
-  });
-  if(!res.ok) throw new Error(res.status + " — " + (await res.text()).slice(0, 200));
-  const data = await res.json();
-  const choice = data && data.choices && data.choices[0];
-  return (choice && choice.message && choice.message.content) || "";
+function arenaToPage(ax, ay) {
+  const rect = canvas.getBoundingClientRect();
+  return { x: rect.left + (ax / arenaCfg.w) * rect.width, y: rect.top + (ay / arenaCfg.h) * rect.height };
 }
 
-/* Pass 2. Converts narration into a mechanics patch. Retries once on bad JSON, and
-   degrades gracefully to a local text-scan rather than losing the player's progress. */
-async function interpretNarration(prose, playerAction, needOptions){
-  const ask = [
-    { role:"system", content: interpreterSystemPrompt() },
-    { role:"user", content:
-`The player's action this turn was:
-"""${playerAction || "(scene opening)"}"""
-
-The narration that resulted was:
-"""${prose}"""
-
-Output the JSON patch describing every mechanical change this narration states or clearly implies.${needOptions ? " Also include an \"options\" array of exactly three specific, scene-grounded choices." : ""} Remember: if the narration says a stat rose, that stat MUST appear in your output. JSON only, no prose.` }
-  ];
-
-  for(let attempt = 0; attempt < 2; attempt++){
-    try{
-      const raw = await callModelOnce(attempt === 0 ? ask : [...ask, {
-        role:"system", content:"Your previous output was not valid JSON. Output ONLY a single raw JSON object this time. No markdown, no commentary."
-      }], { temperature: 0.05, maxTokens: 700 });
-      const parsed = extractJSON(raw);
-      if(parsed && typeof parsed === "object") return { patch: parsed, source: "interpreter" };
-    }catch(e){
-      if(attempt === 1) break;
-    }
+// Send input to the server at a steady rate — independent of render FPS.
+setInterval(() => {
+  if (socket && socket.connected && inRoom && (roomState === 'round' || roomState === 'countdown')) {
+    socket.emit('input', computeInput());
   }
-  /* Both interpreter attempts failed — fall back to reading the narration locally so
-     the player still gets credit for what the prose plainly said. */
-  return { patch: localFallbackExtract(prose), source: "fallback" };
+}, 50);
+
+// ---------------------------------------------------------------------------
+// Client-side prediction (self) + interpolation (everyone else / bullets)
+// ---------------------------------------------------------------------------
+// Approximate per-player speed used ONLY for smoothing local prediction;
+// the server remains authoritative and we gently correct toward it every
+// snapshot, so any drift self-heals within a fraction of a second.
+function selfSpeedGuess() {
+  const me = snapCur && snapCur.players.find(p => p.id === myId);
+  const boost = me ? (me.powerups.speedBoost || 0) : 0;
+  return 260 * (1 + boost * 0.10);
 }
 
-/* A deliberately simple regex pass over the narration, used only when the interpreter
-   model is unreachable or keeps emitting garbage. Catches the common explicit forms
-   the narrator is instructed to write, e.g. "+1 strength" / "strength rises by 2". */
-function localFallbackExtract(prose){
-  const patch = { statDeltas:{}, skillDeltas:{}, statusDeltas:{} };
-  const text = String(prose || "");
-  const allKeys = [...STAT_KEYS, ...SKILL_KEYS];
+function updatePrediction(dt) {
+  const me = snapCur && snapCur.players.find(p => p.id === myId);
+  if (!me) return;
+  if (!predictedSelf.inited) { predictedSelf.x = me.x; predictedSelf.y = me.y; predictedSelf.inited = true; }
 
-  allKeys.forEach(key => {
-    const bucket = STAT_KEYS.includes(key) ? patch.statDeltas : patch.skillDeltas;
-    // "+2 strength" / "-1 agility"
-    let rx = new RegExp("([+-]\\s*\\d+)\\s*(?:points?\\s*)?(?:to\\s*)?" + key + "\\b", "ig");
-    let m;
-    while((m = rx.exec(text))){
-      const v = parseInt(m[1].replace(/\s+/g, ""), 10);
-      if(v) bucket[key] = (bucket[key] || 0) + v;
-    }
-    // "strength rises by 2" / "strength increases by +1" / "strength drops by 1"
-    rx = new RegExp(key + "\\b[^.\\n]{0,40}?\\b(rises?|increases?|improves?|climbs?|grows?|gains?|drops?|falls?|decreases?|declines?|slips?)\\b[^.\\n]{0,20}?by\\s*([+-]?\\d+)", "ig");
-    while((m = rx.exec(text))){
-      let v = parseInt(m[2], 10);
-      if(!v) continue;
-      if(/drops?|falls?|decreases?|declines?|slips?/i.test(m[1])) v = -Math.abs(v);
-      bucket[key] = (bucket[key] || 0) + v;
-    }
-  });
-
-  // health / chakra changes
-  let m2;
-  const hpRx = /([+-]\s*\d+)\s*(?:points?\s*)?(?:of\s*)?(health|hp)\b/ig;
-  while((m2 = hpRx.exec(text))) patch.statusDeltas.hp = (patch.statusDeltas.hp || 0) + parseInt(m2[1].replace(/\s+/g,""), 10);
-  const cpRx = /([+-]\s*\d+)\s*(?:points?\s*)?(?:of\s*)?(chakra points|cp)\b/ig;
-  while((m2 = cpRx.exec(text))) patch.statusDeltas.cp = (patch.statusDeltas.cp || 0) + parseInt(m2[1].replace(/\s+/g,""), 10);
-
-  // explicit birthday / stated age
-  const ageRx = /\b(?:your|the)\s+(\w+)\s+birthday\b/i;
-  const ordinals = { first:1, second:2, third:3, fourth:4, fifth:5, sixth:6, seventh:7, eighth:8, ninth:9,
-                     tenth:10, eleventh:11, twelfth:12, thirteenth:13, fourteenth:14, fifteenth:15,
-                     sixteenth:16, seventeenth:17, eighteenth:18, nineteenth:19, twentieth:20 };
-  const am = text.match(ageRx);
-  if(am && ordinals[am[1].toLowerCase()]) patch.ageSet = ordinals[am[1].toLowerCase()];
-
-  if(/\byou (?:are dead|have died|die)\b/i.test(text)) patch.died = true;
-
-  ["statDeltas","skillDeltas","statusDeltas"].forEach(k => {
-    if(!Object.keys(patch[k]).length) delete patch[k];
-  });
-  return patch;
+  if (me.alive && (roomState === 'round')) {
+    const input = computeInput();
+    let mx = input.mx, my = input.my;
+    const mag = Math.hypot(mx, my);
+    if (mag > 1) { mx /= mag; my /= mag; }
+    const speed = selfSpeedGuess();
+    predictedSelf.x += mx * speed * dt;
+    predictedSelf.y += my * speed * dt;
+    predictedSelf.x = clamp(predictedSelf.x, arenaCfg.playerRadius, arenaCfg.w - arenaCfg.playerRadius);
+    predictedSelf.y = clamp(predictedSelf.y, arenaCfg.playerRadius, arenaCfg.h - arenaCfg.playerRadius);
+  }
+  // Gently reconcile toward the server's authoritative position — corrects
+  // for knockback, wall clamps, and any prediction drift without visible pops.
+  predictedSelf.x = lerp(predictedSelf.x, me.x, 0.18);
+  predictedSelf.y = lerp(predictedSelf.y, me.y, 0.18);
 }
 
-const MAX_RETRIES = 2;
+// Interpolation factor between the last two snapshots, based on wall-clock
+// time so remote players/bullets glide smoothly between the ~33ms server ticks.
+function interpFactor() {
+  if (!snapPrev || !snapCur || snapCur.t === snapPrev.t) return 1;
+  const span = snapCur.t - snapPrev.t;
+  const elapsed = Date.now() - snapCur.t;
+  return clamp(elapsed / span, 0, 1.5);
+}
 
-async function turn(retryCount, hintShorten){
-  retryCount = retryCount || 0;
-  busy = true; setBusy(true); paintChoices([]);
-  const entry = addEntry("gm","…",`<p><span class="caret"></span></p>`);
-  const body = entry.querySelector(".body");
-  const playerAction = (() => {
-    for(let i = messages.length - 1; i >= 0; i--) if(messages[i].role === "user") return messages[i].content;
-    return "";
-  })();
+function interpPos(prevList, curP) {
+  const prevP = prevList && prevList.find(x => x.id === curP.id);
+  if (!prevP) return { x: curP.x, y: curP.y };
+  const t = interpFactor();
+  return { x: lerp(prevP.x, curP.x, t), y: lerp(prevP.y, curP.y, t) };
+}
 
-  let raw = "", finishReason = null;
-  const tokensThisCall = CONFIG.maxTokens + retryCount * 300;
+// ---------------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------------
+function drawArena() {
+  ctx.fillStyle = '#060810';
+  ctx.fillRect(0, 0, arenaCfg.w, arenaCfg.h);
 
-  try{
-    /* ---- PASS 1: narration (streamed so the player watches it arrive) ---- */
-    const res = await fetch(PROVIDERS[provider].url, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json", "Authorization":"Bearer " + apiKey,
-        ...(provider === "openrouter" ? {"X-Title":"Shinobi Registry"} : {}) },
-      body: JSON.stringify({ model, stream:true, temperature:CONFIG.temperature,
-        max_tokens:tokensThisCall, messages:narratorPayload(retryCount, hintShorten) })
+  // grid
+  ctx.strokeStyle = 'rgba(60,80,130,0.12)';
+  ctx.lineWidth = 1;
+  const step = 80;
+  for (let x = 0; x <= arenaCfg.w; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, arenaCfg.h); ctx.stroke(); }
+  for (let y = 0; y <= arenaCfg.h; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(arenaCfg.w, y); ctx.stroke(); }
+
+  // border glow
+  ctx.strokeStyle = '#233252'; ctx.lineWidth = 6;
+  ctx.strokeRect(3, 3, arenaCfg.w - 6, arenaCfg.h - 6);
+  ctx.save();
+  ctx.shadowColor = '#39ff8855'; ctx.shadowBlur = 20;
+  ctx.strokeStyle = 'rgba(57,255,136,.25)'; ctx.lineWidth = 2;
+  ctx.strokeRect(3, 3, arenaCfg.w - 6, arenaCfg.h - 6);
+  ctx.restore();
+}
+
+function drawPlayer(p, pos, isSelf) {
+  const r = arenaCfg.playerRadius;
+  if (!p.alive) {
+    // faint ghost marker for spectating (mid-match joiners / this round's dead)
+    ctx.globalAlpha = 0.18;
+    ctx.strokeStyle = p.color; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = 1;
+    return;
+  }
+
+  // shield ring
+  if (p.shieldActive) {
+    ctx.save();
+    ctx.strokeStyle = '#8ecbffcc'; ctx.lineWidth = 3;
+    ctx.shadowColor = '#8ecbff'; ctx.shadowBlur = 14;
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 8, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  }
+
+  // body glow
+  ctx.save();
+  ctx.shadowColor = p.color; ctx.shadowBlur = isSelf ? 26 : 16;
+  ctx.fillStyle = p.color;
+  ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  // outline ring for self
+  if (isSelf) {
+    ctx.strokeStyle = '#ffffffaa'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 3, 0, Math.PI * 2); ctx.stroke();
+  }
+
+  // aim direction nub
+  ctx.fillStyle = '#ffffffdd';
+  const nx = pos.x + Math.cos(p.aim) * (r + 6), ny = pos.y + Math.sin(p.aim) * (r + 6);
+  ctx.beginPath(); ctx.arc(nx, ny, 3.5, 0, Math.PI * 2); ctx.fill();
+
+  // name + hp bar
+  ctx.textAlign = 'center';
+  ctx.font = '600 12px system-ui';
+  ctx.fillStyle = '#dbe4ffcc';
+  ctx.fillText(p.name, pos.x, pos.y - r - 20);
+
+  const barW = 42, barH = 5;
+  ctx.fillStyle = '#1c2436';
+  ctx.fillRect(pos.x - barW / 2, pos.y - r - 14, barW, barH);
+  ctx.fillStyle = p.hp > p.maxHp * 0.3 ? p.color : '#ff3b3b';
+  ctx.fillRect(pos.x - barW / 2, pos.y - r - 14, barW * clamp(p.hp / p.maxHp, 0, 1), barH);
+}
+
+function drawBullet(b, pos) {
+  ctx.save();
+  ctx.shadowColor = b.color; ctx.shadowBlur = 12;
+  ctx.fillStyle = b.color;
+  ctx.beginPath(); ctx.arc(pos.x, pos.y, b.radius, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+function render() {
+  ctx.clearRect(0, 0, arenaCfg.w, arenaCfg.h);
+  drawArena();
+
+  if (snapCur) {
+    const t = interpFactor();
+    snapCur.bullets.forEach(b => {
+      const prevB = snapPrev && snapPrev.bullets.find(x => x.id === b.id);
+      const pos = prevB ? { x: lerp(prevB.x, b.x, t), y: lerp(prevB.y, b.y, t) } : { x: b.x, y: b.y };
+      drawBullet(b, pos);
     });
-    if(!res.ok) throw new Error(res.status + " — " + (await res.text()).slice(0,280));
 
-    const reader = res.body.getReader(), dec = new TextDecoder();
-    let buf = "", last = 0;
-    for(;;){
-      const {done, value} = await reader.read(); if(done) break;
-      buf += dec.decode(value,{stream:true});
-      let i;
-      while((i = buf.indexOf("\n")) >= 0){
-        const line = buf.slice(0,i).trim(); buf = buf.slice(i+1);
-        if(!line.startsWith("data:")) continue;
-        const d = line.slice(5).trim(); if(d === "[DONE]") continue;
-        try{
-          const choice = JSON.parse(d).choices?.[0];
-          if(choice?.finish_reason) finishReason = choice.finish_reason;
-          const t = choice?.delta?.content;
-          if(t){
-            raw += t;
-            if(performance.now() - last > 55){
-              last = performance.now();
-              body.innerHTML = md(parseOptionMarkers(stripJSON(raw)).prose) + `<span class="caret"></span>`;
-              scrollDown();
-            }
-          }
-        }catch(e){}
-      }
-    }
-    if(!raw.trim()) throw new Error("Empty reply. Try a different model.");
+    snapCur.players.forEach(p => {
+      const isSelf = p.id === myId;
+      const pos = isSelf ? predictedSelf : interpPos(snapPrev.players, p);
+      drawPlayer(p, pos, isSelf);
+    });
+  }
 
-    /* ---- parse narration + options ---- */
-    const cleanedRaw = stripJSON(raw);
-    let { options, prose } = parseOptionMarkers(cleanedRaw);
+  drawParticles();
 
-    /* Some models still nest options in a JSON block; accept that too. */
-    const strayJson = extractJSON(raw);
-    if(!options.length && strayJson && Array.isArray(strayJson.options)) options = strayJson.options;
-
-    if(!prose.trim()){
-      entry.remove();
-      if(retryCount < MAX_RETRIES) return turn(retryCount + 1, finishReason === "length");
-      addEntry("note","Narration failed", `<p>The storyteller returned nothing usable ${MAX_RETRIES + 1} times. Press Act again, or switch to a stronger model from <b>New life</b>.</p>`);
-      busy = false; setBusy(false); paintChoices(lastOptions);
-      return;
-    }
-
-    body.innerHTML = md(prose);
-    scrollDown();
-
-    /* ---- PASS 2: mechanics ---- */
-    const needOptions = !optionsAreUsable(options);
-    const statusEl = addEntry("interp", null, `<p><span class="spin"></span> Reading the scene for consequences…</p>`);
-    let patch = {}, source = "interpreter";
-    try{
-      const r = await interpretNarration(prose, playerAction, needOptions);
-      patch = r.patch || {}; source = r.source;
-    }catch(e){
-      patch = localFallbackExtract(prose); source = "fallback";
-    }
-    statusEl.remove();
-
-    if(needOptions && Array.isArray(patch.options) && patch.options.length) options = patch.options;
-
-    /* ---- apply ---- */
-    const prevPlayer = (state && state.player) || DEFAULT_PLAYER();
-    const result = applyPatch(prevPlayer, patch, pendingDaysPassed);
-    pendingDaysPassed = 0;
-    state = { player: result.player };
-    turnLog = result.log;
-    paintDossier();
-
-    entry.querySelector(".eyebrow").textContent =
-      `Age ${result.player.age ?? 0} · Day ${result.player.day ?? 0} · ${result.player.location || "Hidden Leaf Village"}`;
-
-    if(result.log.length) addEntry("delta", null, renderDeltaRibbon(result.log, source));
-
-    messages.push({ role:"assistant", content: prose });
-
-    /* ---- death ---- */
-    if(result.player.status && result.player.status.hp <= 0){
-      dead = true;
-      paintChoices([]);
-      setBusy(false);
-      showDeathScreen(result.player);
-      busy = false;
-      return;
-    }
-
-    lastOptions = sanitizeOptions(options);
-    paintChoices(lastOptions);
-    scrollDown();
-
-  }catch(err){
-    entry.remove();
-    const msg = err.name === "TypeError"
-      ? `The request never reached ${PROVIDERS[provider].label}. Usually the network, an ad blocker, or that provider not allowing direct browser calls (CORS) — switch provider from <b>New life</b>, or route through a small proxy.`
-      : esc(err.message);
-    addEntry("note","Request failed",`<p>${msg}</p>`);
-  }finally{ busy = false; setBusy(false); }
+  // center banner: countdown / waiting text
+  const banner = $('#centerBanner');
+  if (roomState === 'countdown' && snapCur) {
+    const secs = Math.ceil(snapCur.countdownMs / 1000);
+    banner.innerHTML = `<div class="big">${secs > 0 ? secs : 'GO'}</div><div class="small">Round starting</div>`;
+  } else {
+    banner.innerHTML = '';
+  }
 }
 
-/* The visible receipt of what the interpreter actually applied. */
-function renderDeltaRibbon(log, source){
-  const rows = log.map(l => {
-    const sym = l.dir === "up" ? "▲" : l.dir === "dn" ? "▼" : "•";
-    return `<div class="dl ${esc(l.dir)}"><span class="s">${sym}</span><span>${esc(l.text)}</span></div>`;
-  }).join("");
-  const tag = source === "fallback"
-    ? `<div class="dsrc">applied locally — the interpreter was unreachable</div>` : "";
-  return `<div class="dwrap">${rows}${tag}</div>`;
+// ---------------------------------------------------------------------------
+// HUD (score board, own health/powerups) — updated once per snapshot, not
+// every render frame, since it doesn't need 60fps refresh.
+// ---------------------------------------------------------------------------
+function updateHud() {
+  if (!snapCur) return;
+  const board = $('#scoreBoard');
+  board.innerHTML = snapCur.players.map(p => `
+    <div class="scorePip" style="color:${p.color}">
+      <span class="dot" style="background:${p.color}"></span>${p.score}
+    </div>`).join('');
+
+  const me = snapCur.players.find(p => p.id === myId);
+  if (!me) return;
+
+  const hearts = $('#selfHearts');
+  hearts.innerHTML = '';
+  const full = Math.floor(me.hp), frac = me.hp - full;
+  for (let i = 0; i < me.maxHp; i++) {
+    const filled = i < full ? 1 : (i === full && frac > 0.01 ? frac : 0);
+    hearts.appendChild(heartSvg(me.color, filled));
+  }
+
+  const puWrap = $('#selfPowerups');
+  puWrap.innerHTML = '';
+  Object.entries(me.powerups || {}).forEach(([k, v]) => {
+    if (!v) return;
+    const chip = document.createElement('div');
+    chip.className = 'puChip';
+    chip.innerHTML = `${POWERUP_LABELS[k] || k} <b>x${v}</b>`;
+    puWrap.appendChild(chip);
+  });
+}
+function heartSvg(color, fill) {
+  const wrap = document.createElement('div');
+  wrap.className = 'heart';
+  const pct = Math.round(fill * 100);
+  wrap.innerHTML = `<svg viewBox="0 0 24 24"><defs><clipPath id="clip"><rect x="0" y="0" width="${24 * fill}" height="24"/></clipPath></defs>
+    <path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2.3 4.8 5.6 4.2 8 3.8 10.3 5 12 7c1.7-2 4-3.2 6.4-2.8 3.3.6 5.2 4 3.6 7.5C19.5 16.4 12 21 12 21z" fill="#232c42"/>
+    <path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2.3 4.8 5.6 4.2 8 3.8 10.3 5 12 7c1.7-2 4-3.2 6.4-2.8 3.3.6 5.2 4 3.6 7.5C19.5 16.4 12 21 12 21z" fill="${color}" clip-path="url(#clip)"/></svg>`;
+  return wrap;
 }
 
-/* ---------- death ---------- */
-function showDeathScreen(p){
-  const stage = lifeStageFor(p.age);
-  $("#dName").textContent = p.name || "Unnamed";
-  $("#dSub").textContent = [
-    (p.clan && p.clan !== "No clan") ? "of the " + p.clan : "no clan",
-    p.rank || "civilian",
-    `died at ${p.age} · day ${p.day}`
-  ].join("  ·  ");
-  $("#dCause").textContent = p.causeOfDeath
-    ? `"${p.causeOfDeath}"`
-    : "The record does not say how.";
+// ---------------------------------------------------------------------------
+// Main loop
+// ---------------------------------------------------------------------------
+let lastFrame = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - lastFrame) / 1000);
+  lastFrame = now;
+  if (document.getElementById('gameScreen').classList.contains('on')) {
+    updatePrediction(dt);
+    updateParticles(dt);
+    render();
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+setInterval(updateHud, 80); // HUD DOM updates don't need to run every rAF tick
 
-  const topSkill = SKILL_KEYS
-    .map(k => ({ k, v: Number(p.skills[k]) || 0, n: (TREE.find(b => b.k === k) || {}).n || k }))
-    .sort((a,b) => b.v - a.v)[0];
-  const statTotal = STAT_KEYS.reduce((a,k) => a + (Number(p.stats[k]) || 0), 0);
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
-  $("#dStats").innerHTML = [
-    ["Age reached", p.age],
-    ["Days lived", p.day],
-    ["Attribute total", statTotal],
-    ["Best discipline", topSkill && topSkill.v > 0 ? `${topSkill.v}` : "0"],
-    ["Techniques", (p.jutsu || []).length],
-    ["Bonds formed", Object.keys(p.relationships || {}).length]
-  ].map(([l, v]) => `<div class="dstat"><div class="l">${esc(l)}</div><div class="v">${esc(v)}</div></div>`).join("");
+// ---------------------------------------------------------------------------
+// Victory screen + confetti
+// ---------------------------------------------------------------------------
+const confettiCanvas = $('#confettiCanvas');
+const cctx = confettiCanvas.getContext('2d');
+let confetti = [];
+let confettiRunning = false;
 
-  const bonds = Object.keys(p.relationships || {});
-  const notes = [];
-  notes.push(`Lived as ${stage.label === "infant" ? "an infant" : "a " + stage.label}, ${p.orphan ? "orphaned" : "with family"}, in ${p.location || "the Hidden Leaf"}.`);
-  if(topSkill && topSkill.v > 0) notes.push(`Strongest discipline: <b>${esc(topSkill.n)}</b> at ${topSkill.v}.`);
-  else notes.push(`Never trained a discipline past zero.`);
-  if((p.jutsu || []).length) notes.push(`Knew ${p.jutsu.length} technique${p.jutsu.length === 1 ? "" : "s"}: <b>${esc(p.jutsu.map(j => j.name).join(", "))}</b>.`);
-  if(bonds.length) notes.push(`Remembered by <b>${esc(bonds.join(", "))}</b>.`);
-  else notes.push(`No one alive knew this name.`);
-  if((p.achievements || []).length) notes.push(`Achievements: <b>${esc(p.achievements.join(", "))}</b>.`);
-  if(p.affinity && p.affinity.discovered) notes.push(`Chakra nature: <b>${esc(p.affinity.primary)}</b>.`);
-  $("#dNote").innerHTML = notes.map(n => `<div>${n}</div>`).join("");
+function showVictory(data) {
+  showScreen('#matchEndScreen');
+  const winner = data.players.find(p => p.id === data.winnerId) || {};
+  $('#victoryName').textContent = winner.name || '???';
+  $('#victoryName').style.color = winner.color || '#fff';
+  $('#victoryTitle').textContent = winner.id === myId ? 'VICTORY' : 'MATCH OVER';
 
-  $("#deathScreen").hidden = false;
+  const sorted = [...data.players].sort((a, b) => b.score - a.score);
+  $('#finalScores').innerHTML = sorted.map(p => `
+    <div class="finalCard" style="border-color:${p.color}55">
+      <div class="n" style="color:${p.color}">${escapeHtml(p.name)}</div>
+      <div class="s">${p.score}</div>
+    </div>`).join('');
+
+  startConfetti(winner.color || '#39ff88');
 }
 
-function hideDeathScreen(){ $("#deathScreen").hidden = true; }
+function resizeConfetti() { confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight; }
+window.addEventListener('resize', resizeConfetti);
+resizeConfetti();
 
-function resetToGate(){
-  hideDeathScreen();
-  messages = []; state = null; prevStats = prevSkills = null; dead = false;
-  turnLog = []; pendingDaysPassed = 0;
-  draft = {name:"",gender:"male",orphan:false,clan:null}; rerolls = 3; lastOptions = [];
-  $("#log").querySelectorAll(".entry").forEach(n => n.remove());
-  $("#choices").innerHTML = "";
-  $("#app").hidden = true; $("#gate").style.display = "grid";
-  $("#btnRoll").disabled = false; $("#btnRoll").textContent = "Draw blood";
-  $("#btnBirth").disabled = true; showStep(1); paintProvider();
+function startConfetti(mainColor) {
+  confetti = [];
+  const palette = [mainColor, ...PLAYER_COLORS];
+  for (let i = 0; i < 160; i++) {
+    confetti.push({
+      x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight,
+      vy: 120 + Math.random() * 180, vx: (Math.random() - 0.5) * 80,
+      size: 5 + Math.random() * 7, rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 6,
+      color: palette[Math.floor(Math.random() * palette.length)]
+    });
+  }
+  if (!confettiRunning) { confettiRunning = true; requestAnimationFrame(confettiFrame); }
 }
-
-$("#dNew").onclick = resetToGate;
-$("#dSave").onclick = () => $("#btnSave").click();
-$("#dLoad").onclick = () => { hideDeathScreen(); $("#fileIn").click(); };
-
-function setBusy(v){
-  $("#send").disabled = v || dead; $("#ageup").disabled = v || dead;
-  $("#send").textContent = v ? "…" : "Act";
-  $$(".choice").forEach(c => c.disabled = v);
+let lastConfettiT = performance.now();
+function confettiFrame(now) {
+  const dt = Math.min(0.05, (now - lastConfettiT) / 1000);
+  lastConfettiT = now;
+  const onScreen = document.getElementById('matchEndScreen').classList.contains('on');
+  if (!onScreen) { confettiRunning = false; return; }
+  cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+  confetti.forEach(c => {
+    c.y += c.vy * dt; c.x += c.vx * dt; c.rot += c.vr * dt;
+    if (c.y > innerHeight + 20) { c.y = -20; c.x = Math.random() * innerWidth; }
+    cctx.save();
+    cctx.translate(c.x, c.y); cctx.rotate(c.rot);
+    cctx.fillStyle = c.color;
+    cctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.6);
+    cctx.restore();
+  });
+  requestAnimationFrame(confettiFrame);
 }
-function send(text){
-  if(busy || dead || !text.trim() || !state) return;
-  advanceTime(false);
-  paintDossier();
-  addEntry("you", null, esc(text));
-  messages.push({role:"user", content:text});
-  $("#say").value = ""; autosize(); turn();
-}
-$("#ageup").onclick = () => {
-  if(busy || dead || !state) return;
-  advanceTime(true);
-  paintDossier();
-  addEntry("you", null, "Let time pass.");
-  messages.push({role:"user", content:"[AGE UP] Carry me forward to the next meaningful moment — the engine has already advanced the calendar to reflect it. Apply the gains I earned and the neglect I incurred over that stretch, and land me in a scene."});
-  turn();
-};
-
-const say = $("#say");
-function autosize(){ say.style.height = "auto"; say.style.height = Math.min(140, say.scrollHeight) + "px"; }
-say.oninput = autosize;
-say.onkeydown = e => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); send(say.value); } };
-$("#send").onclick = () => send(say.value);
-
-/* ---------- save / load / reset ---------- */
-$("#btnSave").onclick = () => {
-  const n = (state && state.player && state.player.name) || draft.name || "shinobi";
-  const a = (state && state.player && state.player.age) ?? 0;
-  const blob = new Blob([JSON.stringify({version:6, provider, model, draft, messages, state, lastOptions, dead, log:$("#log").innerHTML}, null, 2)], {type:"application/json"});
-  const el = document.createElement("a");
-  el.href = URL.createObjectURL(blob);
-  el.download = `${String(n).toLowerCase().replace(/\s+/g,"-")}-age${a}${dead ? "-final" : ""}.json`;
-  el.click(); URL.revokeObjectURL(el.href);
-};
-const pick = () => $("#fileIn").click();
-$("#btnLoad").onclick = pick; $("#btnLoad2").onclick = pick;
-$("#fileIn").onchange = async e => {
-  const f = e.target.files[0]; if(!f) return;
-  try{
-    const s = JSON.parse(await f.text());
-    provider = s.provider || provider;
-    model = s.model || PROVIDERS[provider].models[0].id;
-    apiKey = ($("#keyIn").value || CONFIG.keys[provider] || "").trim();
-    draft = s.draft || draft; messages = s.messages || [];
-    /* Merge onto a fresh default so saves from older versions gain any new fields
-       (unlockedNodes, causeOfDeath, actionTicks) instead of arriving undefined. */
-    if(s.state && s.state.player){
-      const merged = { ...DEFAULT_PLAYER(), ...s.state.player };
-      merged.stats = { ...DEFAULT_PLAYER().stats, ...(s.state.player.stats || {}) };
-      merged.skills = { ...DEFAULT_PLAYER().skills, ...(s.state.player.skills || {}) };
-      merged.status = { ...DEFAULT_PLAYER().status, ...(s.state.player.status || {}) };
-      merged.unlockedNodes = Array.isArray(merged.unlockedNodes) ? merged.unlockedNodes : [];
-      syncAgeFields(merged);
-      state = { player: merged };
-    } else state = null;
-    dead = !!s.dead;
-    prevStats = prevSkills = null; turnLog = []; pendingDaysPassed = 0;
-    hideDeathScreen();
-    $("#gate").style.display = "none"; $("#app").hidden = false;
-    if(s.log) $("#log").innerHTML = s.log;
-    paintDossier();
-    lastOptions = s.lastOptions || [];
-    paintChoices(dead ? [] : lastOptions);
-    setBusy(false);
-    if(dead && state) showDeathScreen(state.player);
-    scrollDown();
-  }catch(err){ alert("That file is not a Shinobi Registry save."); }
-  e.target.value = "";
-};
-$("#btnNew").onclick = () => {
-  if(!confirm("Abandon this life and be born again?")) return;
-  resetToGate();
-};
-$("#drawerToggle").onclick = () => document.body.classList.toggle("open");
-paintAbilities();
 </script>
 </body>
 </html>
