@@ -150,6 +150,11 @@ canvas{display:block; background:#060810; touch-action:none}
 .perkCard .ds{font-size:11px; color:var(--dim); line-height:1.5}
 .perkCard .cat{font-size:8.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--warn); margin-top:8px}
 .perkCard .stackTag{display:inline-block; margin-top:6px; font-size:9px; letter-spacing:.08em; color:var(--accent); background:#0e2417; border:1px solid #1e4a2e; border-radius:5px; padding:2px 6px}
+.perkCard .typeTag{font-size:8.5px; letter-spacing:.1em; text-transform:uppercase; font-weight:800; padding:3px 8px; border-radius:6px; display:inline-block; margin-bottom:8px}
+.perkCard.type-buff{border-top:3px solid var(--accent)}
+.perkCard.type-buff .typeTag{background:#0e2417; color:var(--accent)}
+.perkCard.type-ability{border-top:3px solid #ff8a2b}
+.perkCard.type-ability .typeTag{background:#3a2410; color:#ff8a2b}
 
 /* ---------- Match end ---------- */
 #matchEndScreen{background:radial-gradient(120% 100% at 50% -10%,#161022,#05060a 60%)}
@@ -166,6 +171,66 @@ canvas{display:block; background:#060810; touch-action:none}
   #selfPanel{min-width:120px}
   .perkChip{font-size:8.5px}
 }
+
+/* ---------- Equipped skin preview (lobby) ---------- */
+.equippedSkinRow{display:flex; align-items:center; gap:12px; background:#080b12; border:1px solid var(--line); border-radius:10px; padding:10px 12px}
+.equippedSwatch{width:44px; height:44px; border-radius:50%; flex:none; border:2px solid rgba(255,255,255,.25); box-shadow:0 0 14px rgba(255,255,255,.15)}
+.equippedInfo{flex:1; min-width:0}
+#equippedSkinName{font-weight:700; font-size:14px}
+.rarityTag{display:inline-block; margin-top:3px; font-size:9px; letter-spacing:.1em; font-weight:700; padding:2px 7px; border-radius:5px}
+.rarity-common{background:#1c2436; color:#9aa8cc}
+.rarity-uncommon{background:#0e2e1c; color:#57e08a}
+.rarity-rare{background:#0e1e3a; color:#5fa8ff}
+.rarity-epic{background:#2a0e3a; color:#c774ff}
+.rarity-legendary{background:#3a2a0e; color:#ffc84d}
+.rarity-mythic{background:#3a0e1e; color:#ff5fa8}
+
+/* ---------- Shop v2: rarity grid + filters ---------- */
+.shopOwnedCount{font-size:12px; color:var(--dim); margin-bottom:10px}
+.shopFilterRow{display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-bottom:14px; max-width:min(760px,94vw)}
+.shopFilterRow button{background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:20px; padding:6px 13px; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase}
+.shopFilterRow button.active{border-color:var(--accent); color:var(--accent); background:#0e2417}
+#shopGrid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); width:min(760px,94vw)}
+.skinCard{position:relative; overflow:hidden}
+.skinCard.rarity-legendary{border-color:#5c4413}
+.skinCard.rarity-mythic{border-color:#5c1330; box-shadow:0 0 22px rgba(255,59,168,.18)}
+.skinCard .prevWrap{position:relative; width:56px; height:56px; margin:0 auto 10px}
+.skinCard .prev{width:100%; height:100%; border-radius:50%; border:3px solid #000}
+.skinCard .prev.animated{background-size:220% 220%; animation:skinShift 3s ease infinite}
+@keyframes skinShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.skinCard .prev.mythic{animation:skinShift 2.2s ease infinite, mythicSpin 6s linear infinite}
+@keyframes mythicSpin{from{filter:hue-rotate(0deg)} to{filter:hue-rotate(360deg)}}
+.skinCard .rarityTag{margin-bottom:6px}
+
+/* ---------- Leaderboard ---------- */
+.lbTabs{display:flex; gap:8px; margin-bottom:14px}
+.lbTab{background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:9px; padding:8px 18px; font-size:12px; letter-spacing:.06em; text-transform:uppercase; font-weight:700}
+.lbTab.active{border-color:var(--accent); color:var(--accent); background:#0e2417}
+.lbList{width:min(420px,92vw); display:flex; flex-direction:column; gap:7px; max-height:50vh; overflow-y:auto}
+.lbRow{display:flex; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:9px 13px}
+.lbRank{width:22px; font-weight:900; color:var(--dim); font-size:13px; text-align:center}
+.lbRow:nth-child(1) .lbRank{color:#ffd23b}
+.lbRow:nth-child(2) .lbRank{color:#c8d0e0}
+.lbRow:nth-child(3) .lbRank{color:#cd8a4a}
+.lbName{flex:1; font-size:13.5px; font-weight:600}
+.lbValue{font-size:14px; font-weight:800; color:var(--accent); font-variant-numeric:tabular-nums}
+.lbEmpty{color:var(--dim); font-size:13px; text-align:center; padding:20px}
+
+/* ---------- Ability activation bar — big, visible, mobile+desktop ---------- */
+.abilityBar{position:absolute; left:50%; bottom:46%; transform:translateX(-50%); display:flex; gap:16px; pointer-events:none; z-index:15}
+.abilityBtn{position:relative; width:64px; height:64px; border-radius:50%; border:3px solid rgba(255,255,255,.35);
+  background:radial-gradient(circle at 35% 30%, #1c2740, #0b0f18); pointer-events:all; display:flex; align-items:center; justify-content:center;
+  flex-direction:column; box-shadow:0 6px 18px rgba(0,0,0,.5), 0 0 16px rgba(57,255,136,.25); transition:transform .1s}
+.abilityBtn:active{transform:scale(0.92)}
+.abilityBtn .aic{font-size:24px; line-height:1}
+.abilityBtn .alv{position:absolute; top:-4px; right:-4px; background:var(--warn); color:#221a00; font-size:9px; font-weight:900;
+  border-radius:8px; padding:1px 5px; box-shadow:0 0 6px rgba(0,0,0,.5)}
+.abilityBtn .acd{position:absolute; inset:0; border-radius:50%; background:rgba(5,6,10,.72); display:none; align-items:center; justify-content:center;
+  font-size:16px; font-weight:900; color:#fff}
+.abilityBtn.onCooldown .acd{display:flex}
+.abilityBtn.onCooldown{border-color:rgba(255,255,255,.12)}
+.abilityBtn .alabel{position:absolute; bottom:-18px; font-size:8.5px; letter-spacing:.05em; text-transform:uppercase; color:rgba(219,228,255,.75); white-space:nowrap}
+@media (max-width:640px){ .abilityBar{gap:12px; bottom:45%} .abilityBtn{width:56px; height:56px} .abilityBtn .aic{font-size:20px} }
 </style>
 </head>
 <body>
@@ -183,9 +248,15 @@ canvas{display:block; background:#060810; touch-action:none}
       <input id="nameInput" maxlength="16" placeholder="Shinobi" autocomplete="off">
     </div>
     <div class="field">
-      <label>Skin</label>
-      <div class="skinRow" id="skinRow"></div>
-      <div id="skinPickName">—</div>
+      <label>Equipped Skin</label>
+      <div class="equippedSkinRow" id="equippedSkinRow">
+        <div class="equippedSwatch" id="equippedSwatch"></div>
+        <div class="equippedInfo">
+          <div id="equippedSkinName">Neon</div>
+          <div id="equippedSkinRarity" class="rarityTag rarity-common">COMMON</div>
+        </div>
+        <button class="btn ghost" id="browseShopBtn" style="flex:none; padding:10px 14px; min-width:0">Change</button>
+      </div>
     </div>
     <div class="field">
       <label for="roomCodeInput">Room Code (leave blank to create one)</label>
@@ -197,6 +268,7 @@ canvas{display:block; background:#060810; touch-action:none}
     <div id="lobbyError"></div>
     <div id="menuNav">
       <button id="shopNavBtn">🛒 Shop</button>
+      <button id="leaderboardNavBtn">🏆 Leaderboard</button>
       <button id="settingsNavBtn">⚙ Settings</button>
     </div>
   </div>
@@ -216,8 +288,22 @@ canvas{display:block; background:#060810; touch-action:none}
 <div class="screen" id="shopScreen">
   <div class="title" style="font-size:34px">SHOP</div>
   <div class="subtitle">Earn coins from kills, round wins, and match victories</div>
+  <div id="shopOwnedCount" class="shopOwnedCount"></div>
+  <div id="shopFilterRow" class="shopFilterRow"></div>
   <div id="shopGrid"></div>
-  <button class="btn ghost" id="shopBackBtn" style="max-width:200px">← Back</button>
+  <button class="btn ghost" id="shopBackBtn" style="max-width:200px; margin-top:6px">← Back</button>
+</div>
+
+<!-- ============================== LEADERBOARD ============================== -->
+<div class="screen" id="leaderboardScreen">
+  <div class="title" style="font-size:34px">LEADERBOARD</div>
+  <div class="subtitle">Synced from Firebase — top players across every match</div>
+  <div id="leaderboardTabs" class="lbTabs">
+    <button class="lbTab active" data-tab="kills">Top Kills</button>
+    <button class="lbTab" data-tab="wins">Top Wins</button>
+  </div>
+  <div id="leaderboardList" class="lbList"><div class="lbEmpty">Loading…</div></div>
+  <button class="btn ghost" id="leaderboardBackBtn" style="max-width:200px; margin-top:14px">← Back</button>
 </div>
 
 <!-- ============================== SETTINGS ============================== -->
@@ -225,6 +311,9 @@ canvas{display:block; background:#060810; touch-action:none}
   <div class="title" style="font-size:34px">SETTINGS</div>
   <div class="settingsRow"><span>Sound</span><label><input type="checkbox" id="muteToggle"> Mute</label></div>
   <div class="settingsRow"><span>Volume</span><input type="range" id="volumeSlider" min="0" max="100" value="60"></div>
+  <div class="settingsRow"><span>Vibration on ability use</span><label><input type="checkbox" id="vibrateToggle" checked></label></div>
+  <div class="settingsRow"><span>Reduce motion (fewer particles)</span><label><input type="checkbox" id="reduceMotionToggle"></label></div>
+  <div class="settingsRow"><span>Joystick size</span><input type="range" id="joySizeSlider" min="80" max="150" value="110"></div>
   <button class="btn ghost" id="settingsBackBtn" style="margin-top:16px; max-width:200px">← Back</button>
 </div>
 
@@ -247,13 +336,14 @@ canvas{display:block; background:#060810; touch-action:none}
     </div>
     <div class="joyZone" id="joyLeftZone"><div class="joyBase" id="joyLeftBase"><div class="joyStick" id="joyLeftStick"></div></div><div class="joyHint">MOVE</div></div>
     <div class="joyZone" id="joyRightZone"><div class="joyBase" id="joyRightBase"><div class="joyStick" id="joyRightStick"></div></div><div class="joyHint">AIM / FIRE</div></div>
+    <div id="abilityBar" class="abilityBar"></div>
   </div>
 </div>
 
 <!-- ============================== CARD SELECT (on death) ============================== -->
 <div class="screen" id="cardSelectScreen">
   <div id="cardHeader">YOU DIED</div>
-  <div id="cardSub">CHOOSE A PERK</div>
+  <div id="cardSub">PICK A BUFF OR ABILITY</div>
   <div id="cardTimer"></div>
   <div id="cardGrid"></div>
 </div>
@@ -298,24 +388,39 @@ let fb = null;
 async function initFirebase() {
   try {
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-    const { getFirestore, doc, setDoc, getDoc, updateDoc, increment, serverTimestamp } =
+    const { getFirestore, doc, setDoc, getDoc, updateDoc, increment, serverTimestamp, collection, query, orderBy, limit, getDocs } =
       await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
     const app = initializeApp(FIREBASE_CONFIG);
-    fb = { store: getFirestore(app), doc, setDoc, getDoc, updateDoc, increment, serverTimestamp };
+    fb = { store: getFirestore(app), doc, setDoc, getDoc, updateDoc, increment, serverTimestamp, collection, query, orderBy, limit, getDocs };
     console.log('[NeonArena] Firebase connected.');
   } catch (err) {
-    console.warn('[NeonArena] Firebase unavailable — kills tracked locally only this session.', err.message);
+    console.warn('[NeonArena] Firebase unavailable — stats tracked locally only this session.', err.message);
   }
 }
-async function recordKill(playerName) {
+async function bumpCounter(collectionName, playerName, field) {
   if (!fb || !playerName) return;
   try {
-    const ref = fb.doc(fb.store, 'kills', playerName);
+    const ref = fb.doc(fb.store, collectionName, playerName);
     const snap = await fb.getDoc(ref);
-    if (snap.exists()) await fb.updateDoc(ref, { kills: fb.increment(1), timestamp: fb.serverTimestamp() });
-    else await fb.setDoc(ref, { player: playerName, kills: 1, timestamp: fb.serverTimestamp() });
+    if (snap.exists()) await fb.updateDoc(ref, { [field]: fb.increment(1), timestamp: fb.serverTimestamp() });
+    else await fb.setDoc(ref, { player: playerName, [field]: 1, timestamp: fb.serverTimestamp() });
   } catch (err) {
-    console.warn('[NeonArena] Could not record kill (check Firestore rules):', err.message);
+    console.warn(`[NeonArena] Could not record ${field} (check Firestore rules):`, err.message);
+  }
+}
+function recordKill(playerName) { return bumpCounter('kills', playerName, 'kills'); }
+function recordWin(playerName) { return bumpCounter('wins', playerName, 'wins'); }
+async function fetchLeaderboard(collectionName, field) {
+  if (!fb) return [];
+  try {
+    const q = fb.query(fb.collection(fb.store, collectionName), fb.orderBy(field, 'desc'), fb.limit(20));
+    const snap = await fb.getDocs(q);
+    const out = [];
+    snap.forEach(d => out.push(d.data()));
+    return out;
+  } catch (err) {
+    console.warn(`[NeonArena] Could not load ${collectionName} leaderboard:`, err.message);
+    return [];
   }
 }
 
@@ -331,27 +436,83 @@ function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;
 // ---------------------------------------------------------------------------
 // Local persistence
 // ---------------------------------------------------------------------------
-const SAVE_KEY = 'neonArena_save_v1';
+const DEFAULT_SAVE = {
+  coins: 0, owned: ['neon', 'classic'], equipped: 'neon',
+  muted: false, volume: 60, vibrate: true, reduceMotion: false, joySize: 110
+};
+const SAVE_KEY = 'neonArena_save_v2';
 function loadSave() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
-    if (raw) return { coins: 0, owned: ['neon', 'classic'], equipped: 'neon', muted: false, volume: 60, ...JSON.parse(raw) };
+    if (raw) return { ...DEFAULT_SAVE, ...JSON.parse(raw) };
   } catch (e) {}
-  return { coins: 0, owned: ['neon', 'classic'], equipped: 'neon', muted: false, volume: 60 };
+  return { ...DEFAULT_SAVE };
 }
 let save = loadSave();
 function persistSave() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
 function addCoins(n) { save.coins += n; persistSave(); updateCoinBadge(); }
 function updateCoinBadge() { $('#coinBadge').textContent = `🪙 ${save.coins}`; }
 
+// ---------------------------------------------------------------------------
+// SKINS — 35 total across 6 rarity tiers. `colors` with one entry is a flat
+// fill; two or more entries render as a gradient. `animated` skins shimmer
+// in the shop and in-game. These are cosmetic only — they change how your
+// player circle is drawn (via a canvas gradient), never gameplay stats.
+// ---------------------------------------------------------------------------
 const SKINS = [
-  { id: 'neon', label: 'Neon', color: '#39ff88', price: 0 },
-  { id: 'classic', label: 'Classic', color: '#3ba7ff', price: 0 },
-  { id: 'stealth', label: 'Stealth', color: '#7a88ad', price: 150 },
-  { id: 'gold', label: 'Gold', color: '#ffd23b', price: 300 },
-  { id: 'toxic', label: 'Toxic', color: '#ff3bd8', price: 220 }
+  // Common — free / cheap, flat colors
+  { id: 'neon', label: 'Neon', rarity: 'common', price: 0, colors: ['#39ff88'] },
+  { id: 'classic', label: 'Classic', rarity: 'common', price: 0, colors: ['#3ba7ff'] },
+  { id: 'crimson', label: 'Crimson', rarity: 'common', price: 100, colors: ['#e23b3b'] },
+  { id: 'amber', label: 'Amber', rarity: 'common', price: 120, colors: ['#ffb020'] },
+  { id: 'slate', label: 'Slate', rarity: 'common', price: 100, colors: ['#6b7a99'] },
+  { id: 'mint', label: 'Mint', rarity: 'common', price: 120, colors: ['#2be0a0'] },
+  { id: 'azure', label: 'Azure', rarity: 'common', price: 100, colors: ['#2f7bff'] },
+  { id: 'frost', label: 'Frost', rarity: 'common', price: 120, colors: ['#a8d8ff'] },
+
+  // Uncommon — flat with a bit more presence
+  { id: 'stealth', label: 'Stealth', rarity: 'uncommon', price: 200, colors: ['#7a88ad'] },
+  { id: 'violetStorm', label: 'Violet Storm', rarity: 'uncommon', price: 220, colors: ['#8a3bff'] },
+  { id: 'coralReef', label: 'Coral Reef', rarity: 'uncommon', price: 220, colors: ['#ff6b6b'] },
+  { id: 'lagoon', label: 'Lagoon', rarity: 'uncommon', price: 250, colors: ['#21c7c7'] },
+  { id: 'limePunch', label: 'Lime Punch', rarity: 'uncommon', price: 220, colors: ['#b6ff2b'] },
+  { id: 'rosewood', label: 'Rosewood', rarity: 'uncommon', price: 250, colors: ['#d1487a'] },
+  { id: 'steelBlue', label: 'Steel Blue', rarity: 'uncommon', price: 200, colors: ['#4a6fa5'] },
+
+  // Rare — two-color gradients
+  { id: 'toxic', label: 'Toxic', rarity: 'rare', price: 400, colors: ['#ff3bd8', '#7a0a4a'] },
+  { id: 'sunsetBlaze', label: 'Sunset Blaze', rarity: 'rare', price: 450, colors: ['#ff5e3a', '#ff2d78'] },
+  { id: 'oceanDrift', label: 'Ocean Drift', rarity: 'rare', price: 450, colors: ['#2bd1ff', '#1a5fff'] },
+  { id: 'venom', label: 'Venom', rarity: 'rare', price: 500, colors: ['#7cff2b', '#0a8a3a'] },
+  { id: 'royalFade', label: 'Royal Fade', rarity: 'rare', price: 500, colors: ['#7b2bff', '#2b0a66'] },
+  { id: 'cherryBomb', label: 'Cherry Bomb', rarity: 'rare', price: 450, colors: ['#ff2b6b', '#7a0030'] },
+  { id: 'frostbite', label: 'Frostbite', rarity: 'rare', price: 500, colors: ['#b3e8ff', '#3a7dbf'] },
+
+  // Epic — three-color gradients with more glow
+  { id: 'gold', label: 'Gold', rarity: 'epic', price: 700, colors: ['#ffe98a', '#ffd23b', '#a8760a'] },
+  { id: 'galaxyCore', label: 'Galaxy Core', rarity: 'epic', price: 800, colors: ['#7a2bff', '#ff2bd6', '#2bd1ff'] },
+  { id: 'inferno', label: 'Inferno', rarity: 'epic', price: 800, colors: ['#ffdd2b', '#ff6b2b', '#7a0000'] },
+  { id: 'deepVoid', label: 'Deep Void', rarity: 'epic', price: 850, colors: ['#0a0a1a', '#2b0a66', '#7a2bff'] },
+  { id: 'aurora', label: 'Aurora', rarity: 'epic', price: 850, colors: ['#2bffb0', '#2bd1ff', '#7a2bff'] },
+  { id: 'toxicBloom', label: 'Toxic Bloom', rarity: 'epic', price: 800, colors: ['#d1ff2b', '#2bff7a', '#0a4d2b'] },
+
+  // Legendary — animated shimmering gradients
+  { id: 'phoenixWing', label: 'Phoenix Wing', rarity: 'legendary', price: 1400, colors: ['#ff8a2b', '#ffdd2b', '#ff2b2b'], animated: true },
+  { id: 'celestial', label: 'Celestial', rarity: 'legendary', price: 1400, colors: ['#2bd1ff', '#ffffff', '#7a2bff'], animated: true },
+  { id: 'obsidianFlame', label: 'Obsidian Flame', rarity: 'legendary', price: 1500, colors: ['#1a1a1a', '#ff2b2b', '#ff8a2b'], animated: true },
+  { id: 'emeraldDream', label: 'Emerald Dream', rarity: 'legendary', price: 1400, colors: ['#0aff6b', '#2bffe0', '#0a4d2b'], animated: true },
+  { id: 'voidWalker', label: 'Void Walker', rarity: 'legendary', price: 1500, colors: ['#2b0a66', '#7a2bff', '#0a0a1a'], animated: true },
+
+  // Mythic — holographic, top-tier
+  { id: 'prism', label: 'Prism', rarity: 'mythic', price: 2800, colors: ['#ff2b6b', '#ffdd2b', '#2bff7a', '#2bd1ff', '#7a2bff'], animated: true, mythic: true },
+  { id: 'eclipse', label: 'Eclipse', rarity: 'mythic', price: 3000, colors: ['#0a0a0a', '#ff2b6b', '#7a2bff', '#2bd1ff'], animated: true, mythic: true }
 ];
+const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+const RARITY_LABEL = { common: 'Common', uncommon: 'Uncommon', rare: 'Rare', epic: 'Epic', legendary: 'Legendary', mythic: 'Mythic' };
 function skinById(id) { return SKINS.find(s => s.id === id) || SKINS[0]; }
+function skinGradientCss(skin) {
+  return skin.colors.length > 1 ? `linear-gradient(135deg, ${skin.colors.join(', ')})` : skin.colors[0];
+}
 
 // ---------------------------------------------------------------------------
 // Global mutable game state
@@ -360,12 +521,14 @@ let socket = null;
 let myId = null, myName = '';
 let arenaCfg = { w: 1600, h: 900, playerRadius: 20, bulletRadius: 6 };
 let winScore = 5;
+let abilityMaxSlots = 3;
+let lastAbilityBarKeys = ''; // used to avoid rebuilding DOM every frame
 
 let snapPrev = null, snapCur = null;
 let predictedSelf = { x: 0, y: 0, inited: false, aim: 0 };
 let roomState = 'lobby';
 let inRoom = false, wasInMatch = false;
-let lastRoomCode = '', lastPlayerName = '', lastPlayerColor = '';
+let lastRoomCode = '', lastPlayerName = '', lastPlayerColor = '', lastSkinStops = null;
 
 const particles = [];
 const killFeedEl = $('#killFeed');
@@ -393,26 +556,18 @@ window.addEventListener('resize', resizeCanvas);
 // ---------------------------------------------------------------------------
 // Lobby / shop / settings wiring
 // ---------------------------------------------------------------------------
-function buildSkinPicker() {
-  const row = $('#skinRow');
-  row.innerHTML = '';
-  SKINS.forEach(s => {
-    const owned = save.owned.includes(s.id);
-    const el = document.createElement('div');
-    el.className = 'skinSwatch' + (s.id === save.equipped ? ' sel' : '') + (owned ? '' : ' locked');
-    el.style.background = s.color;
-    el.style.boxShadow = `0 0 14px ${s.color}66`;
-    el.title = owned ? s.label : `${s.label} — locked, buy in Shop`;
-    el.onclick = () => {
-      if (!save.owned.includes(s.id)) { showScreen('#shopScreen'); renderShop(); return; }
-      save.equipped = s.id; persistSave();
-      buildSkinPicker();
-    };
-    row.appendChild(el);
-  });
-  $('#skinPickName').textContent = skinById(save.equipped).label;
+function updateEquippedPreview() {
+  const s = skinById(save.equipped);
+  const sw = $('#equippedSwatch');
+  sw.style.background = skinGradientCss(s);
+  sw.className = 'equippedSwatch' + (s.animated ? ' skinAnimated' : '');
+  if (s.colors.length > 1) sw.style.backgroundSize = '220% 220%';
+  $('#equippedSkinName').textContent = s.label;
+  const tag = $('#equippedSkinRarity');
+  tag.textContent = RARITY_LABEL[s.rarity].toUpperCase();
+  tag.className = 'rarityTag rarity-' + s.rarity;
 }
-buildSkinPicker();
+updateEquippedPreview();
 updateCoinBadge();
 
 $('#roomCodeInput').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
@@ -420,32 +575,59 @@ $('#joinBtn').onclick = () => {
   myName = $('#nameInput').value.trim() || 'Player';
   const roomCode = $('#roomCodeInput').value.trim().toUpperCase();
   setLobbyError('');
-  connectAndJoin(roomCode, myName, skinById(save.equipped).color);
+  const skin = skinById(save.equipped);
+  connectAndJoin(roomCode, myName, skin.colors[0], skin.colors);
 };
 $('#leaveLobbyBtn').onclick = () => leaveEverything();
 $('#startMatchBtn').onclick = () => { if (socket) socket.emit('startMatch'); };
 $('#leaveBtn').onclick = () => leaveEverything();
 $('#backToLobbyBtn').onclick = () => leaveEverything();
 $('#playAgainBtn').onclick = () => { if (socket) socket.emit('playAgain'); };
+$('#browseShopBtn').onclick = () => { renderShop(); showScreen('#shopScreen'); };
 $('#shopNavBtn').onclick = () => { renderShop(); showScreen('#shopScreen'); };
+$('#leaderboardNavBtn').onclick = () => { showScreen('#leaderboardScreen'); loadLeaderboardTab('kills'); };
 $('#settingsNavBtn').onclick = () => showScreen('#settingsScreen');
 $('#shopBackBtn').onclick = () => showScreen('#lobbyScreen');
+$('#leaderboardBackBtn').onclick = () => showScreen('#lobbyScreen');
 $('#settingsBackBtn').onclick = () => showScreen('#lobbyScreen');
 $('#muteToggle').checked = save.muted;
 $('#volumeSlider').value = save.volume;
+$('#vibrateToggle').checked = save.vibrate;
+$('#reduceMotionToggle').checked = save.reduceMotion;
+$('#joySizeSlider').value = save.joySize;
 $('#muteToggle').onchange = e => { save.muted = e.target.checked; persistSave(); };
 $('#volumeSlider').oninput = e => { save.volume = Number(e.target.value); persistSave(); };
+$('#vibrateToggle').onchange = e => { save.vibrate = e.target.checked; persistSave(); };
+$('#reduceMotionToggle').onchange = e => { save.reduceMotion = e.target.checked; persistSave(); };
+$('#joySizeSlider').oninput = e => { save.joySize = Number(e.target.value); persistSave(); };
+function vibrate(ms) { if (save.vibrate && navigator.vibrate) navigator.vibrate(ms); }
 
+// ---------------------------------------------------------------------------
+// Shop v2 — rarity filter tabs, gradient previews, owned counter.
+// ---------------------------------------------------------------------------
+let shopFilter = 'all';
+function renderShopFilters() {
+  const tabs = ['all', ...RARITY_ORDER];
+  $('#shopFilterRow').innerHTML = tabs.map(t =>
+    `<button class="${t === shopFilter ? 'active' : ''}" data-filter="${t}">${t === 'all' ? 'All' : RARITY_LABEL[t]}</button>`
+  ).join('');
+  [...document.querySelectorAll('[data-filter]')].forEach(b => b.onclick = () => { shopFilter = b.dataset.filter; renderShop(); });
+}
 function renderShop() {
-  $('#shopGrid').innerHTML = SKINS.map(s => {
+  renderShopFilters();
+  $('#shopOwnedCount').textContent = `${save.owned.length} / ${SKINS.length} skins owned`;
+  const list = shopFilter === 'all' ? SKINS : SKINS.filter(s => s.rarity === shopFilter);
+  $('#shopGrid').innerHTML = list.map(s => {
     const owned = save.owned.includes(s.id);
     const equipped = save.equipped === s.id;
     let btn;
     if (equipped) btn = `<button class="equipped" disabled>Equipped</button>`;
     else if (owned) btn = `<button class="owned" data-eq="${s.id}">Equip</button>`;
     else btn = `<button class="buy" data-buy="${s.id}" ${save.coins < s.price ? 'disabled' : ''}>Buy · 🪙${s.price}</button>`;
-    return `<div class="skinCard">
-      <div class="prev" style="background:${s.color}"></div>
+    const previewClass = 'prev' + (s.animated ? ' animated' : '') + (s.mythic ? ' mythic' : '');
+    return `<div class="skinCard rarity-${s.rarity}">
+      <div class="rarityTag rarity-${s.rarity}">${RARITY_LABEL[s.rarity].toUpperCase()}</div>
+      <div class="prevWrap"><div class="${previewClass}" style="background:${skinGradientCss(s)}"></div></div>
       <div class="nm">${s.label}</div>
       <div class="pr">${s.price === 0 ? 'Free' : '🪙 ' + s.price}</div>
       ${btn}
@@ -453,19 +635,39 @@ function renderShop() {
   }).join('');
   [...document.querySelectorAll('[data-buy]')].forEach(b => b.onclick = () => {
     const s = skinById(b.dataset.buy);
-    if (save.coins >= s.price) { save.coins -= s.price; save.owned.push(s.id); persistSave(); updateCoinBadge(); renderShop(); buildSkinPicker(); }
+    if (save.coins >= s.price) { save.coins -= s.price; save.owned.push(s.id); persistSave(); updateCoinBadge(); renderShop(); updateEquippedPreview(); }
   });
   [...document.querySelectorAll('[data-eq]')].forEach(b => b.onclick = () => {
-    save.equipped = b.dataset.eq; persistSave(); renderShop(); buildSkinPicker();
+    save.equipped = b.dataset.eq; persistSave(); renderShop(); updateEquippedPreview();
   });
+}
+
+// ---------------------------------------------------------------------------
+// Leaderboard — reads from Firestore 'kills' and 'wins' collections.
+// ---------------------------------------------------------------------------
+[...document.querySelectorAll('.lbTab')].forEach(tab => {
+  tab.onclick = () => loadLeaderboardTab(tab.dataset.tab);
+});
+async function loadLeaderboardTab(which) {
+  [...document.querySelectorAll('.lbTab')].forEach(t => t.classList.toggle('active', t.dataset.tab === which));
+  $('#leaderboardList').innerHTML = '<div class="lbEmpty">Loading…</div>';
+  const rows = which === 'wins' ? await fetchLeaderboard('wins', 'wins') : await fetchLeaderboard('kills', 'kills');
+  if (!rows.length) { $('#leaderboardList').innerHTML = '<div class="lbEmpty">No matches recorded yet — be the first!</div>'; return; }
+  rows.sort((a, b) => (b[which] || 0) - (a[which] || 0));
+  $('#leaderboardList').innerHTML = rows.map((r, i) => `
+    <div class="lbRow">
+      <div class="lbRank">${i + 1}</div>
+      <div class="lbName">${escapeHtml(r.player || '???')}</div>
+      <div class="lbValue">${r[which] || 0}</div>
+    </div>`).join('');
 }
 
 function setLobbyError(msg) { $('#lobbyError').textContent = msg || ''; }
 
-function connectAndJoin(roomCode, name, color) {
+function connectAndJoin(roomCode, name, color, skinStops) {
   $('#joinBtn').disabled = true;
   if (socket) { socket.removeAllListeners(); socket.disconnect(); }
-  lastRoomCode = roomCode; lastPlayerName = name; lastPlayerColor = color;
+  lastRoomCode = roomCode; lastPlayerName = name; lastPlayerColor = color; lastSkinStops = skinStops || null;
   socket = io(SERVER_URL, { transports: ['websocket', 'polling'], reconnectionAttempts: 6 });
   wireSocketEvents();
   socket.on('connect_error', () => {
@@ -527,8 +729,10 @@ function wireSocketEvents() {
   socket.on('cardOffer', data => showCardSelect(data));
   socket.on('perkPicked', d => {
     if (d.id === myId) return;
-    pushToast(`${playerNameById(d.id)} picked ${d.icon} ${d.label}`);
+    const verb = d.type === 'ability' ? 'equipped ability' : 'picked';
+    pushToast(`${playerNameById(d.id)} ${verb} ${d.icon} ${d.label}`);
   });
+  socket.on('abilityActivated', d => { if (save.vibrate) vibrate(25); });
 
   socket.on('matchEnd', data => showVictory(data));
   socket.on('playerLeft', () => {});
@@ -536,10 +740,11 @@ function wireSocketEvents() {
   socket.on('disconnect', () => { if (inRoom) $('#reconnectOverlay').classList.add('on'); });
   socket.on('connect', () => {
     $('#reconnectOverlay').classList.remove('on');
-    socket.emit('joinRoom', { roomCode: lastRoomCode, name: lastPlayerName, color: lastPlayerColor }, ack => {
+    socket.emit('joinRoom', { roomCode: lastRoomCode, name: lastPlayerName, color: lastPlayerColor, skinStops: lastSkinStops }, ack => {
       $('#joinBtn').disabled = false;
       if (!ack || !ack.ok) { setLobbyError((ack && ack.error) || 'Could not join room.'); return; }
       myId = ack.playerId; arenaCfg = ack.arena; winScore = ack.winScore;
+      abilityMaxSlots = ack.abilityMaxSlots || 3;
       lastRoomCode = ack.roomCode; inRoom = true;
       $('#joinCard').style.display = 'none';
       $('#roomPanel').style.display = 'block';
@@ -596,24 +801,34 @@ function pushToast(text) {
 }
 
 // ---------------------------------------------------------------------------
-// Card select overlay — 5 cards, drawn from the server's 30-perk pool.
-// Picking a perk you already own adds another stack (build-your-run, like
-// ROUNDS) rather than replacing anything.
+// Card select overlay — 5 cards drawn from 15 passive BUFFS + 15 active
+// ABILITIES. Picking a buff you already own adds a stack; picking a new
+// ability equips it (max 3 slots); picking an ability you already have
+// levels it up instead. `ownedLevel` comes straight from the server so the
+// "you have x2 → x3" tag is always accurate.
 // ---------------------------------------------------------------------------
 let cardTimerInterval = null;
 function showCardSelect(data) {
   awaitingCard = true;
-  const me = findPlayerInSnap(myId);
-  const owned = (me && me.powerups) || {};
   $('#cardGrid').innerHTML = data.cards.map(c => {
-    const stacks = owned[c.key] || 0;
+    const isAbility = c.type === 'ability';
+    const owned = c.ownedLevel || 0;
+    let stackHtml = '';
+    if (isAbility) {
+      stackHtml = owned > 0
+        ? `<div class="stackTag">Level ${owned} → ${owned + 1}</div>`
+        : `<div class="stackTag">Equip new ability</div>`;
+    } else if (owned > 0) {
+      stackHtml = `<div class="stackTag">You have x${owned} → x${owned + 1}</div>`;
+    }
     return `
-    <div class="perkCard" data-key="${c.key}">
+    <div class="perkCard type-${c.type}" data-key="${c.key}">
+      <div class="typeTag">${isAbility ? '⚡ Active Ability' : '🛡 Passive Buff'}</div>
       <div class="ic">${c.icon}</div>
       <div class="nm">${escapeHtml(c.label)}</div>
       <div class="ds">${escapeHtml(c.desc)}</div>
       <div class="cat">${escapeHtml(c.cat)}</div>
-      ${stacks > 0 ? `<div class="stackTag">You have x${stacks} → x${stacks + 1}</div>` : ''}
+      ${stackHtml}
     </div>`;
   }).join('');
   [...document.querySelectorAll('#cardGrid .perkCard')].forEach(el => {
@@ -656,32 +871,38 @@ function diffForEffects(data) {
   });
 }
 
-// Client-side icon/label mirror of the server's 30 perks — used only for
-// HUD chips and pickup sparkle text; mechanics live entirely server-side.
+// Client-side icon/label mirror of the server's 15 buffs + 15 abilities —
+// used only for HUD chips, pickup sparkle text, and ability button icons.
+// Mechanics live entirely server-side.
 const PERK_ICONS = {
+  // Buffs
   biggerBullets: { icon: '🔴', label: 'Bigger Bullets' }, fasterBullets: { icon: '⚡', label: 'Faster Bullets' },
-  doubleShot: { icon: '✌️', label: 'Double Shot' }, homing: { icon: '🎯', label: 'Homing Rounds' },
-  explosive: { icon: '💥', label: 'Explosive Rounds' }, pierce: { icon: '🗡️', label: 'Piercing Rounds' },
-  ricochet: { icon: '↩️', label: 'Ricochet' }, poison: { icon: '☠️', label: 'Poison Rounds' },
-  crit: { icon: '✨', label: 'Critical Strike' }, momentum: { icon: '🏃', label: 'Momentum' },
-  shield: { icon: '🛡️', label: 'Shield' }, extraHp: { icon: '❤️', label: 'Extra HP' },
-  dmgReduction: { icon: '🦺', label: 'Damage Reduction' }, lifesteal: { icon: '🩸', label: 'Life Steal' },
-  thorns: { icon: '🌵', label: 'Thorns' }, secondWind: { icon: '💫', label: 'Second Wind' },
-  regen: { icon: '💚', label: 'Regeneration' }, ironSkin: { icon: '🪨', label: 'Iron Skin' },
-  speedBoost: { icon: '🚀', label: 'Speed Boost' }, dash: { icon: '💨', label: 'Dash' },
-  teleportOnHit: { icon: '🌀', label: 'Teleport on Hit' }, phaseStep: { icon: '👻', label: 'Phase Step' },
-  quickReload: { icon: '🔃', label: 'Quick Reload' }, slippery: { icon: '🧈', label: 'Slippery' },
-  freeze: { icon: '❄️', label: 'Freeze Rounds' }, gravityWell: { icon: '🕳️', label: 'Gravity Well' },
-  enemySlow: { icon: '🐌', label: 'Enemy Slow Field' }, magnet: { icon: '🧲', label: 'Magnet' },
-  lucky: { icon: '🍀', label: 'Lucky' }, bloodlust: { icon: '🧛', label: 'Bloodlust' }
+  doubleShot: { icon: '✌️', label: 'Double Shot' }, pierce: { icon: '🗡️', label: 'Piercing Rounds' },
+  ricochet: { icon: '↩️', label: 'Ricochet' }, crit: { icon: '✨', label: 'Critical Strike' },
+  quickReload: { icon: '🔃', label: 'Quick Reload' }, shield: { icon: '🛡️', label: 'Shield' },
+  extraHp: { icon: '❤️', label: 'Extra HP' }, dmgReduction: { icon: '🦺', label: 'Damage Reduction' },
+  lifesteal: { icon: '🩸', label: 'Life Steal' }, regen: { icon: '💚', label: 'Regeneration' },
+  ironSkin: { icon: '🪨', label: 'Iron Skin' }, lucky: { icon: '🍀', label: 'Lucky' },
+  speedBoost: { icon: '🚀', label: 'Speed Boost' },
+  // Abilities
+  dashStrike: { icon: '💨', label: 'Dash Strike' }, groundSlam: { icon: '🌋', label: 'Ground Slam' },
+  shadowVeil: { icon: '🌑', label: 'Shadow Veil' }, overcharge: { icon: '⚡', label: 'Overcharge' },
+  barrier: { icon: '🧱', label: 'Barrier' }, blink: { icon: '🌀', label: 'Blink' },
+  healPulse: { icon: '💗', label: 'Heal Pulse' }, rageMode: { icon: '😡', label: 'Rage Mode' },
+  decoy: { icon: '🎭', label: 'Decoy' }, timeSlow: { icon: '⏳', label: 'Time Slow' },
+  magnetBurst: { icon: '🧲', label: 'Magnet Burst' }, shockwave: { icon: '💢', label: 'Shockwave' },
+  vanish: { icon: '👻', label: 'Vanish' }, berserk: { icon: '🧛', label: 'Berserk' },
+  gravityPulse: { icon: '🕳️', label: 'Gravity Pulse' }
 };
+const ABILITY_KEYS = new Set(['dashStrike', 'groundSlam', 'shadowVeil', 'overcharge', 'barrier', 'blink', 'healPulse', 'rageMode', 'decoy', 'timeSlow', 'magnetBurst', 'shockwave', 'vanish', 'berserk', 'gravityPulse']);
 
 // ---------------------------------------------------------------------------
 // Particle system
 // ---------------------------------------------------------------------------
-function spawnHitSpark(x, y, color) { for (let i = 0; i < 10; i++) { const a = Math.random() * Math.PI * 2, sp = 60 + Math.random() * 140; particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, maxLife: 0.35, color, size: 2 + Math.random() * 2, kind: 'spark' }); } }
-function spawnDeathBurst(x, y, color) { for (let i = 0; i < 36; i++) { const a = Math.random() * Math.PI * 2, sp = 40 + Math.random() * 260; particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, maxLife: 0.5 + Math.random() * 0.5, color, size: 2 + Math.random() * 4, kind: 'spark' }); } particles.push({ x, y, vx: 0, vy: 0, life: 0, maxLife: 0.6, color, size: 4, kind: 'ring' }); }
-function spawnPerkSparkle(x, y, color, label) { particles.push({ x, y, vx: 0, vy: -40, life: 0, maxLife: 1.3, color, size: 0, kind: 'text', text: '+' + label }); for (let i = 0; i < 14; i++) { const a = Math.random() * Math.PI * 2, sp = 20 + Math.random() * 90; particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 30, life: 0, maxLife: 0.6, color, size: 2 + Math.random() * 2, kind: 'spark' }); } }
+function motionCount(n) { return save.reduceMotion ? Math.ceil(n * 0.25) : n; }
+function spawnHitSpark(x, y, color) { for (let i = 0; i < motionCount(10); i++) { const a = Math.random() * Math.PI * 2, sp = 60 + Math.random() * 140; particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, maxLife: 0.35, color, size: 2 + Math.random() * 2, kind: 'spark' }); } }
+function spawnDeathBurst(x, y, color) { for (let i = 0; i < motionCount(36); i++) { const a = Math.random() * Math.PI * 2, sp = 40 + Math.random() * 260; particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, maxLife: 0.5 + Math.random() * 0.5, color, size: 2 + Math.random() * 4, kind: 'spark' }); } particles.push({ x, y, vx: 0, vy: 0, life: 0, maxLife: 0.6, color, size: 4, kind: 'ring' }); }
+function spawnPerkSparkle(x, y, color, label) { particles.push({ x, y, vx: 0, vy: -40, life: 0, maxLife: 1.3, color, size: 0, kind: 'text', text: '+' + label }); for (let i = 0; i < motionCount(14); i++) { const a = Math.random() * Math.PI * 2, sp = 20 + Math.random() * 90; particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 30, life: 0, maxLife: 0.6, color, size: 2 + Math.random() * 2, kind: 'spark' }); } }
 function spawnShieldFlash(x, y, color) { particles.push({ x, y, vx: 0, vy: 0, life: 0, maxLife: 0.35, color, size: 26, kind: 'ring' }); }
 function updateParticles(dt) { for (let i = particles.length - 1; i >= 0; i--) { const p = particles[i]; p.life += dt; if (p.life >= p.maxLife) { particles.splice(i, 1); continue; } p.x += p.vx * dt; p.y += p.vy * dt; if (p.kind === 'spark') { p.vx *= 0.92; p.vy *= 0.92; } } }
 function drawParticles() {
@@ -700,7 +921,7 @@ function drawParticles() {
 // with joysticks even on a desktop PC, exactly as requested. There is no
 // WASD or mouse-aim fallback.
 // ---------------------------------------------------------------------------
-const JOY_RADIUS = 55;
+function joyRadius() { return save.joySize / 2; }
 const joyState = {
   left: { active: false, id: null, dx: 0, dy: 0, baseX: 0, baseY: 0 },
   right: { active: false, id: null, dx: 0, dy: 0, baseX: 0, baseY: 0 }
@@ -711,19 +932,22 @@ function setupJoystick(zoneSel, baseSel, stickSel, state) {
   const start = e => {
     if (state.active) return;
     state.active = true; state.id = e.pointerId; state.baseX = e.clientX; state.baseY = e.clientY;
+    const R = joyRadius();
+    base.style.width = base.style.height = (R * 2) + 'px';
     base.style.display = 'block';
-    base.style.left = (e.clientX - 55) + 'px'; base.style.top = (e.clientY - 55) + 'px';
-    stick.style.left = '30px'; stick.style.top = '30px'; stick.classList.add('active');
+    base.style.left = (e.clientX - R) + 'px'; base.style.top = (e.clientY - R) + 'px';
+    stick.style.left = (R - 25) + 'px'; stick.style.top = (R - 25) + 'px'; stick.classList.add('active');
     try { zone.setPointerCapture(e.pointerId); } catch (err) {}
     e.preventDefault();
   };
   const move = e => {
     if (!state.active || e.pointerId !== state.id) return;
+    const R = joyRadius();
     let dx = e.clientX - state.baseX, dy = e.clientY - state.baseY;
     const dist = Math.hypot(dx, dy);
-    if (dist > JOY_RADIUS) { dx = dx / dist * JOY_RADIUS; dy = dy / dist * JOY_RADIUS; }
-    state.dx = dx / JOY_RADIUS; state.dy = dy / JOY_RADIUS;
-    stick.style.left = (30 + dx) + 'px'; stick.style.top = (30 + dy) + 'px';
+    if (dist > R) { dx = dx / dist * R; dy = dy / dist * R; }
+    state.dx = dx / R; state.dy = dy / R;
+    stick.style.left = (R - 25 + dx) + 'px'; stick.style.top = (R - 25 + dy) + 'px';
     e.preventDefault();
   };
   const end = e => {
@@ -896,6 +1120,15 @@ function drawArena() {
   ctx.strokeStyle = 'rgba(57,255,136,.25)'; ctx.lineWidth = 2; ctx.strokeRect(3, 3, arenaCfg.w - 6, arenaCfg.h - 6);
   ctx.restore();
 }
+function playerFillStyle(p, pos, r) {
+  if (p.skinStops && p.skinStops.length > 1) {
+    const g = ctx.createRadialGradient(pos.x - r * 0.3, pos.y - r * 0.3, r * 0.15, pos.x, pos.y, r);
+    p.skinStops.forEach((c, i) => g.addColorStop(i / (p.skinStops.length - 1), c));
+    return g;
+  }
+  if (p.skinStops && p.skinStops.length === 1) return p.skinStops[0];
+  return p.color;
+}
 function drawPlayer(p, pos, isSelf) {
   const r = arenaCfg.playerRadius;
   if (!p.alive) {
@@ -908,8 +1141,10 @@ function drawPlayer(p, pos, isSelf) {
     ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 8, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
   }
   if (p.frozen) { ctx.save(); ctx.strokeStyle = '#8ecbff'; ctx.lineWidth = 2; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 4, 0, 7); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); }
+  if (p.shadowVeil) { ctx.save(); ctx.strokeStyle = 'rgba(120,80,200,.7)'; ctx.lineWidth = 2; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 6, 0, 7); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); }
+  if (p.raging) { ctx.save(); ctx.strokeStyle = 'rgba(255,80,40,.75)'; ctx.lineWidth = 3; ctx.shadowColor = '#ff5028'; ctx.shadowBlur = 16; ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 5, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
   ctx.save(); ctx.shadowColor = p.color; ctx.shadowBlur = isSelf ? 26 : 16;
-  ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  ctx.fillStyle = playerFillStyle(p, pos, r); ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
   if (isSelf) { ctx.strokeStyle = '#ffffffaa'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 3, 0, Math.PI * 2); ctx.stroke(); }
   ctx.fillStyle = '#ffffffdd';
   const nx = pos.x + Math.cos(p.aim) * (r + 6), ny = pos.y + Math.sin(p.aim) * (r + 6);
@@ -969,6 +1204,7 @@ function updateHud() {
     chip.innerHTML = `${def ? def.icon : ''} ${def ? def.label : k} <b>x${v}</b>`;
     puWrap.appendChild(chip);
   });
+  updateAbilityBar(me);
 }
 function heartSvg(color, fill) {
   const wrap = document.createElement('div'); wrap.className = 'heart';
@@ -976,6 +1212,51 @@ function heartSvg(color, fill) {
     <path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2.3 4.8 5.6 4.2 8 3.8 10.3 5 12 7c1.7-2 4-3.2 6.4-2.8 3.3.6 5.2 4 3.6 7.5C19.5 16.4 12 21 12 21z" fill="#232c42"/>
     <path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2.3 4.8 5.6 4.2 8 3.8 10.3 5 12 7c1.7-2 4-3.2 6.4-2.8 3.3.6 5.2 4 3.6 7.5C19.5 16.4 12 21 12 21z" fill="${color}" style="clip-path:inset(0 ${100 - fill * 100}% 0 0)"/></svg>`;
   return wrap;
+}
+
+// ---------------------------------------------------------------------------
+// Ability activation bar — up to 3 big, visible on-screen buttons, one per
+// equipped ability. Works identically via tap (mobile) or click (desktop).
+// Cooldown remaining comes straight from the server's state broadcast.
+// ---------------------------------------------------------------------------
+function updateAbilityBar(me) {
+  const bar = $('#abilityBar');
+  const slots = me.abilitySlots || [];
+  const keySignature = slots.join(',');
+  if (keySignature !== lastAbilityBarKeys) {
+    lastAbilityBarKeys = keySignature;
+    bar.innerHTML = slots.map(key => {
+      const def = PERK_ICONS[key] || { icon: '❓', label: key };
+      return `<div class="abilityBtn" data-key="${key}">
+        <span class="alv" data-lv>Lv1</span>
+        <span class="aic">${def.icon}</span>
+        <span class="acd" data-cd></span>
+        <span class="alabel">${escapeHtml(def.label)}</span>
+      </div>`;
+    }).join('');
+    [...bar.querySelectorAll('.abilityBtn')].forEach(btn => {
+      const activate = e => {
+        e.preventDefault();
+        if (btn.classList.contains('onCooldown')) return;
+        if (!socket || !inRoom || awaitingCard) return;
+        socket.emit('activateAbility', btn.dataset.key);
+        vibrate(25);
+        btn.classList.add('pressed');
+        setTimeout(() => btn.classList.remove('pressed'), 120);
+      };
+      btn.addEventListener('pointerdown', activate);
+    });
+  }
+  slots.forEach(key => {
+    const info = (me.abilities || {})[key];
+    if (!info) return;
+    const btn = bar.querySelector(`.abilityBtn[data-key="${key}"]`);
+    if (!btn) return;
+    btn.querySelector('[data-lv]').textContent = 'Lv' + info.level;
+    const onCd = info.cooldownMsLeft > 100;
+    btn.classList.toggle('onCooldown', onCd);
+    btn.querySelector('[data-cd]').textContent = onCd ? Math.ceil(info.cooldownMsLeft / 1000) : '';
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -1004,7 +1285,7 @@ function showVictory(data) {
   $('#victoryName').textContent = winner.name || '???';
   $('#victoryName').style.color = winner.color || '#fff';
   $('#victoryTitle').textContent = winner.id === myId ? 'VICTORY' : 'MATCH OVER';
-  if (winner.id === myId) addCoins(50);
+  if (winner.id === myId) { addCoins(50); recordWin(myName); }
   const sorted = [...data.players].sort((a, b) => b.score - a.score);
   $('#finalScores').innerHTML = sorted.map(p => `<div class="finalCard" style="border-color:${p.color}55"><div class="n" style="color:${p.color}">${escapeHtml(p.name)}</div><div class="s">${p.score}</div></div>`).join('');
   startConfetti(winner.color || '#39ff88');
