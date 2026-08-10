@@ -5,10 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>NEON ARENA — 4-Player Shooter</title>
 <style>
-/* ============================================================================
-   NEON ARENA — client stylesheet
-   Dark background, bright neon accents, mobile-safe layout.
-   ============================================================================ */
 :root{
   --bg:#05060a; --bg2:#0b0e16; --panel:#0f1420; --line:#1c2436;
   --text:#dbe4ff; --dim:#7a88ad; --accent:#39ff88; --accent2:#ff3b7a; --warn:#ffd23b;
@@ -24,15 +20,14 @@ body{
 button{font:inherit; cursor:pointer}
 input{font:inherit}
 
-.screen{position:fixed; inset:0; display:none}
+.screen{position:fixed; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; padding:16px; overflow-y:auto}
 .screen.on{display:flex}
 
-/* ---------- Lobby ---------- */
-#lobbyScreen{align-items:center; justify-content:center; flex-direction:column; padding:20px}
+/* ---------- Lobby / main menu ---------- */
 .title{font-size:clamp(30px,7vw,56px); font-weight:900; letter-spacing:.06em; margin:0 0 4px;
   background:linear-gradient(90deg,var(--p1),var(--p3),var(--p2)); -webkit-background-clip:text; background-clip:text; color:transparent;
   text-shadow:0 0 40px rgba(57,255,136,.25); text-align:center}
-.subtitle{color:var(--dim); font-size:13px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:28px; text-align:center}
+.subtitle{color:var(--dim); font-size:13px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:22px; text-align:center}
 .card{background:linear-gradient(180deg,var(--panel),#0b0f18); border:1px solid var(--line); border-radius:16px;
   padding:24px; width:min(420px,92vw); box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .field{margin-bottom:14px}
@@ -41,18 +36,25 @@ input{font:inherit}
   padding:12px 14px; font-size:16px; letter-spacing:.04em}
 .field input:focus{outline:none; border-color:var(--accent)}
 #roomCodeInput{text-transform:uppercase; letter-spacing:.3em; text-align:center; font-weight:700}
-.colorRow{display:flex; gap:10px; margin-bottom:16px}
-.colorSwatch{width:40px; height:40px; border-radius:50%; border:3px solid transparent; cursor:pointer; transition:.15s;
-  box-shadow:0 0 0 0 transparent}
-.colorSwatch.sel{border-color:#fff; transform:scale(1.1)}
-.btnRow{display:flex; gap:10px}
-.btn{flex:1; padding:14px; border-radius:10px; border:none; font-weight:700; letter-spacing:.06em; font-size:14px; transition:.15s}
+.skinRow{display:flex; gap:10px; margin-bottom:6px; flex-wrap:wrap}
+.skinSwatch{width:40px; height:40px; border-radius:50%; border:3px solid transparent; cursor:pointer; transition:.15s; flex:none}
+.skinSwatch.sel{border-color:#fff; transform:scale(1.1)}
+.skinSwatch.locked{opacity:.3; cursor:not-allowed}
+#skinPickName{font-size:11px; color:var(--dim); margin-bottom:14px; min-height:14px}
+.btnRow{display:flex; gap:10px; flex-wrap:wrap}
+.btn{flex:1; padding:14px; border-radius:10px; border:none; font-weight:700; letter-spacing:.06em; font-size:14px; transition:.15s; min-width:110px}
 .btn.primary{background:var(--accent); color:#04140a}
 .btn.primary:hover{filter:brightness(1.1)}
 .btn.primary:disabled{background:#2a3346; color:#5d6785; cursor:not-allowed}
 .btn.ghost{background:transparent; border:1px solid var(--line); color:var(--text)}
 .btn.ghost:hover{border-color:var(--accent)}
 #lobbyError{color:var(--accent2); font-size:12.5px; margin-top:10px; min-height:16px; text-align:center}
+
+#coinBadge{position:fixed; top:14px; right:14px; background:var(--panel); border:1px solid var(--line); border-radius:20px;
+  padding:7px 15px; font-weight:700; font-size:13px; color:var(--warn); z-index:20}
+#menuNav{display:flex; gap:8px; margin-top:14px}
+#menuNav button{background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:8px; padding:8px 14px; font-size:11px; letter-spacing:.08em; text-transform:uppercase}
+#menuNav button:hover{border-color:var(--accent); color:var(--text)}
 
 #roomPanel{width:min(420px,92vw); margin-top:16px}
 #roomPanel .code{font-size:13px; letter-spacing:.2em; color:var(--dim); text-align:center; margin-bottom:10px}
@@ -64,8 +66,25 @@ input{font:inherit}
 .rosterScore{font-size:12px; color:var(--dim); font-variant-numeric:tabular-nums}
 #waitingHint{font-size:12px; color:var(--dim); text-align:center; margin-top:8px; line-height:1.6}
 
+/* ---------- Shop ---------- */
+#shopGrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; width:min(680px,92vw); margin:18px 0}
+.skinCard{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px; text-align:center}
+.skinCard .prev{width:56px; height:56px; border-radius:50%; margin:0 auto 10px; border:3px solid #000}
+.skinCard .nm{font-weight:700; margin-bottom:4px}
+.skinCard .pr{color:var(--warn); font-size:13px; margin-bottom:10px}
+.skinCard button{width:100%; padding:8px; border-radius:8px; border:none; font-weight:700; font-size:12px}
+.skinCard button.buy{background:var(--warn); color:#221a00}
+.skinCard button.buy:disabled{background:#3a3520; color:#6b6248; cursor:not-allowed}
+.skinCard button.owned{background:#1c2436; color:var(--dim)}
+.skinCard button.equipped{background:var(--accent); color:#04140a}
+
+/* ---------- Settings ---------- */
+.settingsRow{display:flex; align-items:center; justify-content:space-between; width:min(320px,88vw); margin:10px 0; padding:12px 14px;
+  background:var(--panel); border:1px solid var(--line); border-radius:10px}
+input[type=range]{width:140px}
+
 /* ---------- Game ---------- */
-#gameScreen{align-items:center; justify-content:center; background:#000}
+#gameScreen{align-items:center; justify-content:center; background:#000; padding:0}
 #canvasWrap{position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center}
 canvas{display:block; background:#060810; touch-action:none}
 
@@ -76,24 +95,21 @@ canvas{display:block; background:#060810; touch-action:none}
   border-radius:12px; padding:8px 12px}
 .scorePip{display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700}
 .scorePip .dot{width:10px; height:10px; border-radius:50%; box-shadow:0 0 8px currentColor}
-.scoreDots{display:flex; gap:3px}
-.scoreDots i{width:6px; height:6px; border-radius:50%; background:#2a3346; display:inline-block}
-.scoreDots i.filled{background:currentColor; box-shadow:0 0 6px currentColor}
 
-#selfPanel{background:rgba(10,13,20,.7); backdrop-filter:blur(6px); border:1px solid var(--line); border-radius:12px; padding:8px 12px; min-width:150px}
-#selfHearts{display:flex; gap:4px; margin-bottom:6px}
+#selfPanel{background:rgba(10,13,20,.7); backdrop-filter:blur(6px); border:1px solid var(--line); border-radius:12px; padding:8px 12px; min-width:150px; max-width:220px}
+#selfHearts{display:flex; gap:4px; margin-bottom:6px; flex-wrap:wrap}
 .heart{width:16px; height:16px; position:relative}
 .heart svg{width:100%; height:100%}
-#selfPowerups{display:flex; flex-wrap:wrap; gap:4px; max-width:200px}
-.puChip{font-size:9.5px; letter-spacing:.04em; background:#131a2a; border:1px solid var(--line); border-radius:6px;
+#selfPerks{display:flex; flex-wrap:wrap; gap:4px; max-width:100%}
+.perkChip{font-size:9.5px; letter-spacing:.04em; background:#131a2a; border:1px solid var(--line); border-radius:6px;
   padding:2px 6px; color:var(--dim)}
-.puChip b{color:var(--accent)}
+.perkChip b{color:var(--accent)}
 
 #centerBanner{position:absolute; top:44%; left:50%; transform:translate(-50%,-50%); text-align:center; pointer-events:none}
 #centerBanner .big{font-size:clamp(40px,9vw,90px); font-weight:900; color:#fff; text-shadow:0 0 30px rgba(255,255,255,.5)}
 #centerBanner .small{font-size:14px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim); margin-top:6px}
 
-#killFeed{position:absolute; top:70px; right:16px; display:flex; flex-direction:column; gap:6px; align-items:flex-end}
+#killFeed{position:absolute; top:70px; right:16px; display:flex; flex-direction:column; gap:6px; align-items:flex-end; max-width:260px}
 .killToast{background:rgba(10,13,20,.85); border:1px solid var(--line); border-left:3px solid var(--accent2);
   border-radius:8px; padding:7px 12px; font-size:12.5px; animation:kfIn .25s ease, kfOut .4s ease 2.6s forwards}
 @keyframes kfIn{from{opacity:0; transform:translateX(20px)} to{opacity:1; transform:translateX(0)}}
@@ -105,7 +121,6 @@ canvas{display:block; background:#060810; touch-action:none}
 .spinner{width:34px; height:34px; border:3px solid #232c42; border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Mobile joysticks */
 .joyZone{position:absolute; bottom:0; width:46%; height:44%; pointer-events:all; touch-action:none}
 #joyLeftZone{left:0} #joyRightZone{right:0}
 .joyBase{position:absolute; width:110px; height:110px; border-radius:50%; border:2px solid rgba(255,255,255,.15);
@@ -114,14 +129,30 @@ canvas{display:block; background:#060810; touch-action:none}
   border:2px solid rgba(255,255,255,.4); left:30px; top:30px; transition:background .1s}
 .joyStick.active{background:rgba(57,255,136,.35); border-color:var(--accent)}
 #joyRightZone .joyStick.active{background:rgba(255,59,122,.35); border-color:var(--accent2)}
+.joyHint{position:absolute; bottom:14px; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:rgba(219,228,255,.35); pointer-events:none}
+#joyLeftZone .joyHint{left:20px} #joyRightZone .joyHint{right:20px}
 
 #leaveBtn{position:absolute; top:14px; left:50%; transform:translateX(-50%); pointer-events:all;
   background:rgba(10,13,20,.7); border:1px solid var(--line); color:var(--dim); font-size:11px; letter-spacing:.1em;
   padding:6px 12px; border-radius:8px}
 #leaveBtn:hover{color:var(--text); border-color:var(--accent2)}
 
+/* ---------- Card select (on death) ---------- */
+#cardSelectScreen{background:radial-gradient(120% 100% at 50% -10%,#161022,#05060a 70%); z-index:30}
+#cardHeader{font-size:clamp(22px,5.5vw,34px); font-weight:900; margin-bottom:4px; text-align:center; color:var(--accent2)}
+#cardSub{color:var(--dim); font-size:12px; letter-spacing:.14em; text-transform:uppercase; margin-bottom:6px}
+#cardTimer{font-family:monospace; font-size:12px; color:var(--warn); margin-bottom:18px}
+#cardGrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; width:min(760px,94vw)}
+.perkCard{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px 12px; text-align:center; transition:.15s}
+.perkCard:hover{border-color:var(--warn); transform:translateY(-3px)}
+.perkCard .ic{font-size:30px; margin-bottom:8px}
+.perkCard .nm{font-weight:700; font-size:13.5px; margin-bottom:6px}
+.perkCard .ds{font-size:11px; color:var(--dim); line-height:1.5}
+.perkCard .cat{font-size:8.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--warn); margin-top:8px}
+.perkCard .stackTag{display:inline-block; margin-top:6px; font-size:9px; letter-spacing:.08em; color:var(--accent); background:#0e2417; border:1px solid #1e4a2e; border-radius:5px; padding:2px 6px}
+
 /* ---------- Match end ---------- */
-#matchEndScreen{align-items:center; justify-content:center; flex-direction:column; background:radial-gradient(120% 100% at 50% -10%,#161022,#05060a 60%)}
+#matchEndScreen{background:radial-gradient(120% 100% at 50% -10%,#161022,#05060a 60%)}
 #confettiCanvas{position:absolute; inset:0; pointer-events:none}
 .victoryWrap{position:relative; text-align:center; z-index:2}
 #victoryTitle{font-size:clamp(28px,6vw,46px); font-weight:900; letter-spacing:.08em; margin-bottom:6px}
@@ -133,16 +164,18 @@ canvas{display:block; background:#060810; touch-action:none}
 
 @media (max-width:900px){
   #selfPanel{min-width:120px}
-  .puChip{font-size:8.5px}
+  .perkChip{font-size:8.5px}
 }
 </style>
 </head>
 <body>
 
-<!-- ============================== LOBBY ============================== -->
+<div id="coinBadge">🪙 0</div>
+
+<!-- ============================== LOBBY / MAIN MENU ============================== -->
 <div class="screen on" id="lobbyScreen">
   <div class="title">NEON ARENA</div>
-  <div class="subtitle">4-Player Online Top-Down Shooter</div>
+  <div class="subtitle">4-Player Online Perk Battler</div>
 
   <div class="card" id="joinCard">
     <div class="field">
@@ -150,8 +183,9 @@ canvas{display:block; background:#060810; touch-action:none}
       <input id="nameInput" maxlength="16" placeholder="Shinobi" autocomplete="off">
     </div>
     <div class="field">
-      <label>Color</label>
-      <div class="colorRow" id="colorRow"></div>
+      <label>Skin</label>
+      <div class="skinRow" id="skinRow"></div>
+      <div id="skinPickName">—</div>
     </div>
     <div class="field">
       <label for="roomCodeInput">Room Code (leave blank to create one)</label>
@@ -161,6 +195,10 @@ canvas{display:block; background:#060810; touch-action:none}
       <button class="btn primary" id="joinBtn">Join / Create Room</button>
     </div>
     <div id="lobbyError"></div>
+    <div id="menuNav">
+      <button id="shopNavBtn">🛒 Shop</button>
+      <button id="settingsNavBtn">⚙ Settings</button>
+    </div>
   </div>
 
   <div class="card" id="roomPanel" style="display:none">
@@ -174,6 +212,22 @@ canvas{display:block; background:#060810; touch-action:none}
   </div>
 </div>
 
+<!-- ============================== SHOP ============================== -->
+<div class="screen" id="shopScreen">
+  <div class="title" style="font-size:34px">SHOP</div>
+  <div class="subtitle">Earn coins from kills, round wins, and match victories</div>
+  <div id="shopGrid"></div>
+  <button class="btn ghost" id="shopBackBtn" style="max-width:200px">← Back</button>
+</div>
+
+<!-- ============================== SETTINGS ============================== -->
+<div class="screen" id="settingsScreen">
+  <div class="title" style="font-size:34px">SETTINGS</div>
+  <div class="settingsRow"><span>Sound</span><label><input type="checkbox" id="muteToggle"> Mute</label></div>
+  <div class="settingsRow"><span>Volume</span><input type="range" id="volumeSlider" min="0" max="100" value="60"></div>
+  <button class="btn ghost" id="settingsBackBtn" style="margin-top:16px; max-width:200px">← Back</button>
+</div>
+
 <!-- ============================== GAME ============================== -->
 <div class="screen" id="gameScreen">
   <div id="canvasWrap">
@@ -184,17 +238,24 @@ canvas{display:block; background:#060810; touch-action:none}
         <div id="scoreBoard"></div>
         <div id="selfPanel">
           <div id="selfHearts"></div>
-          <div id="selfPowerups"></div>
+          <div id="selfPerks"></div>
         </div>
       </div>
       <div id="centerBanner"></div>
       <div id="killFeed"></div>
       <div id="reconnectOverlay"><div class="spinner"></div><div>Reconnecting…</div></div>
     </div>
-    <!-- Mobile touch zones (shown automatically on touch devices) -->
-    <div class="joyZone" id="joyLeftZone"><div class="joyBase" id="joyLeftBase"><div class="joyStick" id="joyLeftStick"></div></div></div>
-    <div class="joyZone" id="joyRightZone"><div class="joyBase" id="joyRightBase"><div class="joyStick" id="joyRightStick"></div></div></div>
+    <div class="joyZone" id="joyLeftZone"><div class="joyBase" id="joyLeftBase"><div class="joyStick" id="joyLeftStick"></div></div><div class="joyHint">MOVE</div></div>
+    <div class="joyZone" id="joyRightZone"><div class="joyBase" id="joyRightBase"><div class="joyStick" id="joyRightStick"></div></div><div class="joyHint">AIM / FIRE</div></div>
   </div>
+</div>
+
+<!-- ============================== CARD SELECT (on death) ============================== -->
+<div class="screen" id="cardSelectScreen">
+  <div id="cardHeader">YOU DIED</div>
+  <div id="cardSub">CHOOSE A PERK</div>
+  <div id="cardTimer"></div>
+  <div id="cardGrid"></div>
 </div>
 
 <!-- ============================== MATCH END ============================== -->
@@ -206,39 +267,57 @@ canvas{display:block; background:#060810; touch-action:none}
     <div id="finalScores"></div>
     <div class="btnRow">
       <button class="btn primary" id="playAgainBtn">Play Again</button>
-      <button class="btn ghost" id="backToLobbyBtn">Back to Menu</button>
+      <button class="btn ghost" id="backToLobbyBtn">Main Menu</button>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script>
+<script type="module">
 'use strict';
 /* ============================================================================
    NEON ARENA — client game logic
-   ============================================================================
-   HOW THIS CONNECTS TO YOUR SERVER
-   ----------------------------------------------------------------------------
-   Replace DEFAULT_SERVER_URL below with your deployed Render/Railway URL,
-   e.g. "https://my-game-server.onrender.com". Locally (hostname === localhost)
-   it automatically points at http://localhost:3001 instead, so you don't have
-   to keep editing this file while developing. You can also override it at
-   any time with a query string, e.g. index.html?server=http://localhost:3055
-   — handy for testing without touching the code.
    ============================================================================ */
-
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> EDIT THIS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 const DEFAULT_SERVER_URL = 'https://rounds-server.onrender.com';
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 const SERVER_URL = new URLSearchParams(location.search).get('server')
   || (['localhost', '127.0.0.1'].includes(location.hostname) ? 'http://localhost:3001' : DEFAULT_SERVER_URL);
 
-const PLAYER_COLORS = ['#39ff88', '#ff3b7a', '#3ba7ff', '#ffd23b'];
-const POWERUP_LABELS = {
-  biggerBullets: 'Bigger Bullets', fasterBullets: 'Faster Bullets', extraHp: 'Extra HP',
-  shield: 'Shield', doubleShot: 'Double Shot', speedBoost: 'Speed Boost', regen: 'Regeneration'
+// ---------------------------------------------------------------------------
+// Firebase — kill tracking.
+// ---------------------------------------------------------------------------
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBRVPPRYt-F6UYNE9JlgF0QfvAw7espZV8",
+  authDomain: "beastcard-41b0d.firebaseapp.com",
+  projectId: "beastcard-41b0d",
+  storageBucket: "beastcard-41b0d.firebasestorage.app",
+  messagingSenderId: "15774227550",
+  appId: "1:15774227550:web:e9258f41a3e530214a28cf",
+  measurementId: "G-J92K2TYGWP"
 };
+let fb = null;
+async function initFirebase() {
+  try {
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const { getFirestore, doc, setDoc, getDoc, updateDoc, increment, serverTimestamp } =
+      await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const app = initializeApp(FIREBASE_CONFIG);
+    fb = { store: getFirestore(app), doc, setDoc, getDoc, updateDoc, increment, serverTimestamp };
+    console.log('[NeonArena] Firebase connected.');
+  } catch (err) {
+    console.warn('[NeonArena] Firebase unavailable — kills tracked locally only this session.', err.message);
+  }
+}
+async function recordKill(playerName) {
+  if (!fb || !playerName) return;
+  try {
+    const ref = fb.doc(fb.store, 'kills', playerName);
+    const snap = await fb.getDoc(ref);
+    if (snap.exists()) await fb.updateDoc(ref, { kills: fb.increment(1), timestamp: fb.serverTimestamp() });
+    else await fb.setDoc(ref, { player: playerName, kills: 1, timestamp: fb.serverTimestamp() });
+  } catch (err) {
+    console.warn('[NeonArena] Could not record kill (check Firestore rules):', err.message);
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Small utilities
@@ -246,36 +325,58 @@ const POWERUP_LABELS = {
 const $ = sel => document.querySelector(sel);
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const lerp = (a, b, t) => a + (b - a) * t;
-function lerpAngle(a, b, t) {
-  let diff = ((b - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
-  return a + diff * t;
-}
 const showScreen = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('on')); $(id).classList.add('on'); };
+function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+// ---------------------------------------------------------------------------
+// Local persistence
+// ---------------------------------------------------------------------------
+const SAVE_KEY = 'neonArena_save_v1';
+function loadSave() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) return { coins: 0, owned: ['neon', 'classic'], equipped: 'neon', muted: false, volume: 60, ...JSON.parse(raw) };
+  } catch (e) {}
+  return { coins: 0, owned: ['neon', 'classic'], equipped: 'neon', muted: false, volume: 60 };
+}
+let save = loadSave();
+function persistSave() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
+function addCoins(n) { save.coins += n; persistSave(); updateCoinBadge(); }
+function updateCoinBadge() { $('#coinBadge').textContent = `🪙 ${save.coins}`; }
+
+const SKINS = [
+  { id: 'neon', label: 'Neon', color: '#39ff88', price: 0 },
+  { id: 'classic', label: 'Classic', color: '#3ba7ff', price: 0 },
+  { id: 'stealth', label: 'Stealth', color: '#7a88ad', price: 150 },
+  { id: 'gold', label: 'Gold', color: '#ffd23b', price: 300 },
+  { id: 'toxic', label: 'Toxic', color: '#ff3bd8', price: 220 }
+];
+function skinById(id) { return SKINS.find(s => s.id === id) || SKINS[0]; }
 
 // ---------------------------------------------------------------------------
 // Global mutable game state
 // ---------------------------------------------------------------------------
 let socket = null;
-let myId = null, myColor = PLAYER_COLORS[0], myName = '';
+let myId = null, myName = '';
 let arenaCfg = { w: 1600, h: 900, playerRadius: 20, bulletRadius: 6 };
 let winScore = 5;
 
-let snapPrev = null, snapCur = null; // last two 'state' broadcasts, for interpolation
-let predictedSelf = { x: 0, y: 0, inited: false };
-let roomState = 'lobby'; // mirrors server room.state
+let snapPrev = null, snapCur = null;
+let predictedSelf = { x: 0, y: 0, inited: false, aim: 0 };
+let roomState = 'lobby';
 let inRoom = false, wasInMatch = false;
 let lastRoomCode = '', lastPlayerName = '', lastPlayerColor = '';
 
-const particles = []; // {x,y,vx,vy,life,maxLife,color,size,kind}
+const particles = [];
 const killFeedEl = $('#killFeed');
-let prevPlayersById = new Map(); // for diffing hp/alive/powerups between snapshots
+let prevPlayersById = new Map();
+let awaitingCard = false;
 
 // ---------------------------------------------------------------------------
-// Canvas setup / responsive sizing
+// Canvas
 // ---------------------------------------------------------------------------
 const canvas = $('#gameCanvas');
 const ctx = canvas.getContext('2d');
-
 function resizeCanvas() {
   const wrap = $('#canvasWrap');
   const availW = wrap.clientWidth, availH = wrap.clientHeight;
@@ -283,77 +384,99 @@ function resizeCanvas() {
   let cssW = availW, cssH = availW / arenaAspect;
   if (cssH > availH) { cssH = availH; cssW = availH * arenaAspect; }
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.style.width = cssW + 'px';
-  canvas.style.height = cssH + 'px';
-  canvas.width = Math.round(cssW * dpr);
-  canvas.height = Math.round(cssH * dpr);
+  canvas.style.width = cssW + 'px'; canvas.style.height = cssH + 'px';
+  canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssH * dpr);
   ctx.setTransform(dpr * (cssW / arenaCfg.w), 0, 0, dpr * (cssH / arenaCfg.h), 0, 0);
 }
 window.addEventListener('resize', resizeCanvas);
 
-// Convert a page-space pointer/touch coordinate into arena logical coordinates.
-function pageToArena(px, py) {
-  const rect = canvas.getBoundingClientRect();
-  const nx = (px - rect.left) / rect.width;
-  const ny = (py - rect.top) / rect.height;
-  return { x: nx * arenaCfg.w, y: ny * arenaCfg.h };
-}
-
 // ---------------------------------------------------------------------------
-// Lobby screen wiring
+// Lobby / shop / settings wiring
 // ---------------------------------------------------------------------------
-(function buildColorPicker() {
-  const row = $('#colorRow');
-  PLAYER_COLORS.forEach((c, i) => {
+function buildSkinPicker() {
+  const row = $('#skinRow');
+  row.innerHTML = '';
+  SKINS.forEach(s => {
+    const owned = save.owned.includes(s.id);
     const el = document.createElement('div');
-    el.className = 'colorSwatch' + (i === 0 ? ' sel' : '');
-    el.style.background = c;
-    el.style.boxShadow = `0 0 14px ${c}66`;
+    el.className = 'skinSwatch' + (s.id === save.equipped ? ' sel' : '') + (owned ? '' : ' locked');
+    el.style.background = s.color;
+    el.style.boxShadow = `0 0 14px ${s.color}66`;
+    el.title = owned ? s.label : `${s.label} — locked, buy in Shop`;
     el.onclick = () => {
-      row.querySelectorAll('.colorSwatch').forEach(s => s.classList.remove('sel'));
-      el.classList.add('sel');
-      myColor = c;
+      if (!save.owned.includes(s.id)) { showScreen('#shopScreen'); renderShop(); return; }
+      save.equipped = s.id; persistSave();
+      buildSkinPicker();
     };
     row.appendChild(el);
   });
-})();
+  $('#skinPickName').textContent = skinById(save.equipped).label;
+}
+buildSkinPicker();
+updateCoinBadge();
 
 $('#roomCodeInput').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
-
 $('#joinBtn').onclick = () => {
   myName = $('#nameInput').value.trim() || 'Player';
   const roomCode = $('#roomCodeInput').value.trim().toUpperCase();
   setLobbyError('');
-  connectAndJoin(roomCode, myName, myColor);
+  connectAndJoin(roomCode, myName, skinById(save.equipped).color);
 };
-
-$('#leaveLobbyBtn').onclick = () => { leaveEverything(); };
+$('#leaveLobbyBtn').onclick = () => leaveEverything();
 $('#startMatchBtn').onclick = () => { if (socket) socket.emit('startMatch'); };
-$('#leaveBtn').onclick = () => { leaveEverything(); };
-$('#backToLobbyBtn').onclick = () => { leaveEverything(); };
+$('#leaveBtn').onclick = () => leaveEverything();
+$('#backToLobbyBtn').onclick = () => leaveEverything();
 $('#playAgainBtn').onclick = () => { if (socket) socket.emit('playAgain'); };
+$('#shopNavBtn').onclick = () => { renderShop(); showScreen('#shopScreen'); };
+$('#settingsNavBtn').onclick = () => showScreen('#settingsScreen');
+$('#shopBackBtn').onclick = () => showScreen('#lobbyScreen');
+$('#settingsBackBtn').onclick = () => showScreen('#lobbyScreen');
+$('#muteToggle').checked = save.muted;
+$('#volumeSlider').value = save.volume;
+$('#muteToggle').onchange = e => { save.muted = e.target.checked; persistSave(); };
+$('#volumeSlider').oninput = e => { save.volume = Number(e.target.value); persistSave(); };
+
+function renderShop() {
+  $('#shopGrid').innerHTML = SKINS.map(s => {
+    const owned = save.owned.includes(s.id);
+    const equipped = save.equipped === s.id;
+    let btn;
+    if (equipped) btn = `<button class="equipped" disabled>Equipped</button>`;
+    else if (owned) btn = `<button class="owned" data-eq="${s.id}">Equip</button>`;
+    else btn = `<button class="buy" data-buy="${s.id}" ${save.coins < s.price ? 'disabled' : ''}>Buy · 🪙${s.price}</button>`;
+    return `<div class="skinCard">
+      <div class="prev" style="background:${s.color}"></div>
+      <div class="nm">${s.label}</div>
+      <div class="pr">${s.price === 0 ? 'Free' : '🪙 ' + s.price}</div>
+      ${btn}
+    </div>`;
+  }).join('');
+  [...document.querySelectorAll('[data-buy]')].forEach(b => b.onclick = () => {
+    const s = skinById(b.dataset.buy);
+    if (save.coins >= s.price) { save.coins -= s.price; save.owned.push(s.id); persistSave(); updateCoinBadge(); renderShop(); buildSkinPicker(); }
+  });
+  [...document.querySelectorAll('[data-eq]')].forEach(b => b.onclick = () => {
+    save.equipped = b.dataset.eq; persistSave(); renderShop(); buildSkinPicker();
+  });
+}
 
 function setLobbyError(msg) { $('#lobbyError').textContent = msg || ''; }
 
 function connectAndJoin(roomCode, name, color) {
   $('#joinBtn').disabled = true;
   if (socket) { socket.removeAllListeners(); socket.disconnect(); }
-  // Stash these BEFORE connecting — the single 'connect' handler in
-  // wireSocketEvents() uses them for both the first join and any later
-  // auto-reconnect, so there is only ever one join attempt per connection.
   lastRoomCode = roomCode; lastPlayerName = name; lastPlayerColor = color;
   socket = io(SERVER_URL, { transports: ['websocket', 'polling'], reconnectionAttempts: 6 });
   wireSocketEvents();
-
   socket.on('connect_error', () => {
-    setLobbyError(`Could not reach the server at ${SERVER_URL}. Check the URL at the top of this file / your connection.`);
+    setLobbyError(`Could not reach the server at ${SERVER_URL}.`);
     $('#joinBtn').disabled = false;
   });
 }
 
 function leaveEverything() {
   if (socket) { socket.emit('leaveRoom'); socket.disconnect(); socket = null; }
-  inRoom = false; wasInMatch = false; myId = null;
+  inRoom = false; wasInMatch = false; myId = null; awaitingCard = false;
   snapPrev = snapCur = null; predictedSelf.inited = false;
   particles.length = 0; killFeedEl.innerHTML = '';
   $('#joinCard').style.display = 'block';
@@ -363,15 +486,15 @@ function leaveEverything() {
 }
 
 // ---------------------------------------------------------------------------
-// Socket event wiring (shared by initial connect and auto-reconnect)
+// Socket event wiring
 // ---------------------------------------------------------------------------
+let prevScores = {};
 function wireSocketEvents() {
   socket.on('lobbyUpdate', data => {
     roomState = data.state;
     renderRoster(data.players);
     $('#startMatchBtn').disabled = data.players.length < data.minPlayers;
     if (data.state === 'lobby' && wasInMatch) {
-      // Dropped back to lobby (someone left mid-match) — show the lobby card again.
       wasInMatch = false;
       showScreen('#lobbyScreen');
       $('#joinCard').style.display = 'none';
@@ -382,6 +505,7 @@ function wireSocketEvents() {
   socket.on('state', data => {
     if (!wasInMatch) { wasInMatch = true; showScreen('#gameScreen'); resizeCanvas(); }
     roomState = data.state;
+    trackScoreCoins(data);
     diffForEffects(data);
     snapPrev = snapCur;
     snapCur = data;
@@ -392,38 +516,50 @@ function wireSocketEvents() {
     const p = findPlayerInSnap(d.id);
     if (p) spawnDeathBurst(p.x, p.y, p.color);
     pushKillFeed(d);
+    if (d.killerId === myId) {
+      const victim = findPlayerInSnap(d.id);
+      recordKill(myName);
+      if (victim) addCoins(5);
+    }
+  });
+
+  // ---- card select on death (private event, only the dying player gets it) ----
+  socket.on('cardOffer', data => showCardSelect(data));
+  socket.on('perkPicked', d => {
+    if (d.id === myId) return;
+    pushToast(`${playerNameById(d.id)} picked ${d.icon} ${d.label}`);
   });
 
   socket.on('matchEnd', data => showVictory(data));
+  socket.on('playerLeft', () => {});
 
-  socket.on('playerLeft', () => { /* roster already updated via lobbyUpdate */ });
-
-  socket.on('disconnect', () => {
-    if (inRoom) $('#reconnectOverlay').classList.add('on');
-  });
-
-  // Single 'connect' handler for the whole socket lifecycle: it fires once on
-  // the very first connection (joins fresh, room may be created) AND on every
-  // subsequent auto-reconnect (rejoins lastRoomCode, which by then holds the
-  // server-assigned code). Previously this logic was split across two
-  // separate 'connect' listeners, which double-emitted 'joinRoom' on every
-  // reconnect — fixed by consolidating into this one.
+  socket.on('disconnect', () => { if (inRoom) $('#reconnectOverlay').classList.add('on'); });
   socket.on('connect', () => {
     $('#reconnectOverlay').classList.remove('on');
     socket.emit('joinRoom', { roomCode: lastRoomCode, name: lastPlayerName, color: lastPlayerColor }, ack => {
       $('#joinBtn').disabled = false;
       if (!ack || !ack.ok) { setLobbyError((ack && ack.error) || 'Could not join room.'); return; }
-      myId = ack.playerId;
-      arenaCfg = ack.arena;
-      winScore = ack.winScore;
-      lastRoomCode = ack.roomCode;
-      inRoom = true;
+      myId = ack.playerId; arenaCfg = ack.arena; winScore = ack.winScore;
+      lastRoomCode = ack.roomCode; inRoom = true;
       $('#joinCard').style.display = 'none';
       $('#roomPanel').style.display = 'block';
       $('#roomCodeDisplay').textContent = ack.roomCode;
       resizeCanvas();
     });
   });
+}
+
+function trackScoreCoins(data) {
+  data.players.forEach(p => {
+    const prev = prevScores[p.id];
+    if (prev !== undefined && p.score > prev && p.id === myId) addCoins(10);
+    prevScores[p.id] = p.score;
+  });
+}
+
+function playerNameById(id) {
+  const p = findPlayerInSnap(id);
+  return p ? p.name : 'Someone';
 }
 
 function renderRoster(players) {
@@ -438,37 +574,81 @@ function renderRoster(players) {
     list.appendChild(row);
   });
 }
-function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
-
-function findPlayerInSnap(id) {
-  return snapCur && snapCur.players.find(p => p.id === id);
-}
+function findPlayerInSnap(id) { return snapCur && snapCur.players.find(p => p.id === id); }
 
 function pushKillFeed(d) {
-  const victim = (snapCur && snapCur.players.find(p => p.id === d.id)) || {};
-  const killer = (snapCur && snapCur.players.find(p => p.id === d.killerId)) || {};
+  const victim = findPlayerInSnap(d.id) || {};
+  const killer = findPlayerInSnap(d.killerId) || {};
   const toast = document.createElement('div');
   toast.className = 'killToast';
-  const puLabel = POWERUP_LABELS[d.powerup] || d.powerup;
-  toast.innerHTML = `<b style="color:${killer.color || '#fff'}">${escapeHtml(killer.name || '???')}</b> eliminated
-    <b style="color:${victim.color || '#fff'}">${escapeHtml(victim.name || '???')}</b>
-    <div style="color:var(--dim);font-size:10.5px;margin-top:2px">+ ${escapeHtml(puLabel)} for ${escapeHtml(victim.name || 'them')}</div>`;
+  toast.innerHTML = d.killerId
+    ? `<b style="color:${killer.color || '#fff'}">${escapeHtml(killer.name || '???')}</b> eliminated <b style="color:${victim.color || '#fff'}">${escapeHtml(victim.name || '???')}</b>`
+    : `<b style="color:${victim.color || '#fff'}">${escapeHtml(victim.name || '???')}</b> was eliminated by a hazard`;
+  killFeedEl.appendChild(toast);
+  setTimeout(() => toast.remove(), 3100);
+}
+function pushToast(text) {
+  const toast = document.createElement('div');
+  toast.className = 'killToast';
+  toast.textContent = text;
   killFeedEl.appendChild(toast);
   setTimeout(() => toast.remove(), 3100);
 }
 
 // ---------------------------------------------------------------------------
-// Diff-based particle triggers — the server never sends particle events
-// directly; the client infers "something happened" from state deltas, which
-// keeps the network protocol small.
+// Card select overlay — 5 cards, drawn from the server's 30-perk pool.
+// Picking a perk you already own adds another stack (build-your-run, like
+// ROUNDS) rather than replacing anything.
+// ---------------------------------------------------------------------------
+let cardTimerInterval = null;
+function showCardSelect(data) {
+  awaitingCard = true;
+  const me = findPlayerInSnap(myId);
+  const owned = (me && me.powerups) || {};
+  $('#cardGrid').innerHTML = data.cards.map(c => {
+    const stacks = owned[c.key] || 0;
+    return `
+    <div class="perkCard" data-key="${c.key}">
+      <div class="ic">${c.icon}</div>
+      <div class="nm">${escapeHtml(c.label)}</div>
+      <div class="ds">${escapeHtml(c.desc)}</div>
+      <div class="cat">${escapeHtml(c.cat)}</div>
+      ${stacks > 0 ? `<div class="stackTag">You have x${stacks} → x${stacks + 1}</div>` : ''}
+    </div>`;
+  }).join('');
+  [...document.querySelectorAll('#cardGrid .perkCard')].forEach(el => {
+    el.onclick = () => {
+      if (!awaitingCard) return;
+      socket.emit('pickPerk', el.dataset.key);
+      awaitingCard = false;
+      clearInterval(cardTimerInterval);
+      showScreen('#gameScreen');
+    };
+  });
+  const deadline = Date.now() + (data.deadlineMs || 12000);
+  clearInterval(cardTimerInterval);
+  cardTimerInterval = setInterval(() => {
+    const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+    $('#cardTimer').textContent = `Auto-pick in ${left}s if you don't choose`;
+    if (left <= 0) { clearInterval(cardTimerInterval); awaitingCard = false; showScreen('#gameScreen'); }
+  }, 250);
+  showScreen('#cardSelectScreen');
+}
+
+// ---------------------------------------------------------------------------
+// Diff-based particle triggers
 // ---------------------------------------------------------------------------
 function diffForEffects(data) {
   data.players.forEach(p => {
     const prev = prevPlayersById.get(p.id);
     if (prev) {
       if (p.hp < prev.hp && p.alive) spawnHitSpark(p.x, p.y, p.color);
-      Object.keys(p.powerups || {}).forEach(k => {
-        if ((p.powerups[k] || 0) > (prev.powerups[k] || 0)) spawnPowerupSparkle(p.x, p.y - 30, p.color, POWERUP_LABELS[k]);
+      Object.keys(p.perks || p.powerups || {}).forEach(k => {
+        const cur = (p.powerups || {})[k] || 0, was = (prev.powerups || {})[k] || 0;
+        if (cur > was) {
+          const def = PERK_ICONS[k];
+          spawnPerkSparkle(p.x, p.y - 30, p.color, def ? def.label : k);
+        }
       });
       if (p.shieldFlash && !prev.shieldFlash) spawnShieldFlash(p.x, p.y, p.color);
     }
@@ -476,206 +656,138 @@ function diffForEffects(data) {
   });
 }
 
+// Client-side icon/label mirror of the server's 30 perks — used only for
+// HUD chips and pickup sparkle text; mechanics live entirely server-side.
+const PERK_ICONS = {
+  biggerBullets: { icon: '🔴', label: 'Bigger Bullets' }, fasterBullets: { icon: '⚡', label: 'Faster Bullets' },
+  doubleShot: { icon: '✌️', label: 'Double Shot' }, homing: { icon: '🎯', label: 'Homing Rounds' },
+  explosive: { icon: '💥', label: 'Explosive Rounds' }, pierce: { icon: '🗡️', label: 'Piercing Rounds' },
+  ricochet: { icon: '↩️', label: 'Ricochet' }, poison: { icon: '☠️', label: 'Poison Rounds' },
+  crit: { icon: '✨', label: 'Critical Strike' }, momentum: { icon: '🏃', label: 'Momentum' },
+  shield: { icon: '🛡️', label: 'Shield' }, extraHp: { icon: '❤️', label: 'Extra HP' },
+  dmgReduction: { icon: '🦺', label: 'Damage Reduction' }, lifesteal: { icon: '🩸', label: 'Life Steal' },
+  thorns: { icon: '🌵', label: 'Thorns' }, secondWind: { icon: '💫', label: 'Second Wind' },
+  regen: { icon: '💚', label: 'Regeneration' }, ironSkin: { icon: '🪨', label: 'Iron Skin' },
+  speedBoost: { icon: '🚀', label: 'Speed Boost' }, dash: { icon: '💨', label: 'Dash' },
+  teleportOnHit: { icon: '🌀', label: 'Teleport on Hit' }, phaseStep: { icon: '👻', label: 'Phase Step' },
+  quickReload: { icon: '🔃', label: 'Quick Reload' }, slippery: { icon: '🧈', label: 'Slippery' },
+  freeze: { icon: '❄️', label: 'Freeze Rounds' }, gravityWell: { icon: '🕳️', label: 'Gravity Well' },
+  enemySlow: { icon: '🐌', label: 'Enemy Slow Field' }, magnet: { icon: '🧲', label: 'Magnet' },
+  lucky: { icon: '🍀', label: 'Lucky' }, bloodlust: { icon: '🧛', label: 'Bloodlust' }
+};
+
 // ---------------------------------------------------------------------------
 // Particle system
 // ---------------------------------------------------------------------------
-function spawnHitSpark(x, y, color) {
-  for (let i = 0; i < 10; i++) {
-    const a = Math.random() * Math.PI * 2, sp = 60 + Math.random() * 140;
-    particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, maxLife: 0.35 + Math.random() * 0.15, color, size: 2 + Math.random() * 2, kind: 'spark' });
-  }
-}
-function spawnDeathBurst(x, y, color) {
-  for (let i = 0; i < 36; i++) {
-    const a = Math.random() * Math.PI * 2, sp = 40 + Math.random() * 260;
-    particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, maxLife: 0.5 + Math.random() * 0.5, color, size: 2 + Math.random() * 4, kind: 'spark' });
-  }
-  particles.push({ x, y, vx: 0, vy: 0, life: 0, maxLife: 0.6, color, size: 4, kind: 'ring' });
-}
-function spawnPowerupSparkle(x, y, color, label) {
-  particles.push({ x, y, vx: 0, vy: -40, life: 0, maxLife: 1.3, color, size: 0, kind: 'text', text: '+' + label });
-  for (let i = 0; i < 14; i++) {
-    const a = Math.random() * Math.PI * 2, sp = 20 + Math.random() * 90;
-    particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 30, life: 0, maxLife: 0.6, color, size: 2 + Math.random() * 2, kind: 'spark' });
-  }
-}
-function spawnShieldFlash(x, y, color) {
-  particles.push({ x, y, vx: 0, vy: 0, life: 0, maxLife: 0.35, color, size: 26, kind: 'ring' });
-}
-function updateParticles(dt) {
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    p.life += dt;
-    if (p.life >= p.maxLife) { particles.splice(i, 1); continue; }
-    p.x += p.vx * dt; p.y += p.vy * dt;
-    if (p.kind === 'spark') { p.vx *= 0.92; p.vy *= 0.92; }
-  }
-}
+function spawnHitSpark(x, y, color) { for (let i = 0; i < 10; i++) { const a = Math.random() * Math.PI * 2, sp = 60 + Math.random() * 140; particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, maxLife: 0.35, color, size: 2 + Math.random() * 2, kind: 'spark' }); } }
+function spawnDeathBurst(x, y, color) { for (let i = 0; i < 36; i++) { const a = Math.random() * Math.PI * 2, sp = 40 + Math.random() * 260; particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, maxLife: 0.5 + Math.random() * 0.5, color, size: 2 + Math.random() * 4, kind: 'spark' }); } particles.push({ x, y, vx: 0, vy: 0, life: 0, maxLife: 0.6, color, size: 4, kind: 'ring' }); }
+function spawnPerkSparkle(x, y, color, label) { particles.push({ x, y, vx: 0, vy: -40, life: 0, maxLife: 1.3, color, size: 0, kind: 'text', text: '+' + label }); for (let i = 0; i < 14; i++) { const a = Math.random() * Math.PI * 2, sp = 20 + Math.random() * 90; particles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 30, life: 0, maxLife: 0.6, color, size: 2 + Math.random() * 2, kind: 'spark' }); } }
+function spawnShieldFlash(x, y, color) { particles.push({ x, y, vx: 0, vy: 0, life: 0, maxLife: 0.35, color, size: 26, kind: 'ring' }); }
+function updateParticles(dt) { for (let i = particles.length - 1; i >= 0; i--) { const p = particles[i]; p.life += dt; if (p.life >= p.maxLife) { particles.splice(i, 1); continue; } p.x += p.vx * dt; p.y += p.vy * dt; if (p.kind === 'spark') { p.vx *= 0.92; p.vy *= 0.92; } } }
 function drawParticles() {
   particles.forEach(p => {
-    const t = p.life / p.maxLife;
-    ctx.globalAlpha = 1 - t;
-    if (p.kind === 'spark') {
-      ctx.fillStyle = p.color;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (1 - t * 0.4), 0, Math.PI * 2); ctx.fill();
-    } else if (p.kind === 'ring') {
-      ctx.strokeStyle = p.color; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.size + t * 50, 0, Math.PI * 2); ctx.stroke();
-    } else if (p.kind === 'text') {
-      ctx.fillStyle = p.color; ctx.font = '700 15px system-ui'; ctx.textAlign = 'center';
-      ctx.fillText(p.text, p.x, p.y);
-    }
+    const t = p.life / p.maxLife; ctx.globalAlpha = 1 - t;
+    if (p.kind === 'spark') { ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size * (1 - t * 0.4), 0, Math.PI * 2); ctx.fill(); }
+    else if (p.kind === 'ring') { ctx.strokeStyle = p.color; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(p.x, p.y, p.size + t * 50, 0, Math.PI * 2); ctx.stroke(); }
+    else if (p.kind === 'text') { ctx.fillStyle = p.color; ctx.font = '700 15px system-ui'; ctx.textAlign = 'center'; ctx.fillText(p.text, p.x, p.y); }
   });
   ctx.globalAlpha = 1;
 }
 
 // ---------------------------------------------------------------------------
-// Input — keyboard/mouse (desktop) and dual joysticks (touch)
+// Input — dual on-screen joysticks ONLY. These use Pointer Events, so they
+// work identically with touch, mouse, or pen — meaning the game is played
+// with joysticks even on a desktop PC, exactly as requested. There is no
+// WASD or mouse-aim fallback.
 // ---------------------------------------------------------------------------
-const keys = new Set();
-let mousePage = { x: innerWidth / 2, y: innerHeight / 2 };
-let mouseFireHeld = false;
-window.addEventListener('keydown', e => {
-  keys.add(e.key.toLowerCase());
-  if (e.key === ' ') e.preventDefault();
-});
-window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
-canvas.addEventListener('mousemove', e => { mousePage.x = e.clientX; mousePage.y = e.clientY; });
-canvas.addEventListener('mousedown', () => { mouseFireHeld = true; });
-window.addEventListener('mouseup', () => { mouseFireHeld = false; });
-
-function keyboardMoveVector() {
-  let mx = 0, my = 0;
-  if (keys.has('w') || keys.has('arrowup')) my -= 1;
-  if (keys.has('s') || keys.has('arrowdown')) my += 1;
-  if (keys.has('a') || keys.has('arrowleft')) mx -= 1;
-  if (keys.has('d') || keys.has('arrowright')) mx += 1;
-  return { mx, my };
-}
-
-// ---- touch joysticks ----
-const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 const JOY_RADIUS = 55;
 const joyState = {
   left: { active: false, id: null, dx: 0, dy: 0, baseX: 0, baseY: 0 },
   right: { active: false, id: null, dx: 0, dy: 0, baseX: 0, baseY: 0 }
 };
+function setupJoystick(zoneSel, baseSel, stickSel, state) {
+  const zone = $(zoneSel), base = $(baseSel), stick = $(stickSel);
 
-function setupJoystick(zoneEl, baseEl, stickEl, state) {
-  if (!isTouchDevice) { zoneEl.style.display = 'none'; return; }
   const start = e => {
-    const t = e.changedTouches[0];
-    state.active = true; state.id = t.identifier;
-    state.baseX = t.clientX; state.baseY = t.clientY;
-    baseEl.style.display = 'block';
-    baseEl.style.left = (t.clientX - 55) + 'px';
-    baseEl.style.top = (t.clientY - 55) + 'px';
-    stickEl.style.left = '30px'; stickEl.style.top = '30px';
-    stickEl.classList.add('active');
+    if (state.active) return;
+    state.active = true; state.id = e.pointerId; state.baseX = e.clientX; state.baseY = e.clientY;
+    base.style.display = 'block';
+    base.style.left = (e.clientX - 55) + 'px'; base.style.top = (e.clientY - 55) + 'px';
+    stick.style.left = '30px'; stick.style.top = '30px'; stick.classList.add('active');
+    try { zone.setPointerCapture(e.pointerId); } catch (err) {}
     e.preventDefault();
   };
   const move = e => {
-    if (!state.active) return;
-    const t = [...e.changedTouches].find(t => t.identifier === state.id);
-    if (!t) return;
-    let dx = t.clientX - state.baseX, dy = t.clientY - state.baseY;
+    if (!state.active || e.pointerId !== state.id) return;
+    let dx = e.clientX - state.baseX, dy = e.clientY - state.baseY;
     const dist = Math.hypot(dx, dy);
     if (dist > JOY_RADIUS) { dx = dx / dist * JOY_RADIUS; dy = dy / dist * JOY_RADIUS; }
     state.dx = dx / JOY_RADIUS; state.dy = dy / JOY_RADIUS;
-    stickEl.style.left = (30 + dx) + 'px'; stickEl.style.top = (30 + dy) + 'px';
+    stick.style.left = (30 + dx) + 'px'; stick.style.top = (30 + dy) + 'px';
     e.preventDefault();
   };
   const end = e => {
-    const t = [...e.changedTouches].find(t => t.identifier === state.id);
-    if (!t && e.type !== 'touchcancel') return;
-    state.active = false; state.dx = 0; state.dy = 0;
-    baseEl.style.display = 'none';
-    stickEl.classList.remove('active');
-    e.preventDefault();
+    if (e.pointerId !== state.id) return;
+    state.active = false; state.id = null; state.dx = 0; state.dy = 0;
+    base.style.display = 'none'; stick.classList.remove('active');
   };
-  zoneEl.addEventListener('touchstart', start, { passive: false });
-  window.addEventListener('touchmove', move, { passive: false });
-  window.addEventListener('touchend', end, { passive: false });
-  window.addEventListener('touchcancel', end, { passive: false });
+
+  zone.addEventListener('pointerdown', start);
+  zone.addEventListener('pointermove', move);
+  zone.addEventListener('pointerup', end);
+  zone.addEventListener('pointercancel', end);
+  zone.addEventListener('pointerleave', e => { if (e.pointerId === state.id && e.buttons === 0) end(e); });
+  zone.addEventListener('contextmenu', e => e.preventDefault());
 }
-setupJoystick($('#joyLeftZone'), $('#joyLeftBase'), $('#joyLeftStick'), joyState.left);
-setupJoystick($('#joyRightZone'), $('#joyRightBase'), $('#joyRightStick'), joyState.right);
+setupJoystick('#joyLeftZone', '#joyLeftBase', '#joyLeftStick', joyState.left);
+setupJoystick('#joyRightZone', '#joyRightBase', '#joyRightStick', joyState.right);
 
-// Combine every input source into one payload sent to the server. Touch takes
-// priority when active (mobile), otherwise keyboard+mouse (desktop).
 function computeInput() {
-  let mx = 0, my = 0, aim = predictedSelf.aim || 0, fire = false;
-
-  if (joyState.left.active) { mx = joyState.left.dx; my = joyState.left.dy; }
-  else { const kb = keyboardMoveVector(); mx = kb.mx; my = kb.my; }
-
-  if (joyState.right.active) {
-    const dist = Math.hypot(joyState.right.dx, joyState.right.dy);
-    if (dist > 0.18) { aim = Math.atan2(joyState.right.dy, joyState.right.dx); fire = true; }
-  } else {
-    const selfScreen = arenaToPage(predictedSelf.x, predictedSelf.y);
-    aim = Math.atan2(mousePage.y - selfScreen.y, mousePage.x - selfScreen.x);
-    fire = mouseFireHeld || keys.has(' ');
+  const mx = joyState.left.dx, my = joyState.left.dy;
+  let aim = predictedSelf.aim || 0, fire = false;
+  const rdist = Math.hypot(joyState.right.dx, joyState.right.dy);
+  if (rdist > 0.15) {
+    aim = Math.atan2(joyState.right.dy, joyState.right.dx);
+    fire = true;
+    predictedSelf.aim = aim;
   }
-  predictedSelf.aim = aim;
   return { mx, my, aim, fire };
 }
 
-function arenaToPage(ax, ay) {
-  const rect = canvas.getBoundingClientRect();
-  return { x: rect.left + (ax / arenaCfg.w) * rect.width, y: rect.top + (ay / arenaCfg.h) * rect.height };
-}
-
-// Send input to the server at a steady rate — independent of render FPS.
 setInterval(() => {
-  if (socket && socket.connected && inRoom && (roomState === 'round' || roomState === 'countdown')) {
+  if (socket && socket.connected && inRoom && !awaitingCard && (roomState === 'round' || roomState === 'countdown')) {
     socket.emit('input', computeInput());
   }
 }, 50);
 
 // ---------------------------------------------------------------------------
-// Client-side prediction (self) + interpolation (everyone else / bullets)
+// Prediction (self) + interpolation (everyone else / bullets / obstacles)
 // ---------------------------------------------------------------------------
-// Approximate per-player speed used ONLY for smoothing local prediction;
-// the server remains authoritative and we gently correct toward it every
-// snapshot, so any drift self-heals within a fraction of a second.
 function selfSpeedGuess() {
   const me = snapCur && snapCur.players.find(p => p.id === myId);
   const boost = me ? (me.powerups.speedBoost || 0) : 0;
   return 260 * (1 + boost * 0.10);
 }
-
 function updatePrediction(dt) {
   const me = snapCur && snapCur.players.find(p => p.id === myId);
   if (!me) return;
   if (!predictedSelf.inited) { predictedSelf.x = me.x; predictedSelf.y = me.y; predictedSelf.inited = true; }
-
-  if (me.alive && (roomState === 'round')) {
+  if (me.alive && roomState === 'round' && !awaitingCard) {
     const input = computeInput();
     let mx = input.mx, my = input.my;
-    const mag = Math.hypot(mx, my);
-    if (mag > 1) { mx /= mag; my /= mag; }
+    const mag = Math.hypot(mx, my); if (mag > 1) { mx /= mag; my /= mag; }
     const speed = selfSpeedGuess();
-    predictedSelf.x += mx * speed * dt;
-    predictedSelf.y += my * speed * dt;
+    predictedSelf.x += mx * speed * dt; predictedSelf.y += my * speed * dt;
     predictedSelf.x = clamp(predictedSelf.x, arenaCfg.playerRadius, arenaCfg.w - arenaCfg.playerRadius);
     predictedSelf.y = clamp(predictedSelf.y, arenaCfg.playerRadius, arenaCfg.h - arenaCfg.playerRadius);
   }
-  // Gently reconcile toward the server's authoritative position — corrects
-  // for knockback, wall clamps, and any prediction drift without visible pops.
   predictedSelf.x = lerp(predictedSelf.x, me.x, 0.18);
   predictedSelf.y = lerp(predictedSelf.y, me.y, 0.18);
 }
-
-// Interpolation factor between the last two snapshots, based on wall-clock
-// time so remote players/bullets glide smoothly between the ~33ms server ticks.
 function interpFactor() {
   if (!snapPrev || !snapCur || snapCur.t === snapPrev.t) return 1;
-  const span = snapCur.t - snapPrev.t;
-  const elapsed = Date.now() - snapCur.t;
-  return clamp(elapsed / span, 0, 1.5);
+  return clamp((Date.now() - snapCur.t) / (snapCur.t - snapPrev.t), 0, 1.5);
 }
-
 function interpPos(prevList, curP) {
   const prevP = prevList && prevList.find(x => x.id === curP.id);
   if (!prevP) return { x: curP.x, y: curP.y };
@@ -684,92 +796,139 @@ function interpPos(prevList, curP) {
 }
 
 // ---------------------------------------------------------------------------
-// Rendering
+// Obstacle rendering — 10 types, each with a distinct icon, shape, AND a
+// small caption underneath explaining exactly what it does.
+// ---------------------------------------------------------------------------
+const OBSTACLE_META = {
+  breakableWall: { color: '#8a6b4a', label: 'BREAKABLE WALL', sub: '2 hits to destroy', icon: '🧱' },
+  crate: { color: '#c99a4b', label: 'CRATE', sub: 'pushable', icon: '📦' },
+  teleporter: { color: '#8e7bc0', label: 'TELEPORTER', sub: 'linked pair', icon: '🌀' },
+  blade: { color: '#e3546b', label: 'SPINNING BLADE', sub: 'damages on contact', icon: '⚔️' },
+  bouncyPad: { color: '#39ff88', label: 'BOUNCY PAD', sub: 'launches you', icon: '⤴️' },
+  speedZone: { color: '#3ba7ff', label: 'SPEED ZONE', sub: '+35% speed', icon: '💨' },
+  healthPickup: { color: '#ff5577', label: 'HEALTH', sub: '+1.5 HP, respawns', icon: '➕' },
+  damageBrick: { color: '#ff4d4d', label: 'DAMAGE BRICK', sub: 'hurts to stand on', icon: '🔥' },
+  barrel: { color: '#ff8a3b', label: 'EXPLOSIVE BARREL', sub: 'shoot to detonate', icon: '💣' },
+  phaseGate: { color: '#7be0ff', label: 'PHASE GATE', sub: 'blocks bullets only', icon: '👻' }
+};
+function drawObstacleLabel(o, cx, cy) {
+  ctx.fillStyle = 'rgba(219,228,255,.9)';
+  ctx.font = '700 9px system-ui'; ctx.textAlign = 'center';
+  ctx.fillText(OBSTACLE_META[o.type].label, cx, cy + o.h / 2 + 14);
+  ctx.fillStyle = 'rgba(160,172,204,.9)';
+  ctx.font = '400 8px system-ui';
+  ctx.fillText(OBSTACLE_META[o.type].sub, cx, cy + o.h / 2 + 24);
+}
+function drawObstacleIcon(meta, cx, cy) {
+  ctx.font = '13px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(meta.icon, cx, cy);
+  ctx.textBaseline = 'alphabetic';
+}
+function drawObstacles() {
+  if (!snapCur || !snapCur.obstacles) return;
+  snapCur.obstacles.forEach(o => {
+    const meta = OBSTACLE_META[o.type];
+    if (!meta) return;
+    const cx = o.x + o.w / 2, cy = o.y + o.h / 2;
+    ctx.save();
+    if (o.type === 'breakableWall') {
+      ctx.fillStyle = meta.color; ctx.globalAlpha = o.hp === 1 ? 0.55 : 1; ctx.fillRect(o.x, o.y, o.w, o.h);
+      ctx.strokeStyle = '#3a2a17'; ctx.lineWidth = 1;
+      for (let yy = o.y + 8; yy < o.y + o.h; yy += 8) { ctx.beginPath(); ctx.moveTo(o.x, yy); ctx.lineTo(o.x + o.w, yy); ctx.stroke(); }
+      ctx.globalAlpha = 1;
+    } else if (o.type === 'crate') {
+      ctx.fillStyle = meta.color; ctx.fillRect(o.x, o.y, o.w, o.h);
+      ctx.strokeStyle = '#7a5c2e'; ctx.lineWidth = 2; ctx.strokeRect(o.x, o.y, o.w, o.h);
+      ctx.beginPath(); ctx.moveTo(o.x, o.y); ctx.lineTo(o.x + o.w, o.y + o.h); ctx.moveTo(o.x + o.w, o.y); ctx.lineTo(o.x, o.y + o.h); ctx.stroke();
+    } else if (o.type === 'teleporter') {
+      const pulse = 0.75 + Math.sin(Date.now() / 260) * 0.15;
+      ctx.fillStyle = meta.color; ctx.globalAlpha = pulse; ctx.beginPath(); ctx.arc(cx, cy, o.w / 2, 0, 7); ctx.fill();
+      ctx.globalAlpha = 1; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, o.w / 2 - 5, 0, 7); ctx.stroke();
+    } else if (o.type === 'blade') {
+      const t = Date.now() / 150;
+      ctx.translate(cx, cy); ctx.rotate(t);
+      ctx.fillStyle = meta.color; ctx.beginPath();
+      for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; const r = i % 2 === 0 ? o.w / 2 : o.w / 3.2; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+      ctx.closePath(); ctx.fill();
+      ctx.rotate(-t); ctx.translate(-cx, -cy);
+    } else if (o.type === 'bouncyPad') {
+      ctx.fillStyle = meta.color; ctx.globalAlpha = 0.8; ctx.beginPath(); ctx.arc(cx, cy, o.w / 2, 0, 7); ctx.fill();
+      ctx.globalAlpha = 1; ctx.strokeStyle = '#0a3d1f'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, o.w / 3, 0, 7); ctx.stroke();
+    } else if (o.type === 'speedZone') {
+      ctx.fillStyle = meta.color; ctx.globalAlpha = 0.16; ctx.fillRect(o.x, o.y, o.w, o.h);
+      ctx.globalAlpha = 1; ctx.strokeStyle = meta.color; ctx.setLineDash([5, 5]); ctx.strokeRect(o.x, o.y, o.w, o.h); ctx.setLineDash([]);
+    } else if (o.type === 'healthPickup') {
+      ctx.fillStyle = meta.color; ctx.beginPath(); ctx.arc(cx, cy, o.w / 2, 0, 7); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, o.w / 2, 0, 7); ctx.stroke();
+    } else if (o.type === 'damageBrick') {
+      const flicker = 0.7 + Math.sin(Date.now() / 200) * 0.15;
+      ctx.fillStyle = meta.color; ctx.globalAlpha = flicker; ctx.fillRect(o.x, o.y, o.w, o.h);
+      ctx.globalAlpha = 1; ctx.strokeStyle = '#5a1010'; ctx.lineWidth = 2;
+      for (let xx = o.x; xx < o.x + o.w; xx += 10) { ctx.beginPath(); ctx.moveTo(xx, o.y); ctx.lineTo(xx + 6, o.y + o.h); ctx.stroke(); }
+      ctx.strokeRect(o.x, o.y, o.w, o.h);
+    } else if (o.type === 'barrel') {
+      ctx.fillStyle = meta.color; ctx.beginPath(); ctx.arc(cx, cy, o.w / 2, 0, 7); ctx.fill();
+      ctx.strokeStyle = o.hp === 1 ? '#ffcf3b' : '#5a2c00'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, o.w / 2 - 5, 0, 7); ctx.stroke();
+    } else if (o.type === 'phaseGate') {
+      const shimmer = 0.35 + Math.sin(Date.now() / 300) * 0.15;
+      ctx.fillStyle = meta.color; ctx.globalAlpha = shimmer; ctx.fillRect(o.x, o.y, o.w, o.h); ctx.globalAlpha = 1;
+      ctx.strokeStyle = meta.color; ctx.lineWidth = 1.5; ctx.strokeRect(o.x, o.y, o.w, o.h);
+    }
+    ctx.restore();
+    ctx.save();
+    drawObstacleIcon(meta, cx, cy);
+    ctx.restore();
+    drawObstacleLabel(o, cx, cy);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Player / bullet rendering
 // ---------------------------------------------------------------------------
 function drawArena() {
-  ctx.fillStyle = '#060810';
-  ctx.fillRect(0, 0, arenaCfg.w, arenaCfg.h);
-
-  // grid
-  ctx.strokeStyle = 'rgba(60,80,130,0.12)';
-  ctx.lineWidth = 1;
+  ctx.fillStyle = '#060810'; ctx.fillRect(0, 0, arenaCfg.w, arenaCfg.h);
+  ctx.strokeStyle = 'rgba(60,80,130,0.12)'; ctx.lineWidth = 1;
   const step = 80;
   for (let x = 0; x <= arenaCfg.w; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, arenaCfg.h); ctx.stroke(); }
   for (let y = 0; y <= arenaCfg.h; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(arenaCfg.w, y); ctx.stroke(); }
-
-  // border glow
-  ctx.strokeStyle = '#233252'; ctx.lineWidth = 6;
-  ctx.strokeRect(3, 3, arenaCfg.w - 6, arenaCfg.h - 6);
-  ctx.save();
-  ctx.shadowColor = '#39ff8855'; ctx.shadowBlur = 20;
-  ctx.strokeStyle = 'rgba(57,255,136,.25)'; ctx.lineWidth = 2;
-  ctx.strokeRect(3, 3, arenaCfg.w - 6, arenaCfg.h - 6);
+  ctx.strokeStyle = '#233252'; ctx.lineWidth = 6; ctx.strokeRect(3, 3, arenaCfg.w - 6, arenaCfg.h - 6);
+  ctx.save(); ctx.shadowColor = '#39ff8855'; ctx.shadowBlur = 20;
+  ctx.strokeStyle = 'rgba(57,255,136,.25)'; ctx.lineWidth = 2; ctx.strokeRect(3, 3, arenaCfg.w - 6, arenaCfg.h - 6);
   ctx.restore();
 }
-
 function drawPlayer(p, pos, isSelf) {
   const r = arenaCfg.playerRadius;
   if (!p.alive) {
-    // faint ghost marker for spectating (mid-match joiners / this round's dead)
-    ctx.globalAlpha = 0.18;
-    ctx.strokeStyle = p.color; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2); ctx.stroke();
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha = 0.18; ctx.strokeStyle = p.color; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
     return;
   }
-
-  // shield ring
   if (p.shieldActive) {
-    ctx.save();
-    ctx.strokeStyle = '#8ecbffcc'; ctx.lineWidth = 3;
-    ctx.shadowColor = '#8ecbff'; ctx.shadowBlur = 14;
-    ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 8, 0, Math.PI * 2); ctx.stroke();
-    ctx.restore();
+    ctx.save(); ctx.strokeStyle = '#8ecbffcc'; ctx.lineWidth = 3; ctx.shadowColor = '#8ecbff'; ctx.shadowBlur = 14;
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 8, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
   }
-
-  // body glow
-  ctx.save();
-  ctx.shadowColor = p.color; ctx.shadowBlur = isSelf ? 26 : 16;
-  ctx.fillStyle = p.color;
-  ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
-
-  // outline ring for self
-  if (isSelf) {
-    ctx.strokeStyle = '#ffffffaa'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 3, 0, Math.PI * 2); ctx.stroke();
-  }
-
-  // aim direction nub
+  if (p.frozen) { ctx.save(); ctx.strokeStyle = '#8ecbff'; ctx.lineWidth = 2; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 4, 0, 7); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); }
+  ctx.save(); ctx.shadowColor = p.color; ctx.shadowBlur = isSelf ? 26 : 16;
+  ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  if (isSelf) { ctx.strokeStyle = '#ffffffaa'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(pos.x, pos.y, r + 3, 0, Math.PI * 2); ctx.stroke(); }
   ctx.fillStyle = '#ffffffdd';
   const nx = pos.x + Math.cos(p.aim) * (r + 6), ny = pos.y + Math.sin(p.aim) * (r + 6);
   ctx.beginPath(); ctx.arc(nx, ny, 3.5, 0, Math.PI * 2); ctx.fill();
-
-  // name + hp bar
-  ctx.textAlign = 'center';
-  ctx.font = '600 12px system-ui';
-  ctx.fillStyle = '#dbe4ffcc';
+  ctx.textAlign = 'center'; ctx.font = '600 12px system-ui'; ctx.fillStyle = '#dbe4ffcc';
   ctx.fillText(p.name, pos.x, pos.y - r - 20);
-
   const barW = 42, barH = 5;
-  ctx.fillStyle = '#1c2436';
-  ctx.fillRect(pos.x - barW / 2, pos.y - r - 14, barW, barH);
+  ctx.fillStyle = '#1c2436'; ctx.fillRect(pos.x - barW / 2, pos.y - r - 14, barW, barH);
   ctx.fillStyle = p.hp > p.maxHp * 0.3 ? p.color : '#ff3b3b';
   ctx.fillRect(pos.x - barW / 2, pos.y - r - 14, barW * clamp(p.hp / p.maxHp, 0, 1), barH);
 }
-
 function drawBullet(b, pos) {
-  ctx.save();
-  ctx.shadowColor = b.color; ctx.shadowBlur = 12;
-  ctx.fillStyle = b.color;
-  ctx.beginPath(); ctx.arc(pos.x, pos.y, b.radius, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
+  ctx.save(); ctx.shadowColor = b.color; ctx.shadowBlur = 12; ctx.fillStyle = b.color;
+  ctx.beginPath(); ctx.arc(pos.x, pos.y, b.radius, 0, Math.PI * 2); ctx.fill(); ctx.restore();
 }
-
 function render() {
   ctx.clearRect(0, 0, arenaCfg.w, arenaCfg.h);
   drawArena();
-
+  drawObstacles();
   if (snapCur) {
     const t = interpFactor();
     snapCur.bullets.forEach(b => {
@@ -777,66 +936,45 @@ function render() {
       const pos = prevB ? { x: lerp(prevB.x, b.x, t), y: lerp(prevB.y, b.y, t) } : { x: b.x, y: b.y };
       drawBullet(b, pos);
     });
-
     snapCur.players.forEach(p => {
       const isSelf = p.id === myId;
       const pos = isSelf ? predictedSelf : interpPos(snapPrev.players, p);
       drawPlayer(p, pos, isSelf);
     });
   }
-
   drawParticles();
-
-  // center banner: countdown / waiting text
   const banner = $('#centerBanner');
   if (roomState === 'countdown' && snapCur) {
     const secs = Math.ceil(snapCur.countdownMs / 1000);
     banner.innerHTML = `<div class="big">${secs > 0 ? secs : 'GO'}</div><div class="small">Round starting</div>`;
-  } else {
-    banner.innerHTML = '';
-  }
+  } else banner.innerHTML = '';
 }
 
 // ---------------------------------------------------------------------------
-// HUD (score board, own health/powerups) — updated once per snapshot, not
-// every render frame, since it doesn't need 60fps refresh.
+// HUD
 // ---------------------------------------------------------------------------
 function updateHud() {
   if (!snapCur) return;
-  const board = $('#scoreBoard');
-  board.innerHTML = snapCur.players.map(p => `
-    <div class="scorePip" style="color:${p.color}">
-      <span class="dot" style="background:${p.color}"></span>${p.score}
-    </div>`).join('');
-
+  $('#scoreBoard').innerHTML = snapCur.players.map(p => `<div class="scorePip" style="color:${p.color}"><span class="dot" style="background:${p.color}"></span>${p.score}</div>`).join('');
   const me = snapCur.players.find(p => p.id === myId);
   if (!me) return;
-
-  const hearts = $('#selfHearts');
-  hearts.innerHTML = '';
+  const hearts = $('#selfHearts'); hearts.innerHTML = '';
   const full = Math.floor(me.hp), frac = me.hp - full;
-  for (let i = 0; i < me.maxHp; i++) {
-    const filled = i < full ? 1 : (i === full && frac > 0.01 ? frac : 0);
-    hearts.appendChild(heartSvg(me.color, filled));
-  }
-
-  const puWrap = $('#selfPowerups');
-  puWrap.innerHTML = '';
+  for (let i = 0; i < me.maxHp; i++) hearts.appendChild(heartSvg(me.color, i < full ? 1 : (i === full && frac > 0.01 ? frac : 0)));
+  const puWrap = $('#selfPerks'); puWrap.innerHTML = '';
   Object.entries(me.powerups || {}).forEach(([k, v]) => {
     if (!v) return;
-    const chip = document.createElement('div');
-    chip.className = 'puChip';
-    chip.innerHTML = `${POWERUP_LABELS[k] || k} <b>x${v}</b>`;
+    const def = PERK_ICONS[k];
+    const chip = document.createElement('div'); chip.className = 'perkChip';
+    chip.innerHTML = `${def ? def.icon : ''} ${def ? def.label : k} <b>x${v}</b>`;
     puWrap.appendChild(chip);
   });
 }
 function heartSvg(color, fill) {
-  const wrap = document.createElement('div');
-  wrap.className = 'heart';
-  const pct = Math.round(fill * 100);
-  wrap.innerHTML = `<svg viewBox="0 0 24 24"><defs><clipPath id="clip"><rect x="0" y="0" width="${24 * fill}" height="24"/></clipPath></defs>
+  const wrap = document.createElement('div'); wrap.className = 'heart';
+  wrap.innerHTML = `<svg viewBox="0 0 24 24"><defs><clipPath id="clip${Math.random().toString(36).slice(2)}"><rect x="0" y="0" width="${24 * fill}" height="24"/></clipPath></defs>
     <path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2.3 4.8 5.6 4.2 8 3.8 10.3 5 12 7c1.7-2 4-3.2 6.4-2.8 3.3.6 5.2 4 3.6 7.5C19.5 16.4 12 21 12 21z" fill="#232c42"/>
-    <path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2.3 4.8 5.6 4.2 8 3.8 10.3 5 12 7c1.7-2 4-3.2 6.4-2.8 3.3.6 5.2 4 3.6 7.5C19.5 16.4 12 21 12 21z" fill="${color}" clip-path="url(#clip)"/></svg>`;
+    <path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2.3 4.8 5.6 4.2 8 3.8 10.3 5 12 7c1.7-2 4-3.2 6.4-2.8 3.3.6 5.2 4 3.6 7.5C19.5 16.4 12 21 12 21z" fill="${color}" style="clip-path:inset(0 ${100 - fill * 100}% 0 0)"/></svg>`;
   return wrap;
 }
 
@@ -847,17 +985,11 @@ let lastFrame = performance.now();
 function frame(now) {
   const dt = Math.min(0.05, (now - lastFrame) / 1000);
   lastFrame = now;
-  if (document.getElementById('gameScreen').classList.contains('on')) {
-    updatePrediction(dt);
-    updateParticles(dt);
-    render();
-  }
+  if ($('#gameScreen').classList.contains('on')) { updatePrediction(dt); updateParticles(dt); render(); }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-setInterval(updateHud, 80); // HUD DOM updates don't need to run every rAF tick
-
-window.addEventListener('resize', resizeCanvas);
+setInterval(updateHud, 80);
 resizeCanvas();
 
 // ---------------------------------------------------------------------------
@@ -865,61 +997,44 @@ resizeCanvas();
 // ---------------------------------------------------------------------------
 const confettiCanvas = $('#confettiCanvas');
 const cctx = confettiCanvas.getContext('2d');
-let confetti = [];
-let confettiRunning = false;
-
+let confetti = [], confettiRunning = false;
 function showVictory(data) {
   showScreen('#matchEndScreen');
   const winner = data.players.find(p => p.id === data.winnerId) || {};
   $('#victoryName').textContent = winner.name || '???';
   $('#victoryName').style.color = winner.color || '#fff';
   $('#victoryTitle').textContent = winner.id === myId ? 'VICTORY' : 'MATCH OVER';
-
+  if (winner.id === myId) addCoins(50);
   const sorted = [...data.players].sort((a, b) => b.score - a.score);
-  $('#finalScores').innerHTML = sorted.map(p => `
-    <div class="finalCard" style="border-color:${p.color}55">
-      <div class="n" style="color:${p.color}">${escapeHtml(p.name)}</div>
-      <div class="s">${p.score}</div>
-    </div>`).join('');
-
+  $('#finalScores').innerHTML = sorted.map(p => `<div class="finalCard" style="border-color:${p.color}55"><div class="n" style="color:${p.color}">${escapeHtml(p.name)}</div><div class="s">${p.score}</div></div>`).join('');
   startConfetti(winner.color || '#39ff88');
 }
-
 function resizeConfetti() { confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight; }
-window.addEventListener('resize', resizeConfetti);
-resizeConfetti();
-
+window.addEventListener('resize', resizeConfetti); resizeConfetti();
 function startConfetti(mainColor) {
   confetti = [];
-  const palette = [mainColor, ...PLAYER_COLORS];
-  for (let i = 0; i < 160; i++) {
-    confetti.push({
-      x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight,
-      vy: 120 + Math.random() * 180, vx: (Math.random() - 0.5) * 80,
-      size: 5 + Math.random() * 7, rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 6,
-      color: palette[Math.floor(Math.random() * palette.length)]
-    });
-  }
+  const palette = [mainColor, '#39ff88', '#3ba7ff', '#ff3b7a', '#ffd23b'];
+  for (let i = 0; i < 160; i++) confetti.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight, vy: 120 + Math.random() * 180, vx: (Math.random() - 0.5) * 80, size: 5 + Math.random() * 7, rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 6, color: palette[Math.floor(Math.random() * palette.length)] });
   if (!confettiRunning) { confettiRunning = true; requestAnimationFrame(confettiFrame); }
 }
 let lastConfettiT = performance.now();
 function confettiFrame(now) {
-  const dt = Math.min(0.05, (now - lastConfettiT) / 1000);
-  lastConfettiT = now;
-  const onScreen = document.getElementById('matchEndScreen').classList.contains('on');
-  if (!onScreen) { confettiRunning = false; return; }
+  const dt = Math.min(0.05, (now - lastConfettiT) / 1000); lastConfettiT = now;
+  if (!$('#matchEndScreen').classList.contains('on')) { confettiRunning = false; return; }
   cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
   confetti.forEach(c => {
     c.y += c.vy * dt; c.x += c.vx * dt; c.rot += c.vr * dt;
     if (c.y > innerHeight + 20) { c.y = -20; c.x = Math.random() * innerWidth; }
-    cctx.save();
-    cctx.translate(c.x, c.y); cctx.rotate(c.rot);
-    cctx.fillStyle = c.color;
-    cctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.6);
-    cctx.restore();
+    cctx.save(); cctx.translate(c.x, c.y); cctx.rotate(c.rot); cctx.fillStyle = c.color;
+    cctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.6); cctx.restore();
   });
   requestAnimationFrame(confettiFrame);
 }
+
+// ---------------------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------------------
+initFirebase();
 </script>
 </body>
 </html>
